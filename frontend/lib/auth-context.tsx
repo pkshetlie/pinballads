@@ -6,6 +6,7 @@ import { isTokenExpired } from './utils';
 
 interface AuthContextValue {
     token: string | null;
+    user: { name: string; email: string } | null; // Information utilisateur
     login: (email: string, password: string) => Promise<void>;
     logout: () => void;
 }
@@ -15,12 +16,19 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [token, setToken] = useState<string | null>(null);
     const [refreshTokenValue, setRefreshTokenValue] = useState<string | null>(null);
+    const [user, setUser] = useState<{ name: string; email: string } | null>(null);
 
     // Initial load from localStorage
     useEffect(() => {
         const storedToken = localStorage.getItem('token');
         const storedRefreshToken = localStorage.getItem('refreshToken');
-        if (storedToken) setToken(storedToken);
+        const storedUser = localStorage.getItem('user'); // Stocker l'utilisateur également
+
+        if (storedToken){
+            setToken(storedToken);
+            setUser(storedUser ? JSON.parse(storedUser) : null);
+        }
+
         if (storedRefreshToken) setRefreshTokenValue(storedRefreshToken);
     }, []);
 
@@ -46,25 +54,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const login = async (email: string, password: string) => {
         try {
-            const { token, refresh_token } = await loginUser(email, password);
+            const { token, refresh_token, user } = await loginUser(email, password);
+
             localStorage.setItem('token', token);
             localStorage.setItem('refreshToken', refresh_token);
+            localStorage.setItem('user', JSON.stringify(user)); // Stocker une structure utilisateur
             setToken(token);
+            setUser(user);
             setRefreshTokenValue(refresh_token);
         } catch (error) {
-            console.error('Login failed', error);
+            throw error;
         }
     };
 
     const logout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user');
         setToken(null);
+        setUser(null);
         setRefreshTokenValue(null);
+
     };
 
     return (
-        <AuthContext.Provider value={{ token, login, logout }}>
+        <AuthContext.Provider value={{ token, user, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

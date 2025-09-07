@@ -16,6 +16,7 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { LanguageToggle } from "@/components/language-toggle"
 import { useLanguage } from "@/lib/language-context"
 import { useState } from "react"
+import Navbar from "@/app/components/Navbar";
 
 // Mock data for pinball machine listings
 const pinballMachines = [
@@ -350,44 +351,7 @@ export default function ListingsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">P</span>
-              </div>
-              <h1 className="text-xl font-bold text-foreground">PinballMarket</h1>
-            </div>
-            <nav className="hidden md:flex items-center gap-6">
-              <a href="/" className="text-muted-foreground hover:text-foreground transition-colors">
-                {t("nav.home")}
-              </a>
-              <a href="/listings" className="text-foreground font-medium">
-                {t("nav.browse")}
-              </a>
-              <a href="/sell" className="text-muted-foreground hover:text-foreground transition-colors">
-                {t("nav.sell")}
-              </a>
-              <a href="/about" className="text-muted-foreground hover:text-foreground transition-colors">
-                {t("nav.about")}
-              </a>
-              <div className="flex items-center gap-2">
-                <ThemeToggle />
-                <LanguageToggle />
-              </div>
-              <Button variant="outline" size="sm" asChild>
-                <a href="/signin">{t("nav.signIn")}</a>
-              </Button>
-              <Button size="sm" asChild>
-                <a href="/sell">{t("nav.listMachine")}</a>
-              </Button>
-            </nav>
-          </div>
-        </div>
-      </header>
-
+      <Navbar/>
       {/* Search and Filter Bar */}
       <section className="bg-muted/30 border-b">
         <div className="container mx-auto px-4 py-6">

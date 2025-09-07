@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { LanguageToggle } from "@/components/language-toggle"
 import { useLanguage } from "@/lib/language-context"
+import { useAuth } from '@/lib/auth-context';
+import Navbar from "@/app/components/Navbar";
 
 // Mock data for featured pinball machines
 const featuredMachines = [
@@ -57,54 +57,15 @@ const featuredMachines = [
   },
 ]
 
-function LanguageToggleWrapper() {
-  const { language, setLanguage } = useLanguage()
 
-  return <LanguageToggle currentLanguage={language} onLanguageChange={setLanguage} />
-}
 
 export default function HomePage() {
   const { t } = useLanguage()
+  const { login, user, logout } = useAuth(); // Récupère le contexte utilisateur
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">P</span>
-              </div>
-              <h1 className="text-xl font-bold text-foreground">PinballMarket</h1>
-            </div>
-            <nav className="flex items-center gap-4">
-              <div className="hidden md:flex items-center gap-6">
-                <a href="/listings" className="text-muted-foreground hover:text-foreground transition-colors">
-                  {t("nav.browse")}
-                </a>
-                <a href="/sell" className="text-muted-foreground hover:text-foreground transition-colors">
-                  {t("nav.sell")}
-                </a>
-                <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                  {t('nav.about')}
-                </a>
-                <Button variant="outline" size="sm" asChild>
-                  <a href="/signin">{t("nav.signIn")}</a>
-                </Button>
-                <Button size="sm" asChild>
-                  <a href="/sell">List Machine</a>
-                </Button>
-              </div>
-              <div className="flex items-center gap-2">
-                <LanguageToggle />
-                <ThemeToggle />
-              </div>
-            </nav>
-          </div>
-        </div>
-      </header>
-
+    <Navbar/>
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-primary/5 to-accent/5 py-16">
         <div className="container mx-auto px-4 text-center">

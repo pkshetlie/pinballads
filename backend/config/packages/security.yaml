@@ -13,23 +13,6 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-
-        login:
-            pattern: ^/api/login(_check)?
-            stateless: true
-            #            entry_point: jwt
-            json_login:
-                check_path: /api/login_check
-                success_handler: lexik_jwt_authentication.handler.authentication_success
-                failure_handler: lexik_jwt_authentication.handler.authentication_failure
-            #            jwt: ~
-            #            refresh_jwt:
-            #                check_path: /api/token/refresh
-            #        refresh_token:
-            #            pattern: ^/api/token/refresh$
-            #            stateless: true
-
-
         api:
             pattern: ^/api
             stateless: true
@@ -46,9 +29,7 @@ security:
             #                failure_handler: lexik_jwt_authentication.handler.authentication_failure
             json_login:
                 check_path: /api/login_check
-                username_path: email
-                password_path: password
-                success_handler: lexik_jwt_authentication.handler.authentication_success
+                success_handler: App\Security\CustomLoginSuccessHandler
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
         main:
             lazy: true

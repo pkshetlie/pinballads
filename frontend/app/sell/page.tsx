@@ -14,6 +14,7 @@ import Link from "next/link"
 import { ArrowLeft, Upload, X, Plus, DollarSign, MapPin, Settings } from "lucide-react"
 import { useState } from "react"
 import {useLanguage} from "@/lib/language-context"
+import Navbar from "@/app/components/Navbar";
 
 export default function SellMachinePage() {
   const {t} = useLanguage()
@@ -35,31 +36,7 @@ export default function SellMachinePage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">P</span>
-              </div>
-              <span className="text-xl font-bold text-foreground">{t("sell.brand")}</span>
-            </Link>
-            <div className="flex items-center gap-4">
-              <div className="hidden md:flex items-center gap-2">
-                <ThemeToggle/>
-                <LanguageToggle/>
-              </div>
-              <Link
-                  href="/listings"
-                  className="flex items-center text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2"/>
-                {t("sell.backToListings")}
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Navbar/>
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">

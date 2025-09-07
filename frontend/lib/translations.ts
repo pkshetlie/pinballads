@@ -72,6 +72,7 @@ export const translations = {
         acceptTerms: "I accept the",
         termsAndConditions: "Terms and Conditions",
         alreadyHaveAccount: "Already have an account?",
+        invalidCredentials: "Invalid credentials",
       },
 
       // Machine details
@@ -255,6 +256,7 @@ export const translations = {
         acceptTerms: "J'accepte les",
         termsAndConditions: "Conditions Générales",
         alreadyHaveAccount: "Vous avez déjà un compte ?",
+        invalidCredentials: "Identifiants incorrects",
       },
 
       // Machine details

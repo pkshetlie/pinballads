@@ -13,55 +13,35 @@ import { ArrowLeft, Mail, Lock, Eye, EyeOff } from "lucide-react"
 import { useState } from "react"
 import { useLanguage } from "@/lib/language-context"
 import { useAuth } from '@/lib/auth-context';
+import { useRouter } from 'next/navigation';
+import Navbar from "@/app/components/Navbar";
 
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false)
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
+  const router = useRouter(); // Initialisation du router
   const { t } = useLanguage()
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage(null);
 
     try {
       await login(email, password);
       // Rediriger l'utilisateur après connexion (par exemple vers le dashboard)
-      console.log('Connexion réussie');
+      router.push('/'); // Redirige vers la page d'accueil
     } catch (error) {
-      console.error('Erreur lors de la connexion:', error);
+      setErrorMessage(t('auth.invalidCredentials') || 'Invalid email or password'); // Message par défaut si traduction non disponible
     }
   };
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">P</span>
-              </div>
-              <span className="text-xl font-bold text-foreground">PinballMarket</span>
-            </Link>
-            <div className="flex items-center gap-4">
-              <div className="hidden md:flex items-center gap-2">
-                <ThemeToggle />
-                <LanguageToggle />
-              </div>
-              <Link
-                href="/"
-                className="flex items-center text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Home
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Navbar/>
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-12">
@@ -123,6 +103,12 @@ export default function SignInPage() {
                     {t('auth.forgotPassword')}
                   </Link>
                 </div>
+
+                {errorMessage && (
+                    <p className="text-sm text-red-600 text-center">
+                      {errorMessage}
+                    </p>
+                )}
 
                 <Button type="submit" className="w-full">
                   {t('auth.signIn')}

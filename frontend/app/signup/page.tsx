@@ -9,6 +9,7 @@ import Link from "next/link"
 import { ArrowLeft, Mail, Lock, Eye, EyeOff } from "lucide-react"
 import { useState } from "react"
 import { useLanguage } from "@/lib/language-context"
+import Navbar from "@/app/components/Navbar";
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -79,27 +80,7 @@ export default function SignUpPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">P</span>
-              </div>
-              <span className="text-xl font-bold text-foreground">PinballMarket</span>
-            </Link>
-            <div className="flex items-center gap-4">
-              <Link
-                href="/"
-                className="flex items-center text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                {t("common.backToHome")}
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Navbar/>
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-12">
