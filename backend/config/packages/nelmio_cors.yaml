@@ -1,0 +1,13 @@
+nelmio_cors:
+    defaults:
+        origin_regex: true
+        allow_origin: ['%env(CORS_ALLOW_ORIGIN)%']
+        allow_methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE']
+        allow_headers: ['Content-Type', 'Authorization', 'Accept']
+        expose_headers: ['Link', 'Authorization']
+        max_age: 3600
+    paths:
+        '^/': null
+        '^/api/': # CORS s'applique uniquement aux routes commençant par /api/
+            allow_origin: ['http://localhost:3000']
+

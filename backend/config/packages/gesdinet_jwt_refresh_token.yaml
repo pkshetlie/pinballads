@@ -1,0 +1,4 @@
+gesdinet_jwt_refresh_token:
+    ttl: 2592000 # Durée de vie en secondes (30 jours ici)
+    user_provider: app_user_provider # Utilise le même provider que dans `security.yaml`
+    refresh_token_class: App\Entity\RefreshToken

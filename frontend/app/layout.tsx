@@ -1,0 +1,37 @@
+import type React from "react"
+import type { Metadata } from "next"
+import { GeistSans } from "geist/font/sans"
+import { GeistMono } from "geist/font/mono"
+import { Analytics } from "@vercel/analytics/next"
+import { ThemeProvider } from "@/components/theme-provider"
+import { LanguageProvider } from "@/lib/language-context"
+import { Suspense } from "react"
+import "./globals.css"
+import { AuthProvider } from '@/lib/auth-context'; // Importez votre AuthProvider
+
+export const metadata: Metadata = {
+  title: "Pinball Marketplace",
+  description: "Buy and sell pinball machines",
+  generator: "v0.app",
+}
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
+      <AuthProvider>
+      <Suspense fallback={null}>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+            <LanguageProvider>{children}</LanguageProvider>
+          </ThemeProvider>
+        </Suspense>
+        <Analytics />
+      </AuthProvider>
+      </body>
+    </html>
+  )
+}
