@@ -14,7 +14,7 @@ import { useState } from "react"
 import { useLanguage } from "@/lib/language-context"
 import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
-import Navbar from "@/app/components/Navbar";
+import Navbar from "@/components/Navbar";
 
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false)

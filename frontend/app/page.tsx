@@ -7,7 +7,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useLanguage } from "@/lib/language-context"
 import { useAuth } from '@/lib/auth-context';
-import Navbar from "@/app/components/Navbar";
+import Navbar from "@/components/Navbar";
 
 // Mock data for featured pinball machines
 const featuredMachines = [

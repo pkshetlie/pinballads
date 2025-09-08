@@ -1,3 +1,4 @@
+"use client"
 import {
   ArrowLeft,
   Star,
@@ -19,9 +20,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import Link from "next/link"
+import Navbar from "@/components/Navbar";
+import { useSearchParams } from "next/navigation"
 
 // Mock data for a detailed pinball machine
-const pinballMachine = {
+const pinballMachines = [{
   id: 1,
   title: "Medieval Madness",
   manufacturer: "Williams",
@@ -75,47 +78,19 @@ Recent maintenance includes new rubber rings, fresh wax on the playfield, and LE
     responseTime: "Usually responds within 2 hours",
     totalSales: 23,
   },
-}
+}]
 
 export default function AdDetailPage({ params }: { params: { id: string } }) {
+  const searchParams = useSearchParams()
+  const id = searchParams.get("id")
+  const pinballMachine = pinballMachines.find((m) => m.id === parseInt(id))
+
+  if (!pinballMachine) return <div className="p-8">Machine not found</div>
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-card sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link href="/listings">
-                <Button variant="ghost" size="sm" className="gap-2">
-                  <ArrowLeft className="w-4 h-4" />
-                  Back to Listings
-                </Button>
-              </Link>
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                  <span className="text-primary-foreground font-bold text-lg">P</span>
-                </div>
-                <h1 className="text-xl font-bold text-foreground">PinballMarket</h1>
-              </div>
-            </div>
-            <nav className="hidden md:flex items-center gap-6">
-              <a href="/" className="text-muted-foreground hover:text-foreground transition-colors">
-                Home
-              </a>
-              <a href="/listings" className="text-muted-foreground hover:text-foreground transition-colors">
-                Browse
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                Sell
-              </a>
-              <Button variant="outline" size="sm">
-                Sign In
-              </Button>
-              <Button size="sm">List Machine</Button>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <Navbar/>
 
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

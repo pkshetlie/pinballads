@@ -16,7 +16,8 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { LanguageToggle } from "@/components/language-toggle"
 import { useLanguage } from "@/lib/language-context"
 import { useState } from "react"
-import Navbar from "@/app/components/Navbar";
+import Navbar from "@/components/Navbar";
+import Link from "next/link";
 
 // Mock data for pinball machine listings
 const pinballMachines = [
@@ -481,9 +482,12 @@ export default function ListingsPage() {
                   <CardFooter className="p-4 pt-0">
                     <div className="flex items-center justify-between w-full">
                       <span className="text-xl font-bold text-primary">${machine.price.toLocaleString()}</span>
+                      <Link href={`/listings/detail?id=${machine.id}`}>
+
                       <Button size="sm" variant="outline">
                         {t("listings.viewDetails")}
                       </Button>
+                      </Link>
                     </div>
                   </CardFooter>
                 </Card>

@@ -10,7 +10,7 @@ import Link from "next/link"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { LanguageToggle } from "@/components/language-toggle"
 import { useLanguage } from "@/lib/language-context"
-import Navbar from "@/app/components/Navbar";
+import Navbar from "@/components/Navbar";
 
 // Mock user data
 const user = {

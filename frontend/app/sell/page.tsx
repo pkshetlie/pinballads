@@ -11,7 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
 import { Upload, X, Plus, MapPin, Settings } from "lucide-react"
 import {useLanguage} from "@/lib/language-context"
-import Navbar from "@/app/components/Navbar";
+import Navbar from "@/components/Navbar";
 
 import { useApi } from '@/lib/api';
 
