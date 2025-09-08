@@ -8,8 +8,8 @@ export function LanguageToggle() {
     const { language: currentLanguage, setLanguage } = useLanguage()
 
     const languages = [
-        { code: "en", name: "English", flag: "🇺🇸" },
         { code: "fr", name: "Français", flag: "🇫🇷" },
+        { code: "en", name: "English", flag: "🇺🇸" },
         // { code: "de", name: "Deutsch", flag: "🇩🇪" },
     ]
 

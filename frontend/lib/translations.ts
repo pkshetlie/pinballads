@@ -9,6 +9,7 @@ export const translations = {
         profile: "Profile",
         signIn: "Sign In",
         listMachine: "List Machine",
+        myCollection: "My collection",
       },
 
       // Homepage
@@ -193,6 +194,7 @@ export const translations = {
         profile: "Profil",
         signIn: "Se connecter",
         listMachine: "Lister Machine",
+        myCollection: "Ma collection",
       },
 
       // Homepage

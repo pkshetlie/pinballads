@@ -10,8 +10,8 @@ import "./globals.css"
 import { AuthProvider } from '@/lib/auth-context'; // Importez votre AuthProvider
 
 export const metadata: Metadata = {
-  title: "Pinball Marketplace",
-  description: "Buy and sell pinball machines",
+  title: "Crazy Pinball",
+  description: "Buy, sell & collect pinball machines",
   generator: "v0.app",
 }
 

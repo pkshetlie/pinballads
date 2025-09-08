@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageToggle } from "@/components/language-toggle";
 import {useLanguage} from "@/lib/language-context";
+import { Radar } from "lucide-react"
 
 function LanguageToggleWrapper() {
     const { language, setLanguage } = useLanguage()
@@ -39,12 +40,15 @@ export default function Navbar() {
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                            <span className="text-primary-foreground font-bold text-lg">P</span>
+                            <span className="text-primary-foreground font-bold text-lg"><Radar/></span>
                         </div>
-                        <h1 className="text-xl font-bold text-foreground">PinballMarket</h1>
+                        <h1 className="text-xl font-bold text-foreground">Crazy Pinball</h1>
                     </div>
                     <nav className="flex items-center gap-4">
                         <div className="hidden md:flex items-center gap-6">
+                            <a href="/" className="text-muted-foreground hover:text-foreground transition-colors">
+                                {t("nav.home")}
+                            </a>
                             <a href="/listings" className="text-muted-foreground hover:text-foreground transition-colors">
                                 {t("nav.browse")}
                             </a>
@@ -65,7 +69,7 @@ export default function Navbar() {
                             )}
 
                             <Button size="sm" asChild>
-                                <a href="/collection">My collection</a>
+                                <a href="/collection">{t('nav.myCollection')}</a>
                             </Button>
                         </div>
                         <div className="flex items-center gap-2">
