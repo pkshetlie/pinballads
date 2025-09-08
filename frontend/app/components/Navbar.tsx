@@ -33,7 +33,6 @@ export default function Navbar() {
         );
     }
 
-
     return (
         <header className="border-b bg-card">
             <div className="container mx-auto px-4 py-4">
@@ -66,7 +65,7 @@ export default function Navbar() {
                             )}
 
                             <Button size="sm" asChild>
-                                <a href="/sell">List Machine</a>
+                                <a href="/collection">My collection</a>
                             </Button>
                         </div>
                         <div className="flex items-center gap-2">

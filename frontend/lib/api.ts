@@ -1,4 +1,5 @@
 import config from '../config';
+import { useAuth } from './auth-context';
 
 
 export async function loginUser(email: string, password: string) {
@@ -36,4 +37,46 @@ export async function refreshToken(refreshToken: string) {
   }
 
   return response.json(); // This will contain the new token
+}
+
+export function useApi() {
+  const { token, logout } = useAuth();
+
+  const request = async (
+      method: 'GET' | 'POST',
+      endpoint: string,
+      body?: Record<string, any>
+  ) => {
+    if (!token) {
+      throw new Error('No token available');
+    }
+
+    const url = new URL(endpoint, config.API_BASE_URL).href;
+
+    const response = await fetch(url, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: method === 'POST' ? JSON.stringify(body) : undefined,
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        // Token invalide -> déconnexion
+        logout();
+      }
+      const errorText = await response.text();
+      throw new Error(`Request failed: ${response.status} ${errorText}`);
+    }
+
+    return response.json();
+  };
+
+  const get = (endpoint: string) => request('GET', endpoint);
+  const post = (endpoint: string, body: Record<string, any>) =>
+      request('POST', endpoint, body);
+
+  return { get, post };
 }

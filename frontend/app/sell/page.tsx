@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -8,19 +9,66 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { LanguageToggle } from "@/components/language-toggle"
-import Link from "next/link"
-import { ArrowLeft, Upload, X, Plus, DollarSign, MapPin, Settings } from "lucide-react"
-import { useState } from "react"
+import { Upload, X, Plus, MapPin, Settings } from "lucide-react"
 import {useLanguage} from "@/lib/language-context"
 import Navbar from "@/app/components/Navbar";
+
+import { useApi } from '@/lib/api';
+
+type Game = {
+  opdb_id: string
+  is_machine: boolean
+  name: string
+  common_name: string | null
+  shortname: string | null
+  physical_machine: number
+  ipdb_id: number | null
+  manufacture_date: string | null
+  manufacturer: {
+    manufacturer_id: number
+    name: string
+    full_name: string
+    created_at: string
+    updated_at: string
+  } | null
+  type: string | null
+  display: string | null
+  player_count: number | null
+  features: string[]
+  keywords: string[]
+  description: string | null
+  created_at: string
+  updated_at: string
+  images: {
+    title: string
+    primary: boolean
+    type: string
+    urls: {
+      small: string
+      medium: string
+      large: string
+    }
+    sizes: {
+      small: { width: number; height: number }
+      medium: { width: number; height: number }
+      large: { width: number; height: number }
+    }
+  }[]
+}
 
 export default function SellMachinePage() {
   const {t} = useLanguage()
   const [uploadedImages, setUploadedImages] = useState<string[]>([])
   const [features, setFeatures] = useState<string[]>([])
   const [newFeature, setNewFeature] = useState("")
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<Game[]>([]);
+  const [selectedGame, setSelectedGame] = useState<Game | null>(null);
+
+  const [manufacturer, setManufacturer] = useState("");
+  const [year, setYear] = useState("");
+  const [description, setDescription] = useState("");
+  const { get } = useApi();
 
   const addFeature = () => {
     if (newFeature.trim() && !features.includes(newFeature.trim())) {
@@ -32,6 +80,46 @@ export default function SellMachinePage() {
   const removeFeature = (feature: string) => {
     setFeatures(features.filter((f) => f !== feature))
   }
+
+  useEffect(() => {
+    if (query.length < 3) {
+      setResults([]);
+      return;
+    }
+
+    if (selectedGame && query === selectedGame.name) {
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      get(`/api/search/game?query=${encodeURIComponent(query)}`)
+          .then((data) => {
+            setResults(data);
+            setFeatures([]);
+            setManufacturer("");
+            setYear("");
+          })
+          .catch(() => setResults([]));
+    }, 400); // délai de 400ms pour éviter trop d’appels
+
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  const handleSelectGame = (game: Game) => {
+    setSelectedGame(game);
+    setQuery(game.name);
+    setManufacturer(game.manufacturer?.name.toLowerCase()
+        .replace(/\./g, "")      // enlève tous les points
+        .replace(/&/g, "and")    // remplace tous les &
+        .replace(/\s+/g, "-")    // tous les espaces (1+)
+        .trim()  || "");
+    setYear(game.manufacture_date ? new Date(game.manufacture_date).getFullYear().toString() : "");
+    setDescription(game.description || "");
+      if (features.length === 0) {
+          setFeatures(game.features)
+      }
+    setResults([]); // on ferme la liste
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -60,23 +148,177 @@ export default function SellMachinePage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="title">{t('sell.machineTitle')} *</Label>
-                    <Input id="title" placeholder="e.g., Medieval Madness (Williams 1997)" required />
+                    <Input id="title"
+                           placeholder="e.g., Medieval Madness (Williams 1997)"
+                           required value={query}
+                           onChange={(e) => setQuery(e.target.value)} />
+                    {results.length > 0 && (
+                        <ul className="mt-2 border rounded-lg p-2 bg-card shadow bg-" style={{position: 'absolute', zIndex:200}}>
+                          {results.map((game) => (
+                              <li
+                                  key={game.opdb_id}
+                                  className="p-1 hover:bg-card/80 cursor-pointer"
+                                  onClick={() => handleSelectGame(game)}
+                              >
+                                {game.name} ({game.manufacturer?.full_name}  {game.manufacture_date})
+                              </li>
+                          ))}
+                        </ul>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="manufacturer">{t('sell.manufacturer')} *</Label>
-                    <Select required>
+                    <Select required value={manufacturer} onValueChange={(value) => setManufacturer(value as string)}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select manufacturer" />
+                        <SelectValue placeholder={t('sell.selectManufacturer')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="williams">Williams</SelectItem>
+                        <SelectItem value="aa-amusements">A.A. Amusements</SelectItem>
+                        <SelectItem value="ami">A.M.I.</SelectItem>
+                        <SelectItem value="achille-chalvignac">Achille and Chalvignac</SelectItem>
+                        <SelectItem value="alben">Alben</SelectItem>
+                        <SelectItem value="allied-leisure">Allied Leisure</SelectItem>
+                        <SelectItem value="alvin-g-and-co">Alvin G. & Co</SelectItem>
+                        <SelectItem value="american-girl">American Girl</SelectItem>
+                        <SelectItem value="american-pinball">American Pinball</SelectItem>
+                        <SelectItem value="apple-time">Apple Time</SelectItem>
+                        <SelectItem value="arkon">Arkon</SelectItem>
+                        <SelectItem value="astro-games">Astro Games</SelectItem>
+                        <SelectItem value="atari">Atari</SelectItem>
+                        <SelectItem value="automaticos">Automaticos</SelectItem>
                         <SelectItem value="bally">Bally</SelectItem>
-                        <SelectItem value="gottlieb">Gottlieb</SelectItem>
-                        <SelectItem value="stern">Stern</SelectItem>
-                        <SelectItem value="data-east">Data East</SelectItem>
-                        <SelectItem value="sega">Sega</SelectItem>
+                        <SelectItem value="bandai-namco">Bandai Namco</SelectItem>
+                        <SelectItem value="barni">Barni</SelectItem>
+                        <SelectItem value="barrels-of-fun">Barrels of Fun</SelectItem>
+                        <SelectItem value="bell-coin-matic">Bell Coin Matic</SelectItem>
+                        <SelectItem value="bell-games">Bell Games</SelectItem>
+                        <SelectItem value="bigliardini-elettronici-milano">Bigliardini Elettronici Milano</SelectItem>
+                        <SelectItem value="block-marble-company">Block Marble Company</SelectItem>
+                        <SelectItem value="briarwood">Briarwood</SelectItem>
+                        <SelectItem value="brunswick">Brunswick</SelectItem>
+                        <SelectItem value="cea">C.E.A.</SelectItem>
+                        <SelectItem value="capcom">Capcom</SelectItem>
                         <SelectItem value="chicago-coin">Chicago Coin</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
+                        <SelectItem value="chicago-gaming">Chicago Gaming</SelectItem>
+                        <SelectItem value="cic-play">Cic Play</SelectItem>
+                        <SelectItem value="cisco">Cisco</SelectItem>
+                        <SelectItem value="coffee-mat">Coffee Mat</SelectItem>
+                        <SelectItem value="data-east">Data East</SelectItem>
+                        <SelectItem value="deeproot">deeproot</SelectItem>
+                        <SelectItem value="dpx">DPX</SelectItem>
+                        <SelectItem value="dutch-pinball">Dutch Pinball</SelectItem>
+                        <SelectItem value="elbos">Elbos</SelectItem>
+                        <SelectItem value="eric-priepke">Eric Priepke</SelectItem>
+                        <SelectItem value="europlay">Europlay</SelectItem>
+                        <SelectItem value="exhibit">Exhibit</SelectItem>
+                        <SelectItem value="fascination-game">Fascination Game</SelectItem>
+                        <SelectItem value="for-amusement-only">For Amusement Only Games</SelectItem>
+                        <SelectItem value="game-plan">Game Plan</SelectItem>
+                        <SelectItem value="geiger">Geiger</SelectItem>
+                        <SelectItem value="genco">Genco</SelectItem>
+                        <SelectItem value="giorgio-massiniero">Giorgio Massiniero</SelectItem>
+                        <SelectItem value="giuliano-lodola">Giuliano Lodola</SelectItem>
+                        <SelectItem value="gottlieb">Gottlieb</SelectItem>
+                        <SelectItem value="grand-products">Grand Products</SelectItem>
+                        <SelectItem value="haggis-pinball">Haggis Pinball</SelectItem>
+                        <SelectItem value="hanilamatic">Hanilamatic</SelectItem>
+                        <SelectItem value="hankin">Hankin</SelectItem>
+                        <SelectItem value="heighway-pinball">Heighway Pinball</SelectItem>
+                        <SelectItem value="hexa-pinball">HEXA Pinball</SelectItem>
+                        <SelectItem value="hispamatic">Hispamatic</SelectItem>
+                        <SelectItem value="homepin">Homepin</SelectItem>
+                        <SelectItem value="idi">I.D.I.</SelectItem>
+                        <SelectItem value="ian-harrower">Ian Harrower Games</SelectItem>
+                        <SelectItem value="idsa">IDSA</SelectItem>
+                        <SelectItem value="inder">Inder</SelectItem>
+                        <SelectItem value="ice">Innovative Concepts (ICE)</SelectItem>
+                        <SelectItem value="interflip">Interflip</SelectItem>
+                        <SelectItem value="international">International</SelectItem>
+                        <SelectItem value="j-esteban">J. Esteban</SelectItem>
+                        <SelectItem value="jac-van-ham">Jac Van Ham</SelectItem>
+                        <SelectItem value="jersey-jack">Jersey Jack Pinball</SelectItem>
+                        <SelectItem value="jeutel">Jeutel</SelectItem>
+                        <SelectItem value="joctronic">Joctronic</SelectItem>
+                        <SelectItem value="juegos-populares">Juegos Populares</SelectItem>
+                        <SelectItem value="kc-tabart">K.C. Tabart</SelectItem>
+                        <SelectItem value="keeney">Keeney</SelectItem>
+                        <SelectItem value="komplett">Komplett</SelectItem>
+                        <SelectItem value="komputer-dynamics">Komputer Dynamics</SelectItem>
+                        <SelectItem value="ltd-brasil">LTD do Brasil</SelectItem>
+                        <SelectItem value="mac-pinball">Maguinas / Mac Pinball</SelectItem>
+                        <SelectItem value="mali">Mali</SelectItem>
+                        <SelectItem value="mambelli">Mambelli</SelectItem>
+                        <SelectItem value="maresa">Maresa</SelectItem>
+                        <SelectItem value="marsa-play">Marsa Play</SelectItem>
+                        <SelectItem value="marvel">Marvel</SelectItem>
+                        <SelectItem value="mattel">Mattel</SelectItem>
+                        <SelectItem value="megaverse">Megaverse Project</SelectItem>
+                        <SelectItem value="midway">Midway</SelectItem>
+                        <SelectItem value="mike-budai">Mike Budai</SelectItem>
+                        <SelectItem value="mirco">Mirco Games</SelectItem>
+                        <SelectItem value="mocean">Mocean</SelectItem>
+                        <SelectItem value="mondialmatic">Mondialmatic</SelectItem>
+                        <SelectItem value="mr-game">Mr Game</SelectItem>
+                        <SelectItem value="multimorphic">Multimorphic</SelectItem>
+                        <SelectItem value="nordamatic">Nordamatic</SelectItem>
+                        <SelectItem value="north-star">North Star</SelectItem>
+                        <SelectItem value="nsm">Nsm</SelectItem>
+                        <SelectItem value="pedretti">Pedretti Gaming</SelectItem>
+                        <SelectItem value="petaco">Petaco</SelectItem>
+                        <SelectItem value="peyper">Peyper</SelectItem>
+                        <SelectItem value="pinball-adventures">Pinball Adventures</SelectItem>
+                        <SelectItem value="pinball-brothers">Pinball Brothers</SelectItem>
+                        <SelectItem value="pinball-mfg">Pinball Manufacturing Inc.</SelectItem>
+                        <SelectItem value="pinball-shop">Pinball Shop</SelectItem>
+                        <SelectItem value="pinnovating">Pinnovating</SelectItem>
+                        <SelectItem value="pinstar">Pinstar</SelectItem>
+                        <SelectItem value="playbar">Playbar</SelectItem>
+                        <SelectItem value="playmatic">Playmatic</SelectItem>
+                        <SelectItem value="playmec">Playmec Flippers</SelectItem>
+                        <SelectItem value="quetzal">Quetzal Pinball</SelectItem>
+                        <SelectItem value="rmg">R.M.G.</SelectItem>
+                        <SelectItem value="rally">Rally</SelectItem>
+                        <SelectItem value="ramps">Ramp's Pinball</SelectItem>
+                        <SelectItem value="rebellion">Rebellion Pinball</SelectItem>
+                        <SelectItem value="recel">Recel</SelectItem>
+                        <SelectItem value="recreativos-franco">Recreativos Franco</SelectItem>
+                        <SelectItem value="red-baron">Red Baron Amusements</SelectItem>
+                        <SelectItem value="retro-pinball">Retro Pinball</SelectItem>
+                        <SelectItem value="riot">Riot Pinball</SelectItem>
+                        <SelectItem value="sankyo">Sankyo Seiki</SelectItem>
+                        <SelectItem value="sega">Sega</SelectItem>
+                        <SelectItem value="segasa">Segasa</SelectItem>
+                        <SelectItem value="sentinel">Sentinel</SelectItem>
+                        <SelectItem value="sirmo">SIRMO</SelectItem>
+                        <SelectItem value="skit-b">Skit-B Pinball</SelectItem>
+                        <SelectItem value="sleic">Sleic</SelectItem>
+                        <SelectItem value="sonic">Sonic</SelectItem>
+                        <SelectItem value="spinball">Spinball</SelectItem>
+                        <SelectItem value="spooky">Spooky Pinball</SelectItem>
+                        <SelectItem value="sportmatic">Sportmatic</SelectItem>
+                        <SelectItem value="staal">Staal</SelectItem>
+                        <SelectItem value="stern">Stern</SelectItem>
+                        <SelectItem value="stern-electronics">Stern Electronics</SelectItem>
+                        <SelectItem value="suncoast">Suncoast Pinball</SelectItem>
+                        <SelectItem value="th-bergmann">T.H. Bergmann</SelectItem>
+                        <SelectItem value="taito">Taito</SelectItem>
+                        <SelectItem value="team-pinball">Team Pinball</SelectItem>
+                        <SelectItem value="tecnoplay">Tecnoplay</SelectItem>
+                        <SelectItem value="turner-pinball">Turner Pinball</SelectItem>
+                        <SelectItem value="unidesa">Unidesa</SelectItem>
+                        <SelectItem value="united">United</SelectItem>
+                        <SelectItem value="universal">Universal</SelectItem>
+                        <SelectItem value="unknown">Unknown</SelectItem>
+                        <SelectItem value="valley">Valley</SelectItem>
+                        <SelectItem value="vector">Vector Pinball</SelectItem>
+                        <SelectItem value="venture-line">Venture Line</SelectItem>
+                        <SelectItem value="videodens">Videodens</SelectItem>
+                        <SelectItem value="viza">Viza Manufacturing</SelectItem>
+                        <SelectItem value="whizbang">WhizBang Pinball</SelectItem>
+                        <SelectItem value="wico">Wico</SelectItem>
+                        <SelectItem value="williams">Williams</SelectItem>
+                        <SelectItem value="zaccaria">Zaccaria</SelectItem>
+                        <SelectItem value="zidware">Zidware</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -85,7 +327,7 @@ export default function SellMachinePage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="year">{t('sell.year')} *</Label>
-                    <Input id="year" type="number" placeholder="1997" min="1930" max="2024" required />
+                    <Input id="year" type="number" placeholder="1997" value={year} onChange={(e) => setYear(e.target.value)} min="1930" required />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="condition">{t('sell.condition')} *</Label>
@@ -105,8 +347,7 @@ export default function SellMachinePage() {
                   <div className="space-y-2">
                     <Label htmlFor="price">{t('sell.price')} *</Label>
                     <div className="relative">
-                      <DollarSign className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input id="price" type="number" placeholder="8500" className="pl-10" required />
+                      <Input id="price" type="number" placeholder="8500" className="" required />
                     </div>
                   </div>
                 </div>
