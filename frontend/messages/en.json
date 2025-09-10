@@ -1,0 +1,29 @@
+{
+  "Terms": {
+    "backHome": "Back to Home",
+    "title": "Terms of Service & Privacy Policy",
+    "lastUpdated": "Last updated:",
+    "mentionsTitle": "Legal notice",
+    "mentionsContent": "The {websiteName} site is published by a private individual (name not disclosed, in accordance with French law). Contact: contact@crazy-pinball.com. Host: OVH SAS – 2 rue Kellermann, 59100 Roubaix – France.",
+    "objectTitle": "Purpose",
+    "objectContent": "The {websiteName} site allows individuals to publish and view ads. Use of the site implies full acceptance of these terms.",
+    "usageTitle": "Use of the site",
+    "usageRule1": "Publish accurate information when posting an ad.",
+    "usageRule2": "Do not post illegal, offensive, or unlawful content.",
+    "usageRule3": "Accept that the publisher may remove content or accounts if rules are not respected.",
+    "responsibilityTitle": "Responsibilities",
+    "responsibilityContent1": "The publisher acts as a host for user-published content.",
+    "responsibilityContent2": "The publisher does not intervene in transactions between users and declines any liability in case of disputes.",
+    "ipTitle": "Intellectual property",
+    "ipContent": "The site’s own content (logo, design, texts) remains the exclusive property of the publisher. Users retain their rights to their ads but authorize their publication on the site.",
+    "privacyTitle": "Privacy policy",
+    "privacyContent1": "The site may collect personal data (email, username, encrypted password, IP address, cookies).",
+    "privacyContent2": "This data is used only to manage accounts, publish ads, and improve the service.",
+    "privacyContent3": "Data is kept as long as the account is active, then deleted within 3 years after the last activity.",
+    "privacyRights": "In accordance with GDPR, you have rights of access, rectification, deletion, and objection. You can exercise them at:",
+    "cookiesTitle": "Cookies",
+    "cookiesContent": "The site uses cookies to ensure its proper functioning and measure traffic. You can manage them via your browser.",
+    "contactTitle": "Contact",
+    "contactContent": "For any questions about these terms, you can write to:"
+  }
+}

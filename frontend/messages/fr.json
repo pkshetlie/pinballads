@@ -1,0 +1,29 @@
+{
+  "Terms": {
+    "backHome": "Retour à l'accueil",
+    "title": "Conditions Générales d’Utilisation & Politique de Confidentialité",
+    "lastUpdated": "Dernière mise à jour :",
+    "mentionsTitle": "Mentions légales",
+    "mentionsContent": "Le site {websiteName} est édité par un particulier (nom non publié, conformément à la LCEN). Contact : contact@crazy-pinball.com. Hébergeur : OVH SAS – 2 rue Kellermann, 59100 Roubaix – France.",
+    "objectTitle": "Objet",
+    "objectContent": "Le site {websiteName} permet aux particuliers de publier et consulter des annonces. L’utilisation du site implique l’acceptation sans réserve des présentes conditions.",
+    "usageTitle": "Utilisation du site",
+    "usageRule1": "Publier des informations exactes lors de la mise en ligne d’une annonce.",
+    "usageRule2": "Ne pas diffuser de contenus illégaux, offensants ou contraires aux lois en vigueur.",
+    "usageRule3": "Accepter que l’éditeur supprime tout contenu ou compte en cas de non-respect.",
+    "responsibilityTitle": "Responsabilités",
+    "responsibilityContent1": "L’éditeur agit en tant qu’hébergeur du contenu publié par les utilisateurs.",
+    "responsibilityContent2": "L’éditeur n’intervient pas dans les transactions entre utilisateurs et décline toute responsabilité en cas de litige.",
+    "ipTitle": "Propriété intellectuelle",
+    "ipContent": "Le contenu propre du site (logo, design, textes) reste la propriété exclusive de l’éditeur. Les utilisateurs conservent leurs droits sur leurs annonces mais autorisent leur diffusion sur le site.",
+    "privacyTitle": "Politique de confidentialité",
+    "privacyContent1": "Le site peut collecter des données personnelles (email, identifiant, mot de passe chiffré, adresse IP, cookies).",
+    "privacyContent2": "Ces données sont utilisées uniquement pour gérer les comptes, publier des annonces et améliorer le service.",
+    "privacyContent3": "Les données sont conservées tant que le compte est actif puis supprimées dans un délai maximum de 3 ans après la dernière activité.",
+    "privacyRights": "Conformément au RGPD, vous disposez de droits d’accès, rectification, effacement et opposition. Vous pouvez les exercer à l’adresse :",
+    "cookiesTitle": "Cookies",
+    "cookiesContent": "Le site utilise des cookies pour assurer son bon fonctionnement et mesurer la fréquentation. Vous pouvez les gérer via votre navigateur.",
+    "contactTitle": "Contact",
+    "contactContent": "Pour toute question concernant ces conditions, vous pouvez nous écrire à :"
+  }
+}

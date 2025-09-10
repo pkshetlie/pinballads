@@ -8,7 +8,6 @@
     "lint": "next lint",
     "start": "next start",
     "build:prod": "next build && next export && rm -rf ../public/* && cp -r out/* ../public/"
-
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -53,6 +52,7 @@
     "input-otp": "1.4.1",
     "lucide-react": "^0.454.0",
     "next": "14.2.16",
+    "next-intl": "^4.3.7",
     "next-themes": "latest",
     "path": "latest",
     "react": "^18",
