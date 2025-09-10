@@ -69,23 +69,23 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-primary/5 to-accent/5 py-16">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-4 text-balance">{t("heroTitle")}</h2>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto text-pretty">{t("heroSubtitle")}</p>
+          <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-4 text-balance">{t("home.heroTitle")}</h2>
+          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto text-pretty">{t("home.heroSubtitle")}</p>
 
           {/* Search Bar */}
           <div className="max-w-4xl mx-auto">
             <div className="flex flex-col md:flex-row gap-4 bg-card p-4 rounded-lg shadow-lg">
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-                <Input placeholder={t("searchPlaceholder")} className="pl-10 h-12 text-lg" />
+                <Input placeholder={t("home.searchPlaceholder")} className="pl-10 h-12 text-lg" />
               </div>
               <div className="flex-1 relative">
                 <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-                <Input placeholder={t("locationPlaceholder")} className="pl-10 h-12 text-lg" />
+                <Input placeholder={t("home.locationPlaceholder")} className="pl-10 h-12 text-lg" />
               </div>
               <Button size="lg" className="h-12 px-8">
                 <Search className="w-5 h-5 mr-2" />
-                {t("searchButton")}
+                {t("home.searchButton")}
               </Button>
             </div>
           </div>
@@ -96,7 +96,7 @@ export default function HomePage() {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between mb-8">
-            <h3 className="text-3xl font-bold text-foreground">{t("featuredMachines")}</h3>
+            <h3 className="text-3xl font-bold text-foreground">{t("home.featuredMachines")}</h3>
             <Button variant="outline" className="gap-2 bg-transparent">
               <Filter className="w-4 h-4" />
               View All
@@ -137,7 +137,7 @@ export default function HomePage() {
                 <CardFooter className="p-4 pt-0">
                   <div className="flex items-center justify-between w-full">
                     <span className="text-2xl font-bold text-primary">${machine.price.toLocaleString()}</span>
-                    <Button size="sm">{t("viewDetails")}</Button>
+                    <Button size="sm">{t("home.viewDetails")}</Button>
                   </div>
                 </CardFooter>
               </Card>
@@ -149,7 +149,7 @@ export default function HomePage() {
       {/* Categories Section */}
       <section className="py-16 bg-muted/30">
         <div className="container mx-auto px-4">
-          <h3 className="text-3xl font-bold text-foreground text-center mb-12">{t("browseByEra")}</h3>
+          <h3 className="text-3xl font-bold text-foreground text-center mb-12">{t("home.browseByEra")}</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="group hover:shadow-lg transition-shadow cursor-pointer">
               <div className="aspect-[16/9] overflow-hidden rounded-t-lg">

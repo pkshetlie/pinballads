@@ -5,6 +5,8 @@ import { useAuth } from './auth-context';
 export async function loginUser(email: string, password: string) {
   const url = new URL('login_check', config.API_BASE_URL).href; // Gère les slashes correctement
 
+  console.log('CONFIG',config);
+
   const response = await fetch(url, {
     method: 'POST',
     headers: {

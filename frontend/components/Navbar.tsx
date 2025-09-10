@@ -52,28 +52,24 @@ export default function Navbar() {
                             <a href="/listings" className="text-muted-foreground hover:text-foreground transition-colors">
                                 {t("nav.browse")}
                             </a>
-                            <a href="/sell" className="text-muted-foreground hover:text-foreground transition-colors">
-                                {t("nav.sell")}
-                            </a>
-                            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                                {t('nav.about')}
-                            </a>
-                            {user ? (
-                                // Si un utilisateur est connecté, afficher l'e-mail
+                            {user ? (<>
+                                <a href="/sell" className="text-muted-foreground hover:text-foreground transition-colors">
+                                    {t("nav.sell")}
+                                </a>
                                 <span className="text-sm text-foreground font-medium">{user.email}</span>
-                            ) : (
+
+                                <Button size="sm" asChild>
+                                    <a href="/collection">{t('nav.myCollection')}</a>
+                                </Button>
+                            </>) : (
                                 // Sinon, afficher le bouton Sign In
                                 <Button variant="outline" size="sm" asChild>
-                                    <a href="/signin">Sign In</a>
+                                    <a href="/signin">{t('nav.signIn')}</a>
                                 </Button>
                             )}
-
-                            <Button size="sm" asChild>
-                                <a href="/collection">{t('nav.myCollection')}</a>
-                            </Button>
                         </div>
                         <div className="flex items-center gap-2">
-                            <LanguageToggle />
+                            <LanguageToggleWrapper />
                             <ThemeToggle />
                         </div>
                     </nav>

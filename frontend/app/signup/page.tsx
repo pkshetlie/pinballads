@@ -9,7 +9,7 @@ import Link from "next/link"
 import {ArrowLeft, Mail, Lock, Eye, EyeOff, User} from "lucide-react"
 import { useState } from "react"
 import { useLanguage } from "@/lib/language-context"
-import Navbar from "@/app/components/Navbar";
+import Navbar from "@/components/Navbar";
 import {Separator} from "@radix-ui/react-menu";
 
 export default function SignUpPage() {

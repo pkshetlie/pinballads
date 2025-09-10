@@ -74,7 +74,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setToken(null);
         setUser(null);
         setRefreshTokenValue(null);
-
     };
 
     return (

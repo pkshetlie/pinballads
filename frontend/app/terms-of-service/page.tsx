@@ -4,10 +4,10 @@ import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useTranslations } from "next-intl"
+import {useLanguage} from "@/lib/language-context";
 
 export default function TermsOfService() {
-  const t = useTranslations("Terms")
+  const {t} = useLanguage()
   const lastUpdatedDate = "2025-09-09"
   const websiteName = "Crazy Pinball"
   const contactEmail = "contact@crazy-pinball.com"
@@ -19,14 +19,14 @@ export default function TermsOfService() {
             <Link href="/">
               <Button variant="ghost" className="mb-4">
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                {t("backHome")}
+                {t("terms.backHome")}
               </Button>
             </Link>
             <h1 className="text-4xl font-bold text-foreground mb-2">
-              {t("title")}
+              {t("terms.title")}
             </h1>
             <p className="text-muted-foreground">
-              {t("lastUpdated")} {lastUpdatedDate}
+              {t("terms.lastUpdated")} {lastUpdatedDate}
             </p>
           </div>
 
@@ -34,33 +34,33 @@ export default function TermsOfService() {
             {/* Mentions légales */}
             <Card>
               <CardHeader>
-                <CardTitle>{t("mentionsTitle")}</CardTitle>
+                <CardTitle>{t("terms.mentionsTitle")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p>{t("mentionsContent", { websiteName })}</p>
+                <p>{t("terms.mentionsContent")}</p>
               </CardContent>
             </Card>
 
             {/* CGU : Objet */}
             <Card>
               <CardHeader>
-                <CardTitle>{t("objectTitle")}</CardTitle>
+                <CardTitle>{t("terms.objectTitle")}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p>{t("objectContent", { websiteName })}</p>
+                <p>{t("terms.objectContent")}</p>
               </CardContent>
             </Card>
 
             {/* Utilisation */}
             <Card>
               <CardHeader>
-                <CardTitle>{t("usageTitle")}</CardTitle>
+                <CardTitle>{t("terms.usageTitle")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <ul className="list-disc pl-6 space-y-2">
-                  <li>{t("usageRule1")}</li>
-                  <li>{t("usageRule2")}</li>
-                  <li>{t("usageRule3")}</li>
+                  <li>{t("terms.usageRule1")}</li>
+                  <li>{t("terms.usageRule2")}</li>
+                  <li>{t("terms.usageRule3")}</li>
                 </ul>
               </CardContent>
             </Card>
@@ -68,35 +68,35 @@ export default function TermsOfService() {
             {/* Responsabilités */}
             <Card>
               <CardHeader>
-                <CardTitle>{t("responsibilityTitle")}</CardTitle>
+                <CardTitle>{t("terms.responsibilityTitle")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p>{t("responsibilityContent1")}</p>
-                <p>{t("responsibilityContent2")}</p>
+                <p>{t("terms.responsibilityContent1")}</p>
+                <p>{t("terms.responsibilityContent2")}</p>
               </CardContent>
             </Card>
 
             {/* Propriété intellectuelle */}
             <Card>
               <CardHeader>
-                <CardTitle>{t("ipTitle")}</CardTitle>
+                <CardTitle>{t("terms.ipTitle")}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p>{t("ipContent")}</p>
+                <p>{t("terms.ipContent")}</p>
               </CardContent>
             </Card>
 
             {/* Politique de confidentialité */}
             <Card>
               <CardHeader>
-                <CardTitle>{t("privacyTitle")}</CardTitle>
+                <CardTitle>{t("terms.privacyTitle")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p>{t("privacyContent1")}</p>
-                <p>{t("privacyContent2")}</p>
-                <p>{t("privacyContent3")}</p>
+                <p>{t("terms.privacyContent1")}</p>
+                <p>{t("terms.privacyContent2")}</p>
+                <p>{t("terms.privacyContent3")}</p>
                 <p>
-                  {t("privacyRights")} {contactEmail}
+                  {t("terms.privacyRights")} {contactEmail}
                 </p>
               </CardContent>
             </Card>
@@ -104,21 +104,21 @@ export default function TermsOfService() {
             {/* Cookies */}
             <Card>
               <CardHeader>
-                <CardTitle>{t("cookiesTitle")}</CardTitle>
+                <CardTitle>{t("terms.cookiesTitle")}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p>{t("cookiesContent")}</p>
+                <p>{t("terms.cookiesContent")}</p>
               </CardContent>
             </Card>
 
             {/* Contact */}
             <Card>
               <CardHeader>
-                <CardTitle>{t("contactTitle")}</CardTitle>
+                <CardTitle>{t("terms.contactTitle")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p>
-                  {t("contactContent")} {contactEmail}
+                  {t("terms.contactContent")} {contactEmail}
                 </p>
               </CardContent>
             </Card>

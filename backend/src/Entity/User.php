@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -34,6 +36,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 5)]
     private ?string $language = 'fr';
+
+    /**
+     * @var Collection<int, PinballOwner>
+     */
+    #[ORM\OneToMany(targetEntity: PinballOwner::class, mappedBy: 'owner')]
+    private Collection $pinballOwners;
+
+    public function __construct()
+    {
+        $this->pinballOwners = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -124,6 +137,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLanguage(string $language): static
     {
         $this->language = $language;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PinballOwner>
+     */
+    public function getPinballOwners(): Collection
+    {
+        return $this->pinballOwners;
+    }
+
+    public function addPinballOwner(PinballOwner $pinballOwner): static
+    {
+        if (!$this->pinballOwners->contains($pinballOwner)) {
+            $this->pinballOwners->add($pinballOwner);
+            $pinballOwner->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removePinballOwner(PinballOwner $pinballOwner): static
+    {
+        if ($this->pinballOwners->removeElement($pinballOwner)) {
+            // set the owning side to null (unless already changed)
+            if ($pinballOwner->getOwner() === $this) {
+                $pinballOwner->setOwner(null);
+            }
+        }
 
         return $this;
     }

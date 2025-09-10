@@ -5,8 +5,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useLanguage } from "@/lib/language-context"
 
 export function LanguageToggle() {
-    const { language: currentLanguage, setLanguage } = useLanguage()
-
+    const { t,language: currentLanguage, setLanguage } = useLanguage()
     const languages = [
         { code: "fr", name: "Français", flag: "🇫🇷" },
         { code: "en", name: "English", flag: "🇺🇸" },
@@ -20,7 +19,7 @@ export function LanguageToggle() {
             <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="icon">
                     <Languages className="h-[1.2rem] w-[1.2rem]" />
-                    <span className="sr-only">Toggle language</span>
+                    <span className="sr-only">{t('nav.toggleLanguage')}</span>
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">

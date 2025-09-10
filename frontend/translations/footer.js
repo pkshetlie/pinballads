@@ -1,0 +1,40 @@
+export const footer = {
+  en: {
+    footer: {
+      premierMarketplace: "The premier marketplace for pinball enthusiasts worldwide.",
+      marketplace: "Marketplace",
+      browseMachines: "Browse Machines",
+      sellYourMachine: "Sell Your Machine",
+      priceGuide: "Price Guide",
+      support: "Support",
+      helpCenter: "Help Center",
+      safetyTips: "Safety Tips",
+      contactUs: "Contact Us",
+      community: "Community",
+      forums: "Forums",
+      events: "Events",
+      newsletter: "Newsletter",
+      allRightsReserved: "All rights reserved",
+    },
+  },
+  fr: {
+    footer: {
+      premierMarketplace: "Le marché de référence pour les passionnés de flipper dans le monde entier.",
+      marketplace: "Marché",
+      browseMachines: "Parcourir les Machines",
+      sellYourMachine: "Vendez Votre Machine",
+      priceGuide: "Guide des Prix",
+      support: "Support",
+      helpCenter: "Centre d'Aide",
+      safetyTips: "Conseils de Sécurité",
+      contactUs: "Nous Contacter",
+      community: "Communauté",
+      forums: "Forums",
+      events: "Événements",
+      newsletter: "Newsletter",
+      allRightsReserved: "Tous droits réservés",
+    },
+  },
+}
+
+
