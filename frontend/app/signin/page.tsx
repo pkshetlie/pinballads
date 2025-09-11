@@ -10,10 +10,10 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { LanguageToggle } from "@/components/language-toggle"
 import Link from "next/link"
 import { ArrowLeft, Mail, Lock, Eye, EyeOff } from "lucide-react"
-import { useState } from "react"
+import {useEffect, useState} from "react"
 import { useLanguage } from "@/lib/language-context"
 import { useAuth } from '@/lib/auth-context';
-import { useRouter } from 'next/navigation';
+import {useRouter, useSearchParams} from 'next/navigation';
 import Navbar from "@/components/Navbar";
 
 export default function SignInPage() {
@@ -22,10 +22,18 @@ export default function SignInPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter(); // Initialisation du router
-  const { t } = useLanguage()
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const searchParams = useSearchParams();
+    const {t} = useLanguage()
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+    useEffect(() => {
+        const emailParam = searchParams.get('email');
+        if (emailParam) {
+            setEmail(emailParam);
+        }
+    }, [searchParams]);
+
+    const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
 
@@ -65,6 +73,7 @@ export default function SignInPage() {
                   <div className="relative">
                     <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input id="email" type="email" placeholder={t('auth.enterEmail')} className="pl-10" required
+                           value={email}
                            onChange={(e) => setEmail(e.target.value)}
                     />
                   </div>
