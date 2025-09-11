@@ -31,7 +31,7 @@ echo "✅ Backend Symfony déployé."
 # 2️⃣ Frontend React
 # ------------------------
 echo "🚀 Déploiement du frontend React..."
-cd $FRONTEND_DIR
+cd ../$FRONTEND_DIR
 
 echo "📦 Installation des dépendances Node..."
 npm install
