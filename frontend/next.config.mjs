@@ -2,8 +2,6 @@
 import path from 'path';
 
 const nextConfig = {
-  outputFileTracingRoot: path.join(path.resolve(), '../'),
-
   eslint: {
     ignoreDuringBuilds: true,
   },
