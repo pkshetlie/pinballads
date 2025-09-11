@@ -44,7 +44,7 @@ echo "🔄 Restart PM2..."
 if pm2 list | grep -q "$PM2_APP_NAME"; then
     pm2 restart $PM2_APP_NAME
 else
-    pm2 start npx --name "$PM2_APP_NAME" -- serve -s build -l $REACT_PORT
+    pm2 start npm --name "$PM2_APP_NAME" -- start
 fi
 
 echo "✅ Frontend React déployé."
