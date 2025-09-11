@@ -4,8 +4,8 @@ set -e  # Stop le script si une commande échoue
 # ------------------------
 # VARIABLES
 # ------------------------
-BACKEND_DIR="/var/www/crazy-pinball/backend"
-FRONTEND_DIR="/var/www/crazy-pinball/frontend"
+BACKEND_DIR="backend"
+FRONTEND_DIR="frontend"
 PM2_APP_NAME="crazy-pinball"
 REACT_PORT=3000
 
