@@ -11,7 +11,7 @@ import { useState } from "react"
 import { useLanguage } from "@/lib/language-context"
 import Navbar from "@/components/Navbar";
 import {Separator} from "@radix-ui/react-menu";
-
+import config from "@/config";
 export default function SignUpPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -73,14 +73,18 @@ export default function SignUpPage() {
     }
 
     try {
-      const response = post(`/register`,
-          {
-              email: formData.get('email'),
-              password: formData.get('password'),
-              username: formData.get('name')
-          }
-      )
-
+        const response = await fetch(`${config.API_BASE_URL}/register`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email: formData.get('email'),
+                password: formData.get('password'),
+                username: formData.get('name'),
+            }),
+        })
+console.log(response)
       if (!response.ok) {
         const errorData = await response.json()
         setError(errorData.message || t("common.error"))
