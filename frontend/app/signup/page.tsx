@@ -73,17 +73,13 @@ export default function SignUpPage() {
     }
 
     try {
-      const response = await fetch("https://127.0.0.1:8000/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: formData.get('email'),
-          password: formData.get('password'),
-          username: formData.get('name'),
-        }),
-      })
+      const response = post(`/register`,
+          {
+              email: formData.get('email'),
+              password: formData.get('password'),
+              username: formData.get('name')
+          }
+      )
 
       if (!response.ok) {
         const errorData = await response.json()
