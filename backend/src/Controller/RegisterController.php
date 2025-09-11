@@ -44,7 +44,7 @@ class RegisterController extends AbstractController
 
         $user = new User();
         $user->setEmail($content['email']);
-        $user->setUsername($content['username']);
+        $user->setDisplayName($content['username']);
 
         $hashedPassword = password_hash($content['password'], PASSWORD_BCRYPT);
         $user->setPassword($hashedPassword);

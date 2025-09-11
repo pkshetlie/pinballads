@@ -76,9 +76,9 @@ export default function MachineCollectionPage() {
     const [keys, setKeys] = useState(false);
     const [coinDoor, setCoinDoor] = useState(false);
     const [homeUse, setHomeUse] = useState(false);
-    const [condition, setCondition] = useState(false);
-    const [opdbId, setOpdbId] = useState(null);
-    const [startDate, setStartDate] = useState(null);
+    const [condition, setCondition] = useState("");
+    const [opdbId, setOpdbId] = useState("");
+    const [startDate, setStartDate] = useState("");
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -104,7 +104,6 @@ export default function MachineCollectionPage() {
             post('/api/collection/create', payload)
                 .then((data) => {
                     const machineId = data.id;
-
                     if (uploadedImages.length > 0) {
                         const formData = new FormData();
                         uploadedImages.forEach((image) => {
@@ -154,9 +153,9 @@ export default function MachineCollectionPage() {
         }
 
         const timer = setTimeout(() => {
-            setOpdbId(null)
             get(`/api/search/game?query=${encodeURIComponent(query)}`)
                 .then((data) => {
+                    setOpdbId("");
                     setResults(data);
                     setFeatures([]);
                     setManufacturer("");

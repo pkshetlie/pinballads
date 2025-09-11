@@ -44,7 +44,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $pinballOwners;
 
     #[ORM\Column(length: 255)]
-    private ?string $username = null;
+    private ?string $displayName = null;
 
     public function __construct()
     {
@@ -174,14 +174,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getUsername(): ?string
+    public function getDisplayName(): ?string
     {
-        return $this->username;
+        return $this->displayName;
     }
 
-    public function setUsername(string $username): static
+    public function setDisplayName(string $displayName): static
     {
-        $this->username = $username;
+        $this->displayName = $displayName;
 
         return $this;
     }
