@@ -1,6 +1,14 @@
 export const collection = {
   en: {
     collection: {
+      edit: 'Edit',
+      sell: 'Sell',
+      add: 'Add a machine',
+      cantLoadMachines: 'Failed to load machines',
+      loadingAll : 'Loading your collection...',
+      myCollection: 'My Collection',
+      xMachinesInYourCollection: '{{count}} machine in your collection|{{count}} machines in your collection',
+      searchForGame: 'Enter the title of the machine and select the correct model',
       startDate: 'Acquisition date: ',
       addToCollection: "Add to Collection",
       brand: "PinballMarket",
@@ -61,6 +69,14 @@ export const collection = {
   },
   fr: {
     collection: {
+      edit: 'Modifier',
+      sell: 'Vendre',
+      add: 'Ajouter une machine',
+      cantLoadMachines: 'Impossible de charger votre collection. Veuillez réessayer.',
+      loadingAll: 'Chargement de votre collection...',
+      myCollection: 'Ma Collection',
+      xMachinesInYourCollection: '{{count}} machine dans votre collection|{{count}} machines dans votre collection',
+      searchForGame:'Entrez le titre de la machine et sélectionnez le bon model ',
       startDate: 'Date d\'acquisition :',
       addToCollection : "Ajouter à la collection",
       brand: "PinballMarket",

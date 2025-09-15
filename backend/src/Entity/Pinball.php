@@ -17,12 +17,12 @@ class Pinball
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $title = null;
+    private ?string $name = null;
 
     #[ORM\Column(nullable: true)]
     private ?string $opdbId = null;
 
-    #[ORM\Column]
+    #[ORM\Column(options: ['jsonb' => true] )]
     private array $features = [];
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -46,9 +46,19 @@ class Pinball
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $manufacturer = null;
 
+    #[ORM\ManyToOne(inversedBy: 'pinballs')]
+    private ?User $currentOwner = null;
+
+    /**
+     * @var Collection<int, PinballSale>
+     */
+    #[ORM\OneToMany(targetEntity: PinballSale::class, mappedBy: 'pinball')]
+    private Collection $pinballSales;
+
     public function __construct()
     {
         $this->pinballOwners = new ArrayCollection();
+        $this->pinballSales = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -56,14 +66,14 @@ class Pinball
         return $this->id;
     }
 
-    public function getTitle(): ?string
+    public function getName(): ?string
     {
-        return $this->title;
+        return $this->name;
     }
 
-    public function setTitle(string $title): static
+    public function setName(string $name): static
     {
-        $this->title = $title;
+        $this->name = $name;
 
         return $this;
     }
@@ -118,7 +128,7 @@ class Pinball
 
     public function getImages(): ?array
     {
-        return $this->images;
+        return $this->images ?? [];
     }
 
     public function setImages(?array $images): static
@@ -178,6 +188,60 @@ class Pinball
     public function setManufacturer(?string $manufacturer): static
     {
         $this->manufacturer = $manufacturer;
+
+        return $this;
+    }
+
+    public function getCurrentOwner(): ?User
+    {
+        return $this->currentOwner;
+    }
+
+    public function setCurrentOwner(?User $currentOwner): static
+    {
+        $this->currentOwner = $currentOwner;
+
+        return $this;
+    }
+
+    public function getDevise(): ?string
+    {
+        return $this->devise;
+    }
+
+    public function setDevise(?string $devise): static
+    {
+        $this->devise = $devise;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PinballSale>
+     */
+    public function getPinballSales(): Collection
+    {
+        return $this->pinballSales;
+    }
+
+    public function addPinballSale(PinballSale $pinballSale): static
+    {
+        if (!$this->pinballSales->contains($pinballSale)) {
+            $this->pinballSales->add($pinballSale);
+            $pinballSale->setPinball($this);
+        }
+
+        return $this;
+    }
+
+    public function removePinballSale(PinballSale $pinballSale): static
+    {
+        if ($this->pinballSales->removeElement($pinballSale)) {
+            // set the owning side to null (unless already changed)
+            if ($pinballSale->getPinball() === $this) {
+                $pinballSale->setPinball(null);
+            }
+        }
 
         return $this;
     }

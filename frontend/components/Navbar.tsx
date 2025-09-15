@@ -59,7 +59,7 @@ export default function Navbar() {
                                 <span className="text-sm text-foreground font-medium">{user.email}</span>
 
                                 <Button size="sm" asChild>
-                                    <a href="/collection">{t('nav.myCollection')}</a>
+                                    <a href="/collection/all">{t('nav.myCollection')}</a>
                                 </Button>
                             </>) : (
                                 // Sinon, afficher le bouton Sign In

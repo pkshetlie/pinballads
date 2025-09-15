@@ -46,9 +46,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $displayName = null;
 
+    /**
+     * @var Collection<int, Pinball>
+     */
+    #[ORM\OneToMany(targetEntity: Pinball::class, mappedBy: 'currentOwner')]
+    private Collection $pinballs;
+
+    /**
+     * @var Collection<int, PinballSale>
+     */
+    #[ORM\OneToMany(targetEntity: PinballSale::class, mappedBy: 'seller', orphanRemoval: true)]
+    private Collection $pinballsSold;
+
+    /**
+     * @var Collection<int, PinballSale>
+     */
+    #[ORM\OneToMany(targetEntity: PinballSale::class, mappedBy: 'buyer')]
+    private Collection $pinballsPurchased;
+
     public function __construct()
     {
         $this->pinballOwners = new ArrayCollection();
+        $this->pinballs = new ArrayCollection();
+        $this->pinballsSold = new ArrayCollection();
+        $this->pinballsPurchased = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -182,6 +203,96 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setDisplayName(string $displayName): static
     {
         $this->displayName = $displayName;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Pinball>
+     */
+    public function getPinballs(): Collection
+    {
+        return $this->pinballs;
+    }
+
+    public function addPinball(Pinball $pinball): static
+    {
+        if (!$this->pinballs->contains($pinball)) {
+            $this->pinballs->add($pinball);
+            $pinball->setCurrentOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removePinball(Pinball $pinball): static
+    {
+        if ($this->pinballs->removeElement($pinball)) {
+            // set the owning side to null (unless already changed)
+            if ($pinball->getCurrentOwner() === $this) {
+                $pinball->setCurrentOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PinballSale>
+     */
+    public function getPinballsSold(): Collection
+    {
+        return $this->pinballsSold;
+    }
+
+    public function addPinballSold(PinballSale $pinballSale): static
+    {
+        if (!$this->pinballsSold->contains($pinballSale)) {
+            $this->pinballsSold->add($pinballSale);
+            $pinballSale->setSeller($this);
+        }
+
+        return $this;
+    }
+
+    public function removePinballSale(PinballSale $pinballSale): static
+    {
+        if ($this->pinballsSold->removeElement($pinballSale)) {
+            // set the owning side to null (unless already changed)
+            if ($pinballSale->getSeller() === $this) {
+                $pinballSale->setSeller(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PinballSale>
+     */
+    public function getPinballsPurchased(): Collection
+    {
+        return $this->pinballsPurchased;
+    }
+
+    public function addPinballsPurchased(PinballSale $pinballsPurchased): static
+    {
+        if (!$this->pinballsPurchased->contains($pinballsPurchased)) {
+            $this->pinballsPurchased->add($pinballsPurchased);
+            $pinballsPurchased->setBuyer($this);
+        }
+
+        return $this;
+    }
+
+    public function removePinballsPurchased(PinballSale $pinballsPurchased): static
+    {
+        if ($this->pinballsPurchased->removeElement($pinballsPurchased)) {
+            // set the owning side to null (unless already changed)
+            if ($pinballsPurchased->getBuyer() === $this) {
+                $pinballsPurchased->setBuyer(null);
+            }
+        }
 
         return $this;
     }

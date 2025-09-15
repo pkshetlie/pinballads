@@ -19,7 +19,7 @@ export const footer = {
   },
   fr: {
     footer: {
-      premierMarketplace: "Le marché de référence pour les passionnés de flipper dans le monde entier.",
+      premierMarketplace: "Le marché de référence pour les passionnés de flipper en France pour commencer puis peut etre dans le monde entier.",
       marketplace: "Marché",
       browseMachines: "Parcourir les Machines",
       sellYourMachine: "Vendez Votre Machine",

@@ -48,6 +48,7 @@ export function useApi() {
       body?: Record<string, any>
   ) => {
     if (!token) {
+      // logout()
       throw new Error('No token available');
     }
 
