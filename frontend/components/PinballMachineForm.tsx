@@ -169,7 +169,7 @@ export default function MachineForm({ initialData, onSubmit }: MachineFormProps)
     return (
         <form className="space-y-8" onSubmit={handleSubmit}>
             {/* Basic Info */}
-            <Card>
+            <Card className="py-6">
                 <CardHeader>
                     <CardTitle className="flex items-center"><Settings className="w-5 h-5 mr-2 text-primary"/> {t("sell.basicInformation")}</CardTitle>
                     <CardDescription>{t("collection.basicInformationDesc")}</CardDescription>
@@ -393,7 +393,7 @@ export default function MachineForm({ initialData, onSubmit }: MachineFormProps)
             </Card>
 
             {/* Images */}
-            <Card>
+            <Card className="py-6">
                 <CardHeader>
                     <CardTitle className="flex items-center"><Upload className="w-5 h-5 mr-2 text-primary"/> {t('sell.uploadPhotos')}</CardTitle>
                     <CardDescription>{t('sell.addHighQualityPhotosToShowcaseYourMachine')}</CardDescription>
@@ -404,7 +404,7 @@ export default function MachineForm({ initialData, onSubmit }: MachineFormProps)
             </Card>
 
             {/* Features & Checkboxes */}
-            <Card>
+            <Card className="py-6">
                 <CardHeader>
                     <CardTitle>{t('sell.additionalFeatures')}</CardTitle>
                     <CardDescription>{t('sell.additionalFeaturesDesc')}</CardDescription>

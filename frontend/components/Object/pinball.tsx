@@ -1,5 +1,6 @@
 export type PinballDto = {
-    price: number | null;
+    devise: string;
+    price: number;
     views: number | null;
     isForSale: boolean;
     id: number;

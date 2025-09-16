@@ -9,25 +9,29 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from "@/components/ui/button";
 import {PinballDto} from "@/components/Object/pinball";
 import MachineForm, {MachineFormData} from "@/components/PinballMachineForm";
+import {useLanguage} from "@/lib/language-context";
+import {useAuth} from "@/lib/auth-context";
 
 export default function EditMachinePage() {
     const params = useParams();
     const router = useRouter();
     const { get, post } = useApi();
+    const { t } = useLanguage();
     const [machineData, setMachineData] = useState<PinballDto | null>(null);
     const [modalOpen, setModalOpen] = useState(false);
     const [pinball, setPinball] = useState<PinballDto>();
+    const {token} = useAuth();
 
     const machineId = params.id;
 
     useEffect(() => {
+        if (!token) return;
         if (!machineId) return;
 
         get(`/api/collection/${machineId}`)
-            .then(res => res.json())
             .then(data => setPinball(data))
             .catch((err) => console.error("Erreur lors du chargement de la machine :", err));
-    }, [machineId]);
+    }, [machineId, token]);
 
     const handleUpdate = async (formData: MachineFormData) => {
         try {
@@ -41,15 +45,13 @@ export default function EditMachinePage() {
 
             setModalOpen(true);
         } catch (error) {
-            console.error("Erreur lors de la mise à jour :", error);
-            alert("Une erreur est survenue lors de la mise à jour.");
         }
     };
 
-    if (!machineData) {
+    if (!pinball) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                Chargement de la machine...
+                {t('collection.loadingMachine')}
             </div>
         );
     }
@@ -59,7 +61,7 @@ export default function EditMachinePage() {
             <Navbar />
 
             <main className="container mx-auto px-4 py-8 max-w-4xl">
-                <h1 className="text-3xl font-bold mb-6">Éditer la machine</h1>
+                <h1 className="text-3xl font-bold mb-6">{t('collection.editMachine')}</h1>
                 <MachineForm initialData={pinball} onSubmit={handleUpdate} />
 
                 <Dialog open={modalOpen} onOpenChange={(open) => setModalOpen(open)}>

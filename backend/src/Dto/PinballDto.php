@@ -3,6 +3,7 @@
 namespace App\Dto;
 
 use App\Entity\Pinball;
+use App\Entity\PinballOwner;
 use App\Entity\PinballSale;
 
 class PinballDto
@@ -21,6 +22,7 @@ class PinballDto
     public bool $isForSale = false;
     public float $price = 0;
     public string $devise = '€';
+    public ?\DateTimeImmutable $owningDate;
 
     public function __construct(array $data = [])
     {
@@ -36,7 +38,8 @@ class PinballDto
         $this->currentOwnerId = $data['currentOwnerId'] ?? null;
         $this->currentOwner = $data['currentOwner'] ?? null;
         $this->isForSale = $data['isForSale'];
-        $this->price = $data['price'] ;
+        $this->price = $data['price'];
+        $this->owningDate = $data['owningDate'] ?? null;
     }
 
     public static function fromEntity(Pinball $pinball): self
@@ -46,6 +49,9 @@ class PinballDto
         });
 
         $sale = $sales->first();
+        $owner = $pinball->getPinballOwners()->filter(function (PinballOwner $po) {
+            return $po->getEndAt() === null;
+        })->first();
 
         return new self([
             'id' => $pinball->getId(),
@@ -61,9 +67,10 @@ class PinballDto
             'year' => $pinball->getYear(),
             'manufacturer' => $pinball->getManufacturer(),
             'currentOwnerId' => $pinball->getCurrentOwner()?->getId(),
+            'owningDate' => $owner ?  $owner->getStartAt() : null,
             'currentOwner' => [
                 'id' => $pinball->getCurrentOwner()?->getId(),
-                'email' => $pinball->getCurrentOwner()?->getEmail()
+                'email' => $pinball->getCurrentOwner()?->getEmail(),
             ],
         ]);
     }
