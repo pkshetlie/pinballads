@@ -31,7 +31,7 @@ class PinballSale
     private ?string $finalPrice = null;
 
     #[ORM\Column(length: 10)]
-    private string $devise = '€';
+    private string $currency = '€';
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
@@ -104,14 +104,14 @@ class PinballSale
         return $this;
     }
 
-    public function getDevise(): string
+    public function getCurrency(): string
     {
-        return $this->devise;
+        return $this->currency;
     }
 
-    public function setDevise(string $devise): static
+    public function setCurrency(string $currency): static
     {
-        $this->devise = $devise;
+        $this->currency = $currency;
 
         return $this;
     }

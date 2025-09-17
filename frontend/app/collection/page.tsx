@@ -20,7 +20,7 @@ import {Label} from "@/components/ui/label"
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
 import {Textarea} from "@/components/ui/textarea"
 import {useApi} from "@/lib/api";
-import {PinballDto} from "@/components/Object/pinball";
+import {PinballDto} from "@/components/object/pinball";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {useToast} from "@/hooks/use-toast"

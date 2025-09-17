@@ -8,7 +8,7 @@ import {Heart, Share2, ZoomIn} from "lucide-react"
 import { ImageZoomModal } from "./image-zoom-modal"
 import config from "@/config"
 import {useLanguage} from "@/lib/language-context";
-import {PinballDto} from "@/components/Object/pinball";
+import {PinballDto} from "@/components/object/pinball";
 
 interface PinballImageCarouselProps {
     machine: PinballDto

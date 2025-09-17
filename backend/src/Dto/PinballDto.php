@@ -21,7 +21,7 @@ class PinballDto
     public ?array $currentOwner; // { id, username, email } ou null
     public bool $isForSale = false;
     public float $price = 0;
-    public string $devise = '€';
+    public string $currency = '€';
     public ?\DateTimeImmutable $owningDate;
 
     public function __construct(array $data = [])
@@ -39,6 +39,7 @@ class PinballDto
         $this->currentOwner = $data['currentOwner'] ?? null;
         $this->isForSale = $data['isForSale'];
         $this->price = $data['price'];
+        $this->currency = $data['currency'];
         $this->owningDate = $data['owningDate'] ?? null;
     }
 
@@ -63,7 +64,7 @@ class PinballDto
             'images' => $pinball->getImages(),
             'isForSale' => $sales->count() > 0,
             'price' => $sale ? $sales->first()->getStartPrice() : 0,
-            'devise' => $sale ? $sales->first()?->getDevise() : "€",
+            'currency' => $sale ? $sales->first()?->getCurrency() : "€",
             'year' => $pinball->getYear(),
             'manufacturer' => $pinball->getManufacturer(),
             'currentOwnerId' => $pinball->getCurrentOwner()?->getId(),
