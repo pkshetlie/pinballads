@@ -204,18 +204,6 @@ class Pinball
         return $this;
     }
 
-    public function getDevise(): ?string
-    {
-        return $this->devise;
-    }
-
-    public function setDevise(?string $devise): static
-    {
-        $this->devise = $devise;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, PinballSale>
      */

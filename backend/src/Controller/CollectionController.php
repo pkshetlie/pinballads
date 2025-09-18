@@ -188,15 +188,6 @@ final class CollectionController extends AbstractController
 
         return $this->json($pinballService->toDto($pinball));
     }
-
-    #[Route('/api/collection/{id}', name: 'api_collection_get_one', methods: ['GET'])]
-    public function getOne(
-        Pinball $pinball,
-        PinballService $pinballService,
-    ): Response {
-        return $this->json($pinballService->toDto($pinball));
-    }
-
     #[Route('/api/collection/all', name: 'api_collection_all', methods: ['GET'])]
     public function getAll(
         PinballRepository $pinballRepository,
@@ -205,5 +196,13 @@ final class CollectionController extends AbstractController
         $pinballs = $pinballRepository->findBy(['currentOwner' => $this->getUser()]);
 
         return $this->json($pinballService->toDtos($pinballs));
+    }
+
+    #[Route('/api/collection/{id}', name: 'api_collection_get_one', methods: ['GET'])]
+    public function getOne(
+        Pinball $pinball,
+        PinballService $pinballService,
+    ): Response {
+        return $this->json($pinballService->toDto($pinball));
     }
 }
