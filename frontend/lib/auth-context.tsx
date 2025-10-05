@@ -6,7 +6,7 @@ import { isTokenExpired } from './utils';
 
 interface AuthContextValue {
     token: string | null;
-    user: { name: string; email: string } | null; // Information utilisateur
+    user: { name: string; email: string, avatar: string, isProfessionnal: boolean, accountType: string } | null; // Information utilisateur
     login: (email: string, password: string) => Promise<void>;
     logout: () => void;
 }

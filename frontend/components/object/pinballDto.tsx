@@ -1,3 +1,5 @@
+import {additionalOptionsType} from "@/components/PinballMachineForm";
+
 export type PinballDto = {
     devise: string;
     price: number;
@@ -6,10 +8,10 @@ export type PinballDto = {
     id: number;
     name: string;
     opdbId: string | null;
-    features: string[];
+    features: additionalOptionsType;
     description: string | null;
     condition: string;
-    images: { title: string; url: string }[];
+    images: { title: string, url: string, uid: string }[];
     year: string | null;
     manufacturer: string | null;
 
@@ -19,7 +21,7 @@ export type PinballDto = {
     keys: boolean;
     coinDoor: boolean;
     homeUse: boolean;
-    startDate?: string | null;
+    owningDate?: string | null;
 
     currentOwner?: {
         id: number;

@@ -10,7 +10,7 @@ export const terms = {
       "objectContent": "The Crazy Pinball site allows individuals to publish and view ads. Use of the site implies full acceptance of these terms.",
       "usageTitle": "Use of the site",
       "usageRule1": "Publish accurate information when posting an ad.",
-      "usageRule2": "Do not post illegal, offensive, or unlawful content.",
+      "usageRule2": "Do not apiPost illegal, offensive, or unlawful content.",
       "usageRule3": "Accept that the publisher may remove content or accounts if rules are not respected.",
       "responsibilityTitle": "Responsibilities",
       "responsibilityContent1": "The publisher acts as a host for user-published content.",

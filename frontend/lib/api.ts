@@ -1,5 +1,6 @@
 import config from '../config';
 import { useAuth } from './auth-context';
+import {useLanguage} from "@/lib/language-context";
 
 
 export async function loginUser(email: string, password: string) {
@@ -41,43 +42,59 @@ export async function refreshToken(refreshToken: string) {
 
 export function useApi() {
   const { token, logout } = useAuth();
+  const {language} = useLanguage();
 
   const request = async (
-      method: 'GET' | 'POST',
-      endpoint: string,
-      body?: Record<string, any>
-  ) => {
-    if (!token) {
-      // logout()
-      throw new Error('No token available');
-    }
+    method: 'GET' | 'POST' | 'PUT' | 'DELETE',
+    endpoint: string,
+    body?: Record<string, any> | FormData // Permet maintenant de supporter FormData
+) => {
+  if (!token) {
+    throw new Error('No token available');
+  }
 
-    const url = new URL(endpoint, config.API_BASE_URL).href;
+  const url = new URL(endpoint, config.API_BASE_URL).href;
 
-    const response = await fetch(url, {
-      method,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: method === 'POST' ? JSON.stringify(body) : undefined,
-    });
-
-    if (!response.ok) {
-      if (response.status === 401) {
-        // Token invalide -> déconnexion
-        logout();
-      }
-      const errorText = await response.text();
-      throw new Error(`Request failed: ${response.status} ${errorText}`);
-    }
-
-    return response.json();
+  // Configuration initiale
+  const options: RequestInit = {
+    method,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Accept-Language': language,
+    },
+    body: undefined, // Par défaut, aucun corps
   };
 
-  const get = (endpoint: string) => request('GET', endpoint);
-  const post = (endpoint: string, body: Record<string, any>) =>
-      request('POST', endpoint, body);
+  // Gestion du corps de la requête selon son type
+  if (body) {
+    if (body instanceof FormData) {
+      // Cas où le body est FormData: pas de sérialisation et header existant
+      options.body = body;
+    } else {
+      // Cas classique: sérialisation JSON
+      options.body = JSON.stringify(body);
+      options.headers['Content-Type'] = 'application/json';
+    }
+  }
 
-  return { get, post };
+  const response = await fetch(url, options);
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      // Déconnexion si le token est invalide
+      logout();
+    }
+    const errorText = await response.json();
+    throw new Error(`${errorText.error || 'Unknown error'}`);
+  }
+
+  return response.json();
+};
+
+  const apiGet = (endpoint: string) => request('GET', endpoint);
+  const apiPost = (endpoint: string, body: Record<string, any>) => request('POST', endpoint, body);
+  const apiPut = (endpoint: string, body: Record<string, any>) => request('PUT', endpoint, body);
+  const apiDelete = (endpoint: string) => request('DELETE', endpoint);
+
+  return { apiGet, apiPost, apiPut, apiDelete };
 }

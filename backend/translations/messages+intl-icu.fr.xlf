@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="fr" datatype="plaintext" original="file.ext">
+    <header>
+      <tool tool-id="symfony" tool-name="Symfony"/>
+    </header>
+    <body>
+      <trans-unit id="QQG_D3R" resname="Collection with this name already exists">
+        <source>Collection with this name already exists</source>
+        <target>Une collection avec ce nom existe déjà</target>
+      </trans-unit>
+      <trans-unit id="cnZvWLG" resname="You are not the owner of this collection">
+        <source>You are not the owner of this collection</source>
+        <target>Vous n'êtes pas le propriétaire de cette collection</target>
+      </trans-unit>
+      <trans-unit id="L25WvXB" resname="You cannot delete default collection">
+        <source>You cannot delete default collection</source>
+        <target>Vous ne pouvez pas supprimer votre collection par défaut</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

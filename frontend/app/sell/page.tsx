@@ -68,7 +68,7 @@ export default function SellMachinePage() {
   const [manufacturer, setManufacturer] = useState("");
   const [year, setYear] = useState("");
   const [description, setDescription] = useState("");
-  const { get } = useApi();
+  const { apiGet } = useApi();
 
   const addFeature = () => {
     if (newFeature.trim() && !features.includes(newFeature.trim())) {
@@ -92,7 +92,7 @@ export default function SellMachinePage() {
     }
 
     const timer = setTimeout(() => {
-      get(`/api/search/game?query=${encodeURIComponent(query)}`)
+      apiGet(`/api/search/game?query=${encodeURIComponent(query)}`)
           .then((data) => {
             setResults(data);
             setFeatures([]);

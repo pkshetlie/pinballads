@@ -11,12 +11,16 @@ import config from "@/config";
 interface ImageZoomModalProps {
   isOpen: boolean
   onClose: () => void
-  images: string[]
+  images: {
+    url: string,
+    title: string,
+    uid: string,
+  }[]
   initialIndex: number
   title: string
 }
 
-export function ImageZoomModal({ isOpen, onClose, images, initialIndex, title }: ImageZoomModalProps) {
+export function ImageZoomModal({ isOpen, onClose, images, initialIndex }: ImageZoomModalProps) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex)
   const [scale, setScale] = useState(1)
   const [position, setPosition] = useState({ x: 0, y: 0 })
@@ -188,8 +192,8 @@ export function ImageZoomModal({ isOpen, onClose, images, initialIndex, title }:
           >
             <img
               ref={imageRef}
-              src={`${config.CDN_BASE_URL}${images[currentIndex].url}` || `${config.CDN_BASE_URL}/placeholder.png`}
-              alt={`${title} - Image ${currentIndex + 1}`}
+              src={`${images[currentIndex].url}` || `${config.CDN_BASE_URL}/placeholder.png`}
+              alt={`${images[currentIndex].title}`}
               className="max-w-full max-h-full object-contain transition-transform duration-200 select-none"
               style={{
                 transform: `scale(${scale}) translate(${position.x / scale}px, ${position.y / scale}px)`,

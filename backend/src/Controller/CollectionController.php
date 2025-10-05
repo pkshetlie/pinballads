@@ -2,207 +2,133 @@
 
 namespace App\Controller;
 
-use App\Dto\PinballDto;
-use App\Entity\Pinball;
-use App\Entity\PinballOwner;
-use App\Repository\PinballRepository;
-use App\Service\PinballService;
-use DateTimeImmutable;
+use App\Dto\PinballCollectionDto;
+use App\Entity\PinballCollection;
+use App\Repository\PinballCollectionRepository;
+use App\Service\DtoService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class CollectionController extends AbstractController
 {
-    #[Route('/api/collection/create', name: 'api_collection_create', methods: ['POST'])]
-    public function index(
-        Request $request,
-        EntityManagerInterface $entityManager
-    ): Response {
-        /**
-         * name: query,
-         * condition,
-         * opdbId,
-         * manufacturer,
-         * year,
-         * description,
-         * features,
-         */
-
-        $data = json_decode($request->getContent(), false);
-
-        $features = [];
-
-        if ($data->original_parts ?? null) {
-            $features['original_parts'] = true;
-        } else {
-            $features['original_parts'] = false;
-        }
-
-        if ($data->coin_door ?? null) {
-            $features['coin_door'] = true;
-        } else {
-            $features['coin_door'] = false;
-        }
-
-        if ($data->home_use ?? null) {
-            $features['home_use'] = true;
-        } else {
-            $features['home_use'] = false;
-        }
-
-        if ($data->manual ?? null) {
-            $features['manual'] = true;
-        } else {
-            $features['manual'] = false;
-        }
-
-        if ($data->keys ?? null) {
-            $features['keys'] = true;
-        } else {
-            $features['keys'] = false;
-        }
-
-        if ($data->working ?? null) {
-            $features['working'] = true;
-        } else {
-            $features['working'] = false;
-        }
-
-        $features['other'] = [];
-
-        $pinball = new Pinball()
-            ->setOpdbId($data->opdbId)
-            ->setDescription($data->description)
-            ->setName($data->name)
-            ->setCondition($data->condition)
-            ->setYear($data->year)
-            ->setFeatures($features)
-            ->setCurrentOwner($this->getUser())
-            ->setManufacturer($data->manufacturer);
-
-        $pinball->addPinballOwner(
-            new PinballOwner()
-                ->setOwner($this->getUser())
-                ->setPinball($pinball)
-                ->setStartAt(
-                    \DateTimeImmutable::createFromFormat('Y-m-d', $data->startDate ?? date('Y-m-d'))?->setTime(0, 0, 0)
-                )
-        );
-
-        $entityManager->persist($pinball);
-        $entityManager->flush();
-
-        return $this->json(['id' => $pinball->getId()]);
-    }
-
-    #[Route('/api/collection/{id}/update', name: 'api_collection_update', methods: ['POST'])]
-    public function update(
-        Pinball $pinball,
+    #[Route('/api/collections', name: 'api_collection_create', methods: ['POST'])]
+    public function create(
         Request $request,
         EntityManagerInterface $entityManager,
-        PinballService $pinballService,
+        PinballCollectionRepository $pinballCollectionRepository,
+        TranslatorInterface $translator,
     ): Response {
         $data = json_decode($request->getContent(), false);
 
-        $features = [];
+        $exists = $pinballCollectionRepository->findOneBy(['name' => $data->name, 'owner' => $this->getUser()]);
 
-        if ($data->original_parts ?? null) {
-            $features['original_parts'] = true;
-        } else {
-            $features['original_parts'] = false;
+        if ($exists) {
+            return $this->json(['error' => $translator->trans('Collection with this name already exists')],
+                Response::HTTP_CONFLICT);
         }
 
-        if ($data->coin_door ?? null) {
-            $features['coin_door'] = true;
-        } else {
-            $features['coin_door'] = false;
-        }
-
-        if ($data->home_use ?? null) {
-            $features['home_use'] = true;
-        } else {
-            $features['home_use'] = false;
-        }
-
-        if ($data->manual ?? null) {
-            $features['manual'] = true;
-        } else {
-            $features['manual'] = false;
-        }
-
-        if ($data->keys ?? null) {
-            $features['keys'] = true;
-        } else {
-            $features['keys'] = false;
-        }
-
-        if ($data->working ?? null) {
-            $features['working'] = true;
-        } else {
-            $features['working'] = false;
-        }
-
-        $features['other'] = [];
-
-        $pinball
-            ->setOpdbId($data->opdbId)
+        $pinballCollection = new PinballCollection()
             ->setDescription($data->description)
             ->setName($data->name)
-            ->setCondition($data->condition)
-            ->setYear($data->year)
-            ->setFeatures($features)
-            ->setCurrentOwner($this->getUser())
-            ->setManufacturer($data->manufacturer);
+            ->setIsPublic($data->isPublic ?? false)
+            ->setOwner($this->getUser());
 
-        $pinballOwner = $pinball->getPinballOwners()->filter(function (PinballOwner $po) {
-            if ($po->getOwner() === $this->getUser()) {
-                if ($po->getEndAt() === null) {
-                    return true;
-                }
-            }
+        $exists = $pinballCollectionRepository->findOneBy(['isDefault' => true, 'owner' => $this->getUser()]);
 
-            return false;
-        })->first();
-
-        $date = \DateTimeImmutable::createFromFormat('Y-m-d', empty($data->startDate) ? date('Y-m-d') : $data->startDate)?->setTime(0, 0, 0);
-
-        if ($pinballOwner && $pinballOwner->getStartAt() != $date) {
-            $pinballOwner->setStartAt($date);
+        if (!$exists) {
+            $pinballCollection->setIsDefault(true);
         }
 
-        if (!$pinballOwner) {
-            $pinball->addPinballOwner(
-                new PinballOwner()
-                    ->setOwner($this->getUser())
-                    ->setPinball($pinball)
-                    ->setStartAt($date)
-            );
-        }
-
-        $entityManager->persist($pinball);
+        $entityManager->persist($pinballCollection);
         $entityManager->flush();
 
-        return $this->json($pinballService->toDto($pinball));
-    }
-    #[Route('/api/collection/all', name: 'api_collection_all', methods: ['GET'])]
-    public function getAll(
-        PinballRepository $pinballRepository,
-        PinballService $pinballService,
-    ): Response {
-        $pinballs = $pinballRepository->findBy(['currentOwner' => $this->getUser()]);
-
-        return $this->json($pinballService->toDtos($pinballs));
+        return $this->json(PinballCollectionDto::fromEntity($pinballCollection));
     }
 
-    #[Route('/api/collection/{id}', name: 'api_collection_get_one', methods: ['GET'])]
-    public function getOne(
-        Pinball $pinball,
-        PinballService $pinballService,
+    #[Route('/api/collections', name: 'api_collection_list', methods: ['GET'])]
+    public function list(
+        PinballCollectionRepository $pinballCollectionRepository,
+        DtoService $dtoService,
     ): Response {
-        return $this->json($pinballService->toDto($pinball));
+        $collections = $pinballCollectionRepository->findBy(['owner' => $this->getUser()]);
+
+        return $this->json($dtoService->toDtos($collections));
+    }
+
+    #[Route('/api/collections/{id}', name: 'api_collection_delete', methods: ['DELETE'])]
+    public function delete(
+        PinballCollection $pinballCollection,
+        EntityManagerInterface $entityManager,
+        TranslatorInterface $translator,
+    ): Response {
+        if ($pinballCollection->getOwner() !== $this->getUser()) {
+            return $this->json(['error' => $translator->trans('You are not the owner of this collection')],
+                Response::HTTP_FORBIDDEN);
+        }
+
+        if ($pinballCollection->isDefault()) {
+            return $this->json(['error' => $translator->trans('You cannot delete default collection')],
+                Response::HTTP_FORBIDDEN);
+        }
+
+        $entityManager->remove($pinballCollection);
+        $entityManager->flush();
+
+        return $this->json([]);
+    }
+
+    #[Route('/api/collections/{id}', name: 'api_collection_put', methods: ['PUT'])]
+    public function put(
+        Request $request,
+        PinballCollection $pinballCollection,
+        EntityManagerInterface $entityManager,
+        PinballCollectionRepository $pinballCollectionRepository,
+        TranslatorInterface $translator,
+    ): Response {
+        if ($pinballCollection->getOwner() !== $this->getUser()) {
+            return $this->json(['error' => $translator->trans('You are not the owner of this collection')],
+                Response::HTTP_FORBIDDEN);
+        }
+
+        $data = json_decode($request->getContent(), false);
+
+        $exists = $pinballCollectionRepository->createQueryBuilder('c')
+            ->where('c.name = :name')
+            ->andWhere('c.owner = :user')
+            ->andWhere('c.id != :collectionId')
+            ->setParameter('name', $data->name)
+            ->setParameter('user', $this->getUser())
+            ->setParameter('collectionId', $pinballCollection->getId())->getQuery()->getOneOrNullResult();
+
+        if ($exists) {
+            return $this->json(['error' => $translator->trans('Collection with this name already exists')],
+                Response::HTTP_CONFLICT);
+        }
+
+        $pinballCollection
+            ->setDescription($data->description)
+            ->setName($data->name)
+            ->setIsPublic($data->isPublic ?? false)
+            ->setOwner($this->getUser());
+
+        $entityManager->persist($pinballCollection);
+        $entityManager->flush();
+
+        return $this->json(PinballCollectionDto::fromEntity($pinballCollection));
+    }
+
+    #[Route('/api/collection/{id}', name: 'api_collection_list_pinballs', methods: ['GET'])]
+    public function listPinballs(PinballCollection $pinballCollection, DtoService $dtoService): Response
+    {
+        if($pinballCollection->getOwner() !== $this->getUser() && !$pinballCollection->isDefault()) {
+            return $this->json(['error' => 'You are not the owner of this collection'],
+                Response::HTTP_FORBIDDEN);
+        }
+
+        return $this->json($dtoService->toDtos($pinballCollection->getPinballs()->toArray()));
     }
 }

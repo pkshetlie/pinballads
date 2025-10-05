@@ -4,10 +4,13 @@ namespace App\Entity;
 
 use App\Repository\PinballOwnerRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: PinballOwnerRepository::class)]
 class PinballOwner
 {
+    use TimestampableEntity;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

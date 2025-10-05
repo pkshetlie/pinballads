@@ -1,9 +1,9 @@
 "use client"
 
 import {useEffect, useState} from "react"
-import {Calendar, DollarSign, Edit, Eye, Loader2, MapPin, Plus, Shield, Star, Trash2} from "lucide-react"
+import {Calendar, Edit, Folder, Loader2, Plus, Settings, Trash2} from "lucide-react"
 import {Button} from "@/components/ui/button"
-import {Card, CardContent, CardFooter} from "@/components/ui/card"
+import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card"
 import {Badge} from "@/components/ui/badge"
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar"
 import {
@@ -16,105 +16,130 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import {Input} from "@/components/ui/input"
+import Navbar from "@/components/Navbar"
 import {Label} from "@/components/ui/label"
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
 import {Textarea} from "@/components/ui/textarea"
-import {useApi} from "@/lib/api";
-import {PinballDto} from "@/components/Object/pinball";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import {useToast} from "@/hooks/use-toast"
+import Link from "next/link"
+import {useApi} from "@/lib/api";
 import {useAuth} from "@/lib/auth-context";
-import {PinballImageCarousel} from "@/components/PinballImageCarousel";
 import {useLanguage} from "@/lib/language-context";
 
-// Mock user data
-const user = {
-    name: "Mike Johnson",
-    username: "mikej_pinball",
-    avatar: "/seller-avatar.jpg",
-    location: "Los Angeles, CA",
-    memberSince: "2019",
-    verified: true,
-    rating: 5,
-    reviewCount: 0,
-    stats: {
-        machinesOwned: 0,
-        totalViews: 0,
-        responseRate: 100,
-    },
+interface Collection {
+    id: number
+    name: string
+    description: string
+    isPublic: boolean,
+    isDefault: boolean,
+    createdAt: string
+    machineCount: number
 }
 
-export default function MyCollectionPage() {
-    const [collection, setCollection] = useState<PinballDto[]>([])
-    const [editingMachine, setEditingMachine] = useState<any>(null)
-    const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null)
-    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
-    const [sellDialogOpen, setSellDialogOpen] = useState<number | null>(null)
-    const [sellPrice, setSellPrice] = useState("")
-    const [currency, setCurrency] = useState("")
-    const {get} = useApi();
-    const {token} = useAuth();
+export default function CollectionsPage() {
+    const [collections, setCollections] = useState<Collection[]>([])
     const [loading, setLoading] = useState(true)
-    const {toast} = useToast()
+    const [creating, setCreating] = useState(false)
+    const [createError, setCreateError] = useState<string | null>(null)
+    const [editingCollection, setEditingCollection] = useState<Collection | null>(null)
+    const [editError, setEditError] = useState<string | null>(null)
+    const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null)
+    const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+    const [newCollection, setNewCollection] = useState({name: "", description: "", isPublic: false})
     const {t} = useLanguage()
-
-    const handleEdit = (machine: any) => {
-        window.location.href = `/collection/${machine.id}`
-    }
-
-    const handleSaveEdit = () => {
-        if (editingMachine) {
-            setCollection((prev) => prev.map((machine) => (machine.id === editingMachine.id ? editingMachine : machine)))
-            setIsEditDialogOpen(false)
-            setEditingMachine(null)
-        }
-    }
-
-    const handleDelete = (id: number) => {
-        setCollection((prev) => prev.filter((machine) => machine.id !== id))
-        setDeleteConfirm(null)
-    }
-
-    const handleAddMachine = () => {
-        window.location.href = "/collection/add"
-    }
-
-    const handlePutForSale = (machineId: number) => {
-        if (sellPrice && Number(sellPrice) > 0) {
-            setCollection((prev) =>
-                prev.map((machine) =>
-                    machine.id === machineId ? {...machine, status: "For Sale", price: Number(sellPrice)} : machine,
-                ),
-            )
-            setSellDialogOpen(null)
-            setSellPrice("")
-        }
-    }
+    const {toast} = useToast()
+    const {apiGet, apiPost, apiPut, apiDelete} = useApi()
+    const {user, token, logout} = useAuth();
 
     useEffect(() => {
-        if (!token) return; // ⬅️ attendre que le token soit dispo
-        fetchCollection();
-    }, [token]);
+        if (!token && !user) return;
+        fetchCollections();
 
-    const fetchCollection = async () => {
+    }, [token, user])
+
+    const fetchCollections = async () => {
         try {
             setLoading(true)
-            const result = await get("collection/all")
-
-            if (result) {
-                setCollection(result)
-            } else {
-                throw new Error(result.error || "Failed to fetch collection")
-            }
+            const response = await apiGet("/api/collections")
+            setCollections(response)
         } catch (error) {
             toast({
-                title: "Erreur",
-                description: `${t('collection.cantLoadMachines')}`,
+                title: t('toasts.error'),
+                description: t('collection.toasts.cantLoadCollections'),
                 variant: "destructive",
             })
         } finally {
             setLoading(false)
+        }
+    }
+
+    const handleCreateCollection = async () => {
+        if (!newCollection.name.trim()) return
+
+        try {
+            setCreating(true)
+            setCreateError(null)
+            const response = await apiPost("/api/collections", newCollection)
+
+            setCollections((prev) => [...prev, response])
+            setIsCreateDialogOpen(false)
+            setNewCollection({name: "", description: "", isPublic: false})
+            toast({
+                title: t('toasts.success'),
+                description: t('collection.toasts.collectionCreated'),
+                variant: "success",
+            });
+        } catch (error) {
+            setCreateError(error instanceof Error ? error.message : t("toasts.unknownError"))
+        } finally {
+            setCreating(false)
+        }
+    }
+
+    const handleEditCollection = (collection: Collection) => {
+        setEditingCollection({...collection})
+        setIsEditDialogOpen(true)
+    }
+
+    const handleSaveEdit = async () => {
+        if (!editingCollection) return
+
+        try {
+            setEditError(null)
+            const response = await apiPut(`/api/collections/${editingCollection.id}`, editingCollection)
+
+                setCollections((prev) => prev.map((c) => (c.id === editingCollection.id ? response : c)))
+                setIsEditDialogOpen(false)
+                setEditingCollection(null)
+            toast({
+                title: t('toasts.success'),
+                description: t('collection.toasts.collectionUpdated'),
+                variant: "success",
+            });
+        } catch (error) {
+            setEditError(error instanceof Error ? error.message : t("toasts.unknownError"))
+        }
+    }
+
+    const handleDeleteCollection = async (id: number) => {
+        try {
+            await apiDelete(`/api/collections/${id}`)
+
+            setCollections((prev) => prev.filter((c) => c.id !== id))
+            setDeleteConfirm(null)
+            toast({
+                title: t("toasts.success"),
+                description: t('collection.toasts.collectionDeleted'),
+                variant: "success",
+            })
+
+        } catch (error) {
+            toast({
+                title: t("toasts.error"),
+                description: error instanceof Error ? error.message : t("toasts.unknownError"),
+                variant: "destructive",
+            })
+            setCreateError(null)
         }
     }
 
@@ -131,8 +156,8 @@ export default function MyCollectionPage() {
 
     return (
         <div className="min-h-screen bg-background">
-            {/* Header */}
             <Navbar/>
+
             <div className="container mx-auto px-4 py-8">
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                     {/* Left Sidebar - User Info */}
@@ -141,51 +166,28 @@ export default function MyCollectionPage() {
                             <CardContent className="p-6">
                                 <div className="text-center mb-6">
                                     <Avatar className="w-24 h-24 mx-auto mb-4">
-                                        <AvatarImage src={user.avatar || "/placeholder.svg"}/>
+                                        <AvatarImage src={user?.avatar ?? "/placeholder.svg"}/>
                                         <AvatarFallback className="text-2xl">
-                                            {user.name
+                                            {user?.name
                                                 .split(" ")
                                                 .map((n) => n[0])
                                                 .join("")}
                                         </AvatarFallback>
                                     </Avatar>
-                                    <div className="flex items-center justify-center gap-2 mb-2">
-                                        <h2 className="text-xl font-bold text-foreground">{user.name}</h2>
-                                        {user.verified && <Shield className="w-5 h-5 text-primary"/>}
-                                    </div>
-                                    <p className="text-muted-foreground">@{user.username}</p>
-                                    <div className="flex items-center justify-center gap-1 mt-2">
-                                        <Star className="w-4 h-4 fill-accent text-accent"/>
-                                        <span className="font-medium">{user.rating}</span>
-                                        <span className="text-muted-foreground">({user.reviewCount} avis)</span>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-4 mb-6">
-                                    <div className="flex items-center gap-2 text-sm">
-                                        <MapPin className="w-4 h-4 text-muted-foreground"/>
-                                        <span className="text-muted-foreground">{user.location}</span>
-                                    </div>
-                                    <div className="flex items-center gap-2 text-sm">
-                                        <Calendar className="w-4 h-4 text-muted-foreground"/>
-                                        <span className="text-muted-foreground">Membre depuis {user.memberSince}</span>
-                                    </div>
+                                    <h2 className="text-xl font-bold text-foreground mb-2">{user?.name}</h2>
+                                    {/*<p className="text-muted-foreground">@{user.name}</p>*/}
                                 </div>
 
                                 <div className="grid grid-cols-1 gap-4 mb-6">
                                     <div className="text-center">
-                                        <div
-                                            className="text-2xl font-bold text-primary">{user.stats.machinesOwned}</div>
-                                        <div className="text-xs text-muted-foreground">Machines</div>
+                                        <div className="text-2xl font-bold text-primary">{collections.length}</div>
+                                        <div className="text-xs text-muted-foreground">{t('collection.collections')}</div>
                                     </div>
                                     <div className="text-center">
-                                        <div className="text-2xl font-bold text-primary">{user.stats.totalViews}</div>
-                                        <div className="text-xs text-muted-foreground">Vues totales</div>
-                                    </div>
-                                    <div className="text-center">
-                                        <div className="text-2xl font-bold text-primary">{user.stats.responseRate}%
+                                        <div className="text-2xl font-bold text-primary">
+                                            {collections.reduce((sum, c) => sum + c.machineCount, 0)}
                                         </div>
-                                        <div className="text-xs text-muted-foreground">Taux de réponse</div>
+                                        <div className="text-xs text-muted-foreground">{t('collection.totalMachines')}</div>
                                     </div>
                                 </div>
                             </CardContent>
@@ -197,172 +199,216 @@ export default function MyCollectionPage() {
                         <div className="space-y-6">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <h3 className="text-2xl font-bold text-foreground">{t('collection.myCollection')}</h3>
-                                    <p className="text-muted-foreground">{t('collection.xMachinesInYourCollection', {count: collection.length}, collection.length)}</p>
+                                    <h3 className="text-2xl font-bold text-foreground">{t('collection.myCollections')}</h3>
+                                    <p className="text-muted-foreground">{t('collection.organizeMachinesInCollection')}</p>
                                 </div>
-                                <Button onClick={handleAddMachine} className="gap-2">
-                                    <Plus className="w-4 h-4"/>
-                                    {t('collection.add')}
-                                </Button>
+                                <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+                                    <DialogTrigger asChild>
+                                        <Button className="gap-2">
+                                            <Plus className="w-4 h-4"/>
+                                            {t('collection.createEditDialog.newCollection')}
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                        <DialogHeader>
+                                            <DialogTitle>
+                                                {t('collection.createEditDialog.createANewCollection')}
+                                            </DialogTitle>
+                                            <DialogDescription>
+                                                {t('collection.createEditDialog.organizeYourMachinesInCollection')}
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <div className="space-y-4 py-4">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="collection-name">
+                                                    {t('collection.createEditDialog.collectionNameLabel')}
+                                                    *</Label>
+                                                {createError && (
+                                                    <p className="text-sm text-destructive">{createError}</p>
+                                                )}
+                                                <Input
+                                                    id="collection-name"
+                                                    placeholder="Ex: Machines Williams, Collection Vintage..."
+                                                    value={newCollection.name}
+                                                    onChange={(e) => setNewCollection({
+                                                        ...newCollection,
+                                                        name: e.target.value
+                                                    })}
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="collection-description">
+                                                    {t('collection.createEditDialog.descriptionLabel')}
+                                                </Label>
+                                                <Textarea
+                                                    id="collection-description"
+                                                    placeholder="Décrivez votre collection..."
+                                                    value={newCollection.description}
+                                                    onChange={(e) => setNewCollection({
+                                                        ...newCollection,
+                                                        description: e.target.value
+                                                    })}
+                                                    rows={3}
+                                                />
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                                <input
+                                                    type="checkbox"
+                                                    id="edit-isPublic"
+                                                    checked={newCollection.isPublic}
+                                                    onChange={(e) => setNewCollection({
+                                                        ...newCollection,
+                                                        isPublic: e.target.checked
+                                                    })}
+                                                    className="h-4 w-4 rounded border-gray-300"
+                                                />
+                                                <Label htmlFor="edit-isPublic">
+                                                    {t('collection.createEditDialog.setPublicLabel')}
+                                                </Label>
+                                            </div>
+                                        </div>
+                                        <DialogFooter>
+                                            <Button
+                                                variant="outline"
+                                                className="cursor"
+                                                onClick={() => {
+                                                    setIsCreateDialogOpen(false)
+                                                    setNewCollection({name: "", description: "", isPublic: false})
+                                                }}
+                                                disabled={creating}
+                                            >
+                                                Annuler
+                                            </Button>
+                                            <Button className="cursor"
+                                                    onClick={handleCreateCollection}
+                                                    disabled={!newCollection.name.trim() || creating}>
+                                                {creating ? (
+                                                    <>
+                                                        <Loader2 className="w-4 h-4 animate-spin mr-2"/>
+                                                        {t('collection.createEditDialog.creating')}
+                                                    </>
+                                                ) : (
+                                                    "Créer"
+                                                )}
+                                            </Button>
+                                        </DialogFooter>
+                                    </DialogContent>
+                                </Dialog>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                                {collection.map((machine) => (
-                                    <Card key={machine.id}
-                                          className="group hover:shadow-lg transition-all duration-200">
-                                        <div className="relative">
-                                            <PinballImageCarousel
-                                                 machine={machine}
-                                                showActions={false}
-                                                className="rounded-t-lg overflow-hidden"
-                                            />
-                                            <div className="absolute top-3 left-3">
-                                                <Badge variant={machine.isForSale ? "default" : "secondary"}
-                                                       className="text-xs">
-                                                    {machine.isForSale ? "À vendre" : "Collection"}
-                                                </Badge>
-                                            </div>
-                                            {machine.isForSale && (
-                                                <div className="absolute top-3 right-3">
-                                                    <div
-                                                        className="flex items-center gap-1 bg-background/90 rounded-full px-2 py-1 text-xs">
-                                                        <Eye className="w-3 h-3"/>
-                                                        {machine.views}
+                            {collections.length === 0 ? (
+                                <></>
+                                // <Card className="p-12 text-center">
+                                //     <div className="text-muted-foreground">
+                                //         <Folder className="w-16 h-16 mx-auto mb-4 text-muted-foreground/50"/>
+                                //         <p className="text-lg mb-2">Aucune collection trouvée</p>
+                                //         <p className="text-sm mb-4">Créez votre première collection pour organiser vos
+                                //             machines</p>
+                                //         <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2">
+                                //             <Plus className="w-4 h-4"/>
+                                //             Créer une collection
+                                //         </Button>
+                                //     </div>
+                                // </Card>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                                    {collections.map((collection) => (
+                                        <Card key={collection.id}
+                                              className="group hover:shadow-lg transition-all duration-200">
+                                            <CardHeader className="pb-3">
+                                                <div className="flex items-start justify-between">
+                                                    <div className="flex items-center gap-3">
+                                                        <div
+                                                            className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                                                            <Folder className="w-6 h-6 text-primary"/>
+                                                        </div>
+                                                        <div>
+                                                            <CardTitle
+                                                                className="text-lg group-hover:text-primary transition-colors">
+                                                                {collection.name}
+                                                            </CardTitle>
+                                                            {collection.isDefault && (
+                                                                <Badge variant="secondary" className="text-xs mt-1 mr-1">
+                                                                    Default
+                                                                </Badge>
+                                                            )}
+                                                            {collection.isPublic && (
+                                                                <Badge variant="default" className="text-xs mt-1">
+                                                                    Public
+                                                                </Badge>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            )}
-                                        </div>
-                                        <CardContent className="p-4">
-                                            <div className="space-y-2">
-                                                <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">
-                                                    {machine.name}
-                                                </h4>
-                                                <p className="text-sm text-muted-foreground">
-                                                    {machine.manufacturer} • {machine.year}
+                                            </CardHeader>
+                                            <CardContent className="pb-3">
+                                                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                                                    {collection.description || "..."}
                                                 </p>
-                                                <div className="flex items-center justify-between">
-                                                    <Badge variant="outline" className="text-xs">
-                                                        {machine.condition}
-                                                    </Badge>
-                                                    {machine.price > 0 && (
-                                                        <span
-                                                            className="font-bold text-primary">{machine.devise}{machine.price?.toLocaleString()}</span>
+                                                <div className="flex items-center justify-between text-sm">
+                                                    <div className="flex items-center gap-1 text-muted-foreground">
+                                                        <Settings className="w-4 h-4"/>
+                                                        <span>
+                                                            {t('collection.xMachines', {count: collection.machineCount}, collection.machineCount)}
+                                                            </span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1 text-muted-foreground">
+                                                        <Calendar className="w-4 h-4"/>
+                                                        <span>{new Date(collection.createdAt).toLocaleDateString()}</span>
+                                                    </div>
+                                                </div>
+                                            </CardContent>
+                                            <CardFooter className="pt-0">
+                                                <div className="flex gap-2 w-full">
+                                                    <Button asChild size="sm" className="flex-1">
+                                                        <Link href={`/collection/${collection.id}`}>{t('collection.see')}</Link>
+                                                    </Button>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        className="gap-2 bg-transparent cursor-pointer"
+                                                        onClick={() => handleEditCollection(collection)}
+                                                    >
+                                                        <Edit className="w-4 h-4"/>
+                                                    </Button>
+                                                    {(
+                                                        <Dialog
+                                                            open={deleteConfirm === collection.id}
+                                                            onOpenChange={(open) => setDeleteConfirm(open ? collection.id : null)}
+                                                        >
+                                                            <DialogTrigger asChild>
+                                                                <Button size="sm" variant="destructive" className={'cursor-pointer'}>
+                                                                    <Trash2 className="w-4 h-4"/>
+                                                                </Button>
+                                                            </DialogTrigger>
+                                                            <DialogContent>
+                                                                <DialogHeader>
+                                                                    <DialogTitle>{t('collection.confirmDeleteDialog.deleteCollection')}</DialogTitle>
+                                                                    <DialogDescription>
+                                                                        {t('collection.confirmDeleteDialog.confirm',{name: collection.name})}
+                                                                    </DialogDescription>
+                                                                </DialogHeader>
+                                                                <DialogFooter>
+                                                                    <Button variant="outline"
+                                                                            className="cursor-pointer"
+                                                                            onClick={() => setDeleteConfirm(null)}>
+                                                                        {t('collection.confirmDeleteDialog.cancel')}
+                                                                    </Button>
+                                                                    <Button variant="destructive"
+                                                                            className="cursor-pointer"
+                                                                            onClick={() => handleDeleteCollection(collection.id)}>
+                                                                        {t('collection.confirmDeleteDialog.remove')}
+                                                                    </Button>
+                                                                </DialogFooter>
+                                                            </DialogContent>
+                                                        </Dialog>
                                                     )}
                                                 </div>
-                                                <p className="text-xs text-muted-foreground line-clamp-2">{machine.description}</p>
-                                            </div>
-                                        </CardContent>
-                                        <CardFooter className="p-4 pt-0">
-                                            <div className="flex gap-2 w-full">
-                                                <Button size="sm" className="flex-1 gap-2 cursor-pointer"
-                                                        onClick={() => handleEdit(machine)}>
-                                                <Edit className="w-4 h-4"/>
-                                                    {t('collection.edit')}
-                                                </Button>
-                                                {!machine.isForSale && (
-                                                    <Dialog
-                                                        open={sellDialogOpen === machine.id}
-                                                        onOpenChange={(open) => setSellDialogOpen(open ? machine.id : null)}
-                                                    >
-                                                        <DialogTrigger asChild>
-                                                            <Button size="sm" variant="outline"
-                                                                    className="gap-2 bg-transparent cursor-pointer">
-                                                                {t('collection.sell')}
-                                                            </Button>
-                                                        </DialogTrigger>
-                                                        <DialogContent>
-                                                            <DialogHeader>
-                                                                <DialogTitle>Mettre en vente</DialogTitle>
-                                                                <DialogDescription>
-                                                                    Définissez le prix de vente pour "{machine.name}".
-                                                                    Cette machine sera visible dans
-                                                                    les annonces publiques.
-                                                                </DialogDescription>
-                                                            </DialogHeader>
-                                                            <div className="space-y-4 py-4">
-                                                                <div className="space-y-2">
-                                                                    <Label
-                                                                        htmlFor="sell-price">{t('pinball.price')}</Label>
-                                                                    <div className="flex gap-2">
-                                                                        <Select
-                                                                            defaultValue="EUR"
-                                                                            onValueChange={(value) => setCurrency(value)}
-                                                                        >
-                                                                            <SelectTrigger className="w-[100px]">
-                                                                                <SelectValue placeholder="Currency"/>
-                                                                            </SelectTrigger>
-                                                                            <SelectContent>
-                                                                                <SelectItem value="EUR">€ EUR</SelectItem>
-                                                                                <SelectItem value="USD">$ USD</SelectItem>
-                                                                                <SelectItem value="GBP">£ GBP</SelectItem>
-                                                                            </SelectContent>
-                                                                        </Select>
-                                                                        <Input
-                                                                            id="sell-price"
-                                                                            type="number"
-                                                                            placeholder="Ex: 5000"
-                                                                            value={sellPrice}
-                                                                            onChange={(e) => setSellPrice(e.target.value)}
-                                                                            className="flex-1"
-                                                                        />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <DialogFooter>
-                                                                <Button
-                                                                    variant="outline"
-                                                                    onClick={() => {
-                                                                        setSellDialogOpen(null)
-                                                                        setSellPrice("")
-                                                                    }}
-                                                                >
-                                                                    Annuler
-                                                                </Button>
-                                                                <Button
-                                                                    onClick={() => handlePutForSale(machine.id)}
-                                                                    disabled={!sellPrice || Number(sellPrice) <= 0}
-                                                                >
-                                                                    {t('collection.sell')}
-                                                                </Button>
-                                                            </DialogFooter>
-                                                        </DialogContent>
-                                                    </Dialog>
-                                                )}
-                                                <Dialog
-                                                    open={deleteConfirm === machine.id}
-                                                    onOpenChange={(open) => setDeleteConfirm(open ? machine.id : null)}
-                                                >
-                                                    <DialogTrigger asChild>
-                                                        <Button size="sm" variant="destructive" className="cursor-pointer">
-                                                            <Trash2 className="w-4 h-4"/>
-                                                        </Button>
-                                                    </DialogTrigger>
-                                                    <DialogContent>
-                                                        <DialogHeader>
-                                                            <DialogTitle>Supprimer la machine</DialogTitle>
-                                                            <DialogDescription>
-                                                                Êtes-vous sûr de vouloir supprimer "{machine.name}" de
-                                                                votre collection ? Cette action
-                                                                ne peut pas être annulée.
-                                                            </DialogDescription>
-                                                        </DialogHeader>
-                                                        <DialogFooter>
-                                                            <Button variant="outline"
-                                                                    onClick={() => setDeleteConfirm(null)}>
-                                                                Annuler
-                                                            </Button>
-                                                            <Button variant="destructive"
-                                                                    onClick={() => handleDelete(machine.id)}>
-                                                                Supprimer
-                                                            </Button>
-                                                        </DialogFooter>
-                                                    </DialogContent>
-                                                </Dialog>
-                                            </div>
-                                        </CardFooter>
-                                    </Card>
-                                ))}
-                            </div>
+                                            </CardFooter>
+                                        </Card>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -370,127 +416,65 @@ export default function MyCollectionPage() {
 
             {/* Edit Dialog */}
             <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-                <DialogContent className="max-w-2xl">
+                <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Éditer la machine</DialogTitle>
-                        <DialogDescription>Modifiez les informations de votre machine pinball.</DialogDescription>
+                        <DialogTitle>{t('collection.createEditDialog.editCollection')}</DialogTitle>
+                        <DialogDescription>{t('collection.createEditDialog.editCollectionDetails')}</DialogDescription>
                     </DialogHeader>
-                    {editingMachine && (
-                        <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="title">Titre</Label>
-                                    <Input
-                                        id="title"
-                                        value={editingMachine.title}
-                                        onChange={(e) => setEditingMachine({...editingMachine, title: e.target.value})}
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="manufacturer">Fabricant</Label>
-                                    <Input
-                                        id="manufacturer"
-                                        value={editingMachine.manufacturer}
-                                        onChange={(e) => setEditingMachine({
-                                            ...editingMachine,
-                                            manufacturer: e.target.value
-                                        })}
-                                    />
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="year">Année</Label>
-                                    <Input
-                                        id="year"
-                                        type="number"
-                                        value={editingMachine.year}
-                                        onChange={(e) => setEditingMachine({
-                                            ...editingMachine,
-                                            year: Number.parseInt(e.target.value)
-                                        })}
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="condition">État</Label>
-                                    <Select
-                                        value={editingMachine.condition}
-                                        onValueChange={(value) => setEditingMachine({
-                                            ...editingMachine,
-                                            condition: value
-                                        })}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue/>
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Excellent">Excellent</SelectItem>
-                                            <SelectItem value="Very Good">Très bon</SelectItem>
-                                            <SelectItem value="Good">Bon</SelectItem>
-                                            <SelectItem value="Fair">Correct</SelectItem>
-                                            <SelectItem value="Poor">Mauvais</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="status">Statut</Label>
-                                    <Select
-                                        value={editingMachine.status}
-                                        onValueChange={(value) => setEditingMachine({...editingMachine, status: value})}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue/>
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Collection">Collection</SelectItem>
-                                            <SelectItem value="For Sale">À vendre</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                {editingMachine.status === "For Sale" && (
-                                    <div className="space-y-2">
-                                        <Label htmlFor="price">Prix ($)</Label>
-                                        <Input
-                                            id="price"
-                                            type="number"
-                                            value={editingMachine.price || ""}
-                                            onChange={(e) =>
-                                                setEditingMachine({
-                                                    ...editingMachine,
-                                                    price: Number.parseInt(e.target.value) || null
-                                                })
-                                            }
-                                        />
-                                    </div>
+                    {editingCollection && (
+                        <div className="space-y-4 py-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="edit-name">{t('collection.createEditDialog.collectionNameLabel')}*</Label>
+                                {editError && (
+                                    <p className="text-sm text-destructive">{editError}</p>
                                 )}
+                                <Input
+                                    id="edit-name"
+                                    value={editingCollection.name}
+                                    onChange={(e) => setEditingCollection({
+                                        ...editingCollection,
+                                        name: e.target.value
+                                    })}
+                                />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="description">Description</Label>
+                                <Label htmlFor="edit-description">{t('collection.createEditDialog.descriptionLabel')}</Label>
                                 <Textarea
-                                    id="description"
-                                    value={editingMachine.description}
-                                    onChange={(e) => setEditingMachine({
-                                        ...editingMachine,
+                                    id="edit-description"
+                                    value={editingCollection.description}
+                                    onChange={(e) => setEditingCollection({
+                                        ...editingCollection,
                                         description: e.target.value
                                     })}
                                     rows={3}
                                 />
                             </div>
+                            <div className="flex items-center space-x-2">
+                                <input
+                                    type="checkbox"
+                                    id="edit-isPublic"
+                                    checked={editingCollection.isPublic}
+                                    onChange={(e) => setEditingCollection({
+                                        ...editingCollection,
+                                        isPublic: e.target.checked
+                                    })}
+                                    className="h-4 w-4 rounded border-gray-300"
+                                />
+                                <Label htmlFor="edit-isPublic">{t('collection.createEditDialog.setPublicLabel')}</Label>
+                            </div>
                         </div>
                     )}
                     <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
-                            Annuler
+                        <Button className="cursor-pointer"
+                                variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                            {t('collection.createEditDialog.cancel')}
                         </Button>
-                        <Button onClick={handleSaveEdit}>Sauvegarder</Button>
+                        <Button
+                            className="cursor-pointer"
+                            onClick={handleSaveEdit}>{t('collection.createEditDialog.save')}</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-
-            {/* Footer */}
-            <Footer/>
         </div>
     )
 }

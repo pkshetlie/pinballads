@@ -67,21 +67,16 @@ const fallbackData = {
 
 async function fetchPinballData() {
   try {
-    console.log("[v0] Attempting to fetch data from API...")
-
     // Try to fetch from API first
     const response = await fetch(PINBALL_API_URL)
 
     if (response.ok) {
       const data = await response.json()
-      console.log("[v0] Successfully fetched data from API")
       return data
     } else {
       throw new Error(`API returned status: ${response.status}`)
     }
   } catch (error) {
-    console.log("[v0] API fetch failed, using fallback JSON data:", error.message)
-
     // Use fallback data
     return fallbackData
   }
@@ -100,9 +95,6 @@ async function savePinballData() {
     // Write data to file
     await fs.writeFile(outputPath, JSON.stringify(data, null, 2))
 
-    console.log("[v0] Pinball data saved to:", outputPath)
-    console.log("[v0] Total machines:", data.machines.length)
-
     return data
   } catch (error) {
     console.error("[v0] Error saving pinball data:", error)
@@ -113,9 +105,7 @@ async function savePinballData() {
 // Run the script
 savePinballData()
   .then(() => {
-    console.log("[v0] Script completed successfully")
   })
   .catch((error) => {
-    console.error("[v0] Script failed:", error)
     process.exit(1)
   })

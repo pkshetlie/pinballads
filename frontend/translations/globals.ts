@@ -7,11 +7,13 @@ import {footer} from "./footer";
 import {sell} from "./sell";
 import {profile} from "./profile";
 import {collection} from "./collection";
+import {toasts} from "./toasts";
 
 export const translations = {
     "en": {
         ...nav.en,
         ...footer.en,
+        ...toasts.en,
         ...terms.en,
         ...home.en,
         ...listings.en,
@@ -36,6 +38,7 @@ export const translations = {
     "fr": {
         ...nav.fr,
         ...footer.fr,
+        ...toasts.en,
         ...terms.fr,
         ...home.fr,
         ...listings.fr,

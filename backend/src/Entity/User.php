@@ -5,7 +5,9 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -14,6 +16,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    use TimestampableEntity;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -64,12 +68,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: PinballSale::class, mappedBy: 'buyer')]
     private Collection $pinballsPurchased;
 
+    /**
+     * @var Collection<int, PinballCollection>
+     */
+    #[ORM\OneToMany(targetEntity: PinballCollection::class, mappedBy: 'owner')]
+    private Collection $pinballCollections;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $avatar = null;
+
     public function __construct()
     {
         $this->pinballOwners = new ArrayCollection();
         $this->pinballs = new ArrayCollection();
         $this->pinballsSold = new ArrayCollection();
         $this->pinballsPurchased = new ArrayCollection();
+        $this->pinballCollections = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -293,6 +307,48 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $pinballsPurchased->setBuyer(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PinballCollection>
+     */
+    public function getPinballCollections(): Collection
+    {
+        return $this->pinballCollections;
+    }
+
+    public function addPinballCollection(PinballCollection $pinballCollection): static
+    {
+        if (!$this->pinballCollections->contains($pinballCollection)) {
+            $this->pinballCollections->add($pinballCollection);
+            $pinballCollection->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removePinballCollection(PinballCollection $pinballCollection): static
+    {
+        if ($this->pinballCollections->removeElement($pinballCollection)) {
+            // set the owning side to null (unless already changed)
+            if ($pinballCollection->getOwner() === $this) {
+                $pinballCollection->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getAvatar(): ?string
+    {
+        return $this->avatar;
+    }
+
+    public function setAvatar(?string $avatar): static
+    {
+        $this->avatar = $avatar;
 
         return $this;
     }

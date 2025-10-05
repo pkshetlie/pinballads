@@ -8,7 +8,7 @@ import {Heart, Share2, ZoomIn} from "lucide-react"
 import { ImageZoomModal } from "./image-zoom-modal"
 import config from "@/config"
 import {useLanguage} from "@/lib/language-context";
-import {PinballDto} from "@/components/Object/pinball";
+import {PinballDto} from "@/components/object/pinballDto";
 
 interface PinballImageCarouselProps {
     machine: PinballDto
@@ -25,7 +25,7 @@ export function PinballImageCarousel({
     const [isZoomModalOpen, setIsZoomModalOpen] = useState(false)
     const [zoomImageIndex, setZoomImageIndex] = useState(0)
     const {t} = useLanguage()
-    const displayImages = machine.images.length > 0 ? machine.images : [{title: "no image", url: "uploads/pinballs/placeholder.png"},{title: "no image", url: "uploads/pinballs/placeholder.png"}]
+    const displayImages = machine.images.length > 0 ? machine.images : [{title: "no image", url: "uploads/pinballs/placeholder.png", uid: ''},{title: "no image", url: "uploads/pinballs/placeholder.png", uid:''}]
     const limitedImages = displayImages.slice(0, 10)
 
     const handleImageClick = (index: number) => {
@@ -41,8 +41,8 @@ export function PinballImageCarousel({
                         <CarouselItem key={index}>
                             <div className="aspect-[4/3] overflow-hidden rounded-lg relative group">
                                 <img
-                                    src={`${config.CDN_BASE_URL}${image.url}` || `${config.CDN_BASE_URL}/placeholder.png`}
-                                    alt={`${machine.title} - Image ${index + 1}`}
+                                    src={`${image.url}` || `${config.CDN_BASE_URL}/placeholder.png`}
+                                    alt={`${image.title}`}
                                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                                 />
 

@@ -45,7 +45,7 @@ export function LanguageProvider({children}: { children: React.ReactNode }) {
 
     if (count !== undefined) {
       const parts = result.split('|');
-      result = count === 1 ? parts[0] : (parts[1] || parts[0]);
+      result = count <= 1 ? parts[0] : (parts[1] || parts[0]);
     }
 
     return result;

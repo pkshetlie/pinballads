@@ -1,33 +1,34 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import {useParams, useRouter} from "next/navigation";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import Navbar from "@/components/Navbar";
 import MachineForm, {MachineFormData} from "@/components/PinballMachineForm";
 import {useApi} from "@/lib/api";
+import {toast} from "@/components/ui/use-toast";
+import {useLanguage} from "@/lib/language-context";
 
 export default function MachineCollectionPage() {
     const router = useRouter();
     const [modalOpen, setModalOpen] = useState(false);
-    const { get, post } = useApi();
-
+    const { apiGet, apiPost } = useApi();
+    const { id } = useParams()
+    const { t } = useLanguage()
 
     const handleCreate = async (formData: MachineFormData) => {
         try {
-            const data = await post("/api/collection/create", formData);
+            const data = await apiPost(`/api/collection/${id}/machine`, formData);
             const machineId = data.id;
+            await apiPost(`/api/machine/${machineId}/images`, formData);
 
-            if (formData.images && formData.images.length > 0) {
-                const formDataImage = new FormData();
-                formData.images.forEach((file) => formDataImage.append("images", file));
-                await fetch(`/api/machines/${machineId}/images`, { method: "POST", body: formDataImage });
-            }
-
-            setModalOpen(true);
         } catch (error) {
             console.error(error);
-            alert("Une erreur est survenue.");
+            toast({
+                title: t('toasts.success'),
+                description: t('collection.toasts.collectionCreated'),
+                variant: "success",
+            });
         }
     };
 

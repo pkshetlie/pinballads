@@ -2,6 +2,7 @@
 
 namespace App\Security;
 
+use App\Entity\User;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Http\Authentication\AuthenticationSuccessHandler;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -15,11 +16,13 @@ class CustomLoginSuccessHandler extends AuthenticationSuccessHandler
     {
         // Appelle la méthode parent pour obtenir la réponse par défaut
         $response = parent::handleAuthenticationSuccess($user, $jwt);
-
+        /** @var User $user */
         // Ajoute les données utilisateur dans la réponse (par exemple : email et nom)
         $userData = [
             'id' => $user->getId(),
             'email' => $user->getEmail(),
+            'name' => $user->getDisplayName(),
+            'avatar' => '',
             // 'name' => $user->getName(), // Assurez-vous que cette méthode existe dans l'entité User
         ];
 

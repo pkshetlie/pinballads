@@ -7,12 +7,12 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { LanguageProvider } from "@/lib/language-context"
 import { Suspense } from "react"
 import "./globals.css"
-import { AuthProvider } from '@/lib/auth-context'; // Importez votre AuthProvider
+import { AuthProvider } from '@/lib/auth-context';
+import {Toaster} from "@/components/ui/toaster"; // Importez votre AuthProvider
 
 export const metadata: Metadata = {
   title: "Crazy Pinball",
   description: "Buy, sell & collect pinball machines",
-  generator: "v0.app",
 }
 
 export default function RootLayout({
@@ -24,6 +24,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
       <AuthProvider>
+          <Toaster/>
       <Suspense fallback={null}>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
             <LanguageProvider>{children}</LanguageProvider>

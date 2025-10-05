@@ -2,15 +2,19 @@
 
 namespace App\Entity;
 
+use App\Interface\DtoableInterface;
 use App\Repository\PinballRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: PinballRepository::class)]
-class Pinball
+class Pinball implements DtoableInterface
 {
+    use TimestampableEntity;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -55,10 +59,17 @@ class Pinball
     #[ORM\OneToMany(targetEntity: PinballSale::class, mappedBy: 'pinball')]
     private Collection $pinballSales;
 
+    /**
+     * @var Collection<int, PinballCollection>
+     */
+    #[ORM\ManyToMany(targetEntity: PinballCollection::class, mappedBy: 'pinballs')]
+    private Collection $pinballCollections;
+
     public function __construct()
     {
         $this->pinballOwners = new ArrayCollection();
         $this->pinballSales = new ArrayCollection();
+        $this->pinballCollections = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -229,6 +240,33 @@ class Pinball
             if ($pinballSale->getPinball() === $this) {
                 $pinballSale->setPinball(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PinballCollection>
+     */
+    public function getPinballCollections(): Collection
+    {
+        return $this->pinballCollections;
+    }
+
+    public function addPinballCollection(PinballCollection $pinballCollection): static
+    {
+        if (!$this->pinballCollections->contains($pinballCollection)) {
+            $this->pinballCollections->add($pinballCollection);
+            $pinballCollection->addPinball($this);
+        }
+
+        return $this;
+    }
+
+    public function removePinballCollection(PinballCollection $pinballCollection): static
+    {
+        if ($this->pinballCollections->removeElement($pinballCollection)) {
+            $pinballCollection->removePinball($this);
         }
 
         return $this;

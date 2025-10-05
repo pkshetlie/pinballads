@@ -5,10 +5,13 @@ namespace App\Entity;
 use App\Repository\PinballSaleRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: PinballSaleRepository::class)]
 class PinballSale
 {
+    use TimestampableEntity;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -32,9 +35,6 @@ class PinballSale
 
     #[ORM\Column(length: 10)]
     private string $currency = '€';
-
-    #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $sold_at = null;
@@ -112,18 +112,6 @@ class PinballSale
     public function setCurrency(string $currency): static
     {
         $this->currency = $currency;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->created_at;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
-    {
-        $this->created_at = $created_at;
 
         return $this;
     }
