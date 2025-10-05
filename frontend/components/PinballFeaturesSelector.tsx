@@ -13,7 +13,7 @@ interface PinballFeaturesSelectorProps {
   features: PinballFeatures
   onChange: (features: PinballFeatures) => void
   readonly?: boolean
-  language?: "en" | "fr" // Added language prop
+  language?: string // Added language prop
 }
 
 export function PinballFeaturesSelector({

@@ -2,16 +2,16 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-function Card({ className, ...props }: React.ComponentProps<"div">) {
+function Card({className, noPadding = false, ...props}: React.ComponentProps<"div"> & { noPadding?: boolean }) {
   return (
-    <div
-      data-slot="card"
-      className={cn(
-        "bg-card text-card-foreground flex flex-col gap-6 py-6 rounded-xl border shadow-sm",
-        className
-      )}
-      {...props}
-    />
+      <div
+          data-slot="card"
+          className={cn(
+              `bg-card text-card-foreground flex flex-col gap-6 ${!noPadding && 'py-6'} rounded-xl border shadow-sm`,
+              className
+          )}
+          {...props}
+      />
   )
 }
 

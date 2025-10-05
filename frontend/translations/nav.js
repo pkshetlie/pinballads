@@ -3,6 +3,7 @@ export const nav = {
     nav: {
       home: "Home",
       browse: "Browse",
+      pricing: "Pricing",
       sell: "Sell",
       about: "About",
       profile: "Profile",
@@ -16,6 +17,7 @@ export const nav = {
     nav: {
       home: "Accueil",
       browse: "Parcourir",
+      pricing: "Tarifs",
       sell: "Vendre",
       about: "À propos",
       profile: "Profil",

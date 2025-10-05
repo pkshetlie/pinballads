@@ -49,6 +49,9 @@ export default function Navbar() {
                             <a href="/" className="text-muted-foreground hover:text-foreground transition-colors">
                                 {t("nav.home")}
                             </a>
+                            <a href="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
+                                {t("nav.pricing")}
+                            </a>
                             <a href="/listings" className="text-muted-foreground hover:text-foreground transition-colors">
                                 {t("nav.browse")}
                             </a>

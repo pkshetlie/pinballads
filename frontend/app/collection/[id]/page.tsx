@@ -211,7 +211,8 @@ export default function MyCollectionPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                                 {collection.map((machine) => (
                                     <Card key={machine.id}
-                                          className="group hover:shadow-lg transition-all duration-200">
+                                          className="group hover:shadow-lg transition-all duration-200"
+                                          noPadding={true}>
                                         <div className="relative">
                                             <PinballImageCarousel
                                                  machine={machine}

@@ -358,11 +358,11 @@ export const categoryLabelsFr = {
     maintenance: "Maintenance",
 }
 
-export function getFeatureLabels(language: "en" | "fr" = "en") {
+export function getFeatureLabels(language: string = "en") {
     return language === "fr" ? featureLabelsFr : featureLabels
 }
 
-export function getCategoryLabels(language: "en" | "fr" = "en") {
+export function getCategoryLabels(language: string = "en") {
     return language === "fr" ? categoryLabelsFr : categoryLabels
 }
 

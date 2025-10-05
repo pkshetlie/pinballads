@@ -10,7 +10,7 @@ import {collection} from "./collection";
 import {toasts} from "./toasts";
 
 export const translations = {
-    "en": {
+    'en': {
         ...nav.en,
         ...footer.en,
         ...toasts.en,
@@ -35,7 +35,7 @@ export const translations = {
         back: "Back",
     },
 
-    "fr": {
+    'fr': {
         ...nav.fr,
         ...footer.fr,
         ...toasts.en,
