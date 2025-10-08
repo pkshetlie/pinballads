@@ -55,6 +55,8 @@ final class MachineController extends AbstractController
             ->setCurrentOwner($this->getUser())
             ->setManufacturer($data->manufacturer);
 
+        $pinballCollection->addPinball($pinball);
+
         $pinball->addPinballOwner(
             new PinballOwner()
                 ->setOwner($this->getUser())

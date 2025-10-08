@@ -8,6 +8,7 @@ import {sell} from "./sell";
 import {profile} from "./profile";
 import {collection} from "./collection";
 import {toasts} from "./toasts";
+import {privacyPolicy} from "@/translations/privacy_policy";
 
 export const translations = {
     'en': {
@@ -21,6 +22,7 @@ export const translations = {
         ...sell.en,
         ...profile.en,
         ...collection.en,
+        ...privacyPolicy.en,
 
         // Machine details
         viewDetails: "View Details",
@@ -46,6 +48,7 @@ export const translations = {
         ...sell.fr,
         ...profile.fr,
         ...collection.fr,
+        ...privacyPolicy.fr,
         // Machine details
         viewDetails: "Voir Détails",
         contactSeller: "Contacter Vendeur",

@@ -8,7 +8,7 @@ interface LanguageContextType {
     language: Language
     setLanguage: (language: string) => void
     currentLanguage: string
-    t: (key: string, variables?: Record<string, string | number>, count?: number) => string
+    t: (key: string, variables?: Record<string, string | number>, count?: number) => string,
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined)

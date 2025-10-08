@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
 import Link from "next/link"
 import {ArrowLeft, Mail, Lock, Eye, EyeOff, User} from "lucide-react"
 import { useState } from "react"
@@ -23,7 +24,8 @@ export default function SignUpPage() {
   })
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const { t } = useLanguage()
+  const {t, currentLanguage, setLanguage} = useLanguage()
+  const availableLanguages = [{code : "fr", name: 'Français'},{code: "en", name: 'English'}];
 
   // Handle form field changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,19 +50,19 @@ export default function SignUpPage() {
     const terms = formData.get("terms") as string
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match")
+      setError(t('auth.passwordsDoNotMatch'))
       setIsLoading(false)
       return
     }
 
     if (password.length < 8) {
-      setError("Password must be at least 8 characters long")
+      setError(t('auth.passwordTooShort'))
       setIsLoading(false)
       return
     }
 
     if (!terms) {
-      setError("You must accept the terms and conditions")
+      setError(t('auth.acceptTermsToContinue'))
       setIsLoading(false)
       return
     }
@@ -82,6 +84,7 @@ export default function SignUpPage() {
                 email: formData.get('email'),
                 password: formData.get('password'),
                 username: formData.get('name'),
+                language: currentLanguage,
             }),
         })
         if (!response.ok) {
@@ -107,26 +110,28 @@ export default function SignUpPage() {
         <main className="container mx-auto px-4 py-12">
           <div className="max-w-md mx-auto">
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-foreground mb-2">Join PinballMarket</h1>
-              <p className="text-muted-foreground">Create your account to start buying and selling pinball machines</p>
+              <h1 className="text-3xl font-bold text-foreground mb-2">{t('auth.signUpToWebsite')}</h1>
+              <p className="text-muted-foreground">
+                {t('auth.createAccountToStart')}
+              </p>
             </div>
 
             <Card className="shadow-lg border">
               <CardHeader className="space-y-1">
-                <CardTitle className="text-2xl text-center">Sign Up</CardTitle>
-                <CardDescription className="text-center">Enter your information to create your account</CardDescription>
+                <CardTitle className="text-2xl text-center">{t('auth.signUp')}</CardTitle>
+                <CardDescription className="text-center">{t('auth.enterYourDetails')}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="name">Full Name</Label>
+                    <Label htmlFor="name">{t('auth.displayName')}</Label>
                     <div className="relative">
                       <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                           id="name"
                           name="name"
                           type="text"
-                          placeholder="Enter your full name"
+                          placeholder={t('auth.enterYourDisplayName')}
                           className="pl-10"
                           required
                       />
@@ -134,14 +139,14 @@ export default function SignUpPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="email">{t('auth.email')}</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                           id="email"
                           name="email"
                           type="email"
-                          placeholder="Enter your email"
+                          placeholder={t('auth.enterEmail')}
                           className="pl-10"
                           required
                       />
@@ -149,14 +154,14 @@ export default function SignUpPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="password">{t('auth.password')}</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                           id="password"
                           name="password"
                           type={showPassword ? "text" : "password"}
-                          placeholder="Create a password"
+                          placeholder={t('auth.createPassword')}
                           className="pl-10 pr-10"
                           required
                       />
@@ -171,14 +176,14 @@ export default function SignUpPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">Confirm Password</Label>
+                    <Label htmlFor="confirmPassword">{t('auth.confirmPassword')}</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                           id="confirmPassword"
                           name="confirmPassword"
                           type={showConfirmPassword ? "text" : "password"}
-                          placeholder="Confirm your password"
+                          placeholder={t('auth.confirmPassword')}
                           className="pl-10 pr-10"
                           required
                       />
@@ -191,17 +196,32 @@ export default function SignUpPage() {
                       </button>
                     </div>
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="language">{t('auth.language')}</Label>
+                    <Select  defaultValue={currentLanguage} onValueChange={(value) => setLanguage(value)}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder={t('auth.selectLanguage')}/>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableLanguages.map((lang) => (
+                            <SelectItem key={lang.code} value={lang.code}>
+                              {lang.name}
+                            </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
                   <div className="flex items-center space-x-2">
                     <Checkbox id="terms" name="terms" value="accepted" />
-                    <Label htmlFor="terms" className="text-sm text-muted-foreground">
-                      I agree to the{" "}
-                      <Link href="#" className="text-primary hover:text-primary/80">
-                        Terms of Service
+                    <Label noFlex={true} htmlFor="terms" className="text-sm text-muted-foreground">
+                      {t('auth.agreeToTerms')}{" "}
+                      <Link href="/terms-of-service" target={'_blank'} className="text-primary hover:text-primary/80">
+                        {t('auth.termsOfService')}
                       </Link>{" "}
-                      and{" "}
-                      <Link href="#" className="text-primary hover:text-primary/80">
-                        Privacy Policy
+                      {t('auth.and')}{" "}
+                      <Link href="/privacy-policy" target={'_blank'} className="text-primary hover:text-primary/80">
+                        {t('auth.privacyPolicy')}
                       </Link>
                     </Label>
                   </div>
@@ -213,7 +233,7 @@ export default function SignUpPage() {
                   )}
 
                   <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Creating Account..." : "Create Account"}
+                    {isLoading ? t('auth.creatingAccount'): t('auth.createAccount')}
                   </Button>
                 </form>
 
@@ -257,9 +277,9 @@ export default function SignUpPage() {
                 {/*</div>*/}
 
                 <div className="text-center text-sm text-muted-foreground">
-                  Already have an account?{" "}
+                  {t('auth.alreadyHaveAccount')}{" "}
                   <Link href="/signin" className="text-primary hover:text-primary/80 font-medium">
-                    Sign in
+                    {t('auth.signIn')}
                   </Link>
                 </div>
               </CardContent>
