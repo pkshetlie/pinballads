@@ -6,6 +6,10 @@ export const collection = {
                 collectionUpdated: 'Collection updated',
                 collectionDeleted: 'Collection deleted',
                 cantLoadCollections: 'Failed to load your collections',//"Impossible de charger vos collections. Veuillez réessayer."
+                machineUpdated: "Pinball upated",
+                machineCreated: "Pinball created, you are going to be redirected to your collection",
+                imageTooLargeDescription: 'The max size is 2Mb. Please resize your image and try again.',
+                imageTooLarge: 'Image too large',
             },
             createEditDialog: {
                 newCollection : 'New Collection',
@@ -98,6 +102,9 @@ export const collection = {
             homeUse: "Home Use Only",
             saveDraft: "Save as Draft",
             publishListing: "Publish Listing",
+            updateMachine: "Update Pinball",
+            addMachine: 'Add flipper'
+
         },
     },
     fr: {
@@ -107,6 +114,10 @@ export const collection = {
                 collectionUpdated: "Collection mise à jour",
                 collectionDeleted: "Collection supprimée",
                 cantLoadCollections: "Impossible de charger vos collections. Veuillez réessayer.",
+                machineUpdated: "Flipper mis à jour",
+                machineCreated: "Flipper ajouté, vous allez etre redirigé vers votre collection",
+                imageTooLargeDescription: 'la taille maximum des images est de 2Mb. Redimensionnez la et recommencez.',
+                imageTooLarge: 'Image trop grosse',
             },
             createEditDialog: {
                 newCollection : "Nouvelle collection",
@@ -199,6 +210,8 @@ export const collection = {
             homeUse: "Uniquement Utilisé à Domicile",
             saveDraft: "Enregistrer comme Brouillon",
             publishListing: "Publier l'Annonce",
+            updateMachine: 'Mettre à jour le flipper',
+            addMachine: 'Ajouter le flipper'
         },
     },
 }

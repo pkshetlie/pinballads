@@ -54,7 +54,7 @@ const pricingPlans = [
     },
     {
         name: "Premium",
-        price: 15,
+        price: 30,
         period: "mois",
         description: "Solution complète pour les entreprises",
         popular: false,

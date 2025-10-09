@@ -14,7 +14,6 @@ export type PinballDto = {
     images: { title: string, url: string, uid: string }[];
     year: string | null;
     manufacturer: string | null;
-
     working: boolean;
     originalParts: boolean;
     manual: boolean;

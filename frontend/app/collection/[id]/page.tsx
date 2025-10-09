@@ -59,7 +59,8 @@ export default function MyCollectionPage() {
     const [loading, setLoading] = useState(true)
     const {toast} = useToast()
     const {t} = useLanguage();
-    const { id } = useParams()
+    const {id} = useParams()
+    const {apiDelete} = useApi();
 
     const handleEdit = (machine: any) => {
         window.location.href = `/machine/${machine.id}`
@@ -74,8 +75,10 @@ export default function MyCollectionPage() {
     }
 
     const handleDelete = (id: number) => {
-        setCollection((prev) => prev.filter((machine) => machine.id !== id))
-        setDeleteConfirm(null)
+        apiDelete(`/api/machine/${id}`).then(data => {
+            setCollection((prev) => prev.filter((machine) => machine.id !== id))
+            setDeleteConfirm(null)
+        });
     }
 
     const handleAddMachine = () => {

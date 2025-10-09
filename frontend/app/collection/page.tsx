@@ -371,7 +371,7 @@ export default function CollectionsPage() {
                                                     >
                                                         <Edit className="w-4 h-4"/>
                                                     </Button>
-                                                    {(
+                                                    {collection.isDefault ? <></> : (
                                                         <Dialog
                                                             open={deleteConfirm === collection.id}
                                                             onOpenChange={(open) => setDeleteConfirm(open ? collection.id : null)}

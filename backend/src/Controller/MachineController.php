@@ -2,22 +2,18 @@
 
 namespace App\Controller;
 
-use App\Dto\PinballCollectionDto;
 use App\Entity\Pinball;
 use App\Entity\PinballCollection;
 use App\Entity\PinballOwner;
-use App\Repository\PinballCollectionRepository;
-use App\Repository\PinballRepository;
 use App\Service\DtoService;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Symfony\Component\Filesystem\Filesystem;
 
 final class MachineController extends AbstractController
 {
@@ -38,8 +34,9 @@ final class MachineController extends AbstractController
          * features,
          */
 
-        if($pinballCollection->getOwner() !== $this->getUser()){
-            return $this->json(['error' => $translator->trans('You are not the owner of this collection')], Response::HTTP_FORBIDDEN);
+        if ($pinballCollection->getOwner() !== $this->getUser()) {
+            return $this->json(['error' => $translator->trans('You are not the owner of this collection')],
+                Response::HTTP_FORBIDDEN);
         }
 
         $data = json_decode($request->getContent(), false);
@@ -91,7 +88,7 @@ final class MachineController extends AbstractController
             ->setCurrentOwner($this->getUser())
             ->setManufacturer($data->manufacturer);
 
-        $pinballOwner = $pinball->getPinballOwners()->filter(function (PinballOwner $po) {
+        $pinballOwner = $pinball->getPinballOwners()->filter(function(PinballOwner $po) {
             if ($po->getOwner() === $this->getUser()) {
                 if ($po->getEndAt() === null) {
                     return true;
@@ -101,7 +98,10 @@ final class MachineController extends AbstractController
             return false;
         })->first();
 
-        $date = \DateTimeImmutable::createFromFormat('Y-m-d', empty($data->startDate) ? date('Y-m-d') : $data->startDate)?->setTime(0, 0, 0);
+        $date = \DateTimeImmutable::createFromFormat(
+            'Y-m-d',
+            empty($data->startDate) ? date('Y-m-d') : $data->startDate
+        )?->setTime(0, 0, 0);
 
         if ($pinballOwner && $pinballOwner->getStartAt() != $date) {
             $pinballOwner->setStartAt($date);
@@ -160,7 +160,10 @@ final class MachineController extends AbstractController
             if ($file instanceof UploadedFile && $uids[$key] == 'none') {
                 // Valider le fichier si nécessaire (type, taille, etc.)
                 if (!$file->isValid()) {
-                    return $this->json(['error' => $translator->trans('Invalid file upload').':'.$file->getErrorMessage()], 400);
+                    return $this->json(
+                        ['error' => $translator->trans('Invalid file upload').':'.$file->getErrorMessage()],
+                        400
+                    );
                 }
 
                 // Définir un chemin de sauvegarde (par ex. un dossier "uploads")
@@ -184,20 +187,20 @@ final class MachineController extends AbstractController
                     $image = $resized;
                 }
 
-                // Ajouter le filigrane
-                $black = imagecolorallocatealpha($image, 0, 0, 0, 100);
-                $fontSize = min($width, $height) * 0.05;
-                $angle = -45;
-                imagettftext(
-                    $image,
-                    $fontSize,
-                    $angle,
-                    $width / 4,
-                    $height / 2,
-                    $black,
-                    __DIR__.'/../../public/fonts/Sweet Toffee.ttf',
-                    'Crazy-pinball.com'
-                );
+                // // Ajouter le filigrane
+                // $black = imagecolorallocatealpha($image, 0, 0, 0, 100);
+                // $fontSize = min($width, $height) * 0.05;
+                // $angle = -45;
+                // imagettftext(
+                //     $image,
+                //     $fontSize,
+                //     $angle,
+                //     $width / 4,
+                //     $height / 2,
+                //     $black,
+                //     __DIR__.'/../../public/fonts/Sweet Toffee.ttf',
+                //     'Crazy-pinball.com'
+                // );
 
                 // Sauvegarder en WebP
                 imagewebp($image, $uploadDir.'/'.$newFilename, 80);
@@ -211,7 +214,7 @@ final class MachineController extends AbstractController
                     'created_at' => new \DateTimeImmutable(),
                 ];
             } else {
-                foreach($pinball->getImages() as $image) {
+                foreach ($pinball->getImages() as $image) {
                     if ($image['uid'] == $uids[$key]) {
                         $image['title'] = $titles[$key] ?? "Picture ".$key;
                         $uploadedFilePaths[] = $image;
@@ -219,7 +222,7 @@ final class MachineController extends AbstractController
                 }
             }
         }
-    //[{"url":"\/uploads\/pinballs\/upload_68e2d22d35bf11.54831852.webp","title":"Pinball","uid":"68e2d22d576c2","created_at":{"date":"2025-10-05 20:16:45.358105","timezone_type":3,"timezone":"UTC"}},{"url":"\/uploads\/pinballs\/upload_68e2d22d577005.78958778.webp","title":"Rhokapa","uid":"68e2d22d681ba","created_at":{"date":"2025-10-05 20:16:45.426438","timezone_type":3,"timezone":"UTC"}},{"url":"\/uploads\/pinballs\/upload_68e2d22d681f10.60067721.webp","title":"Skull","uid":"68e2d22d9c57b","created_at":{"date":"2025-10-05 20:16:45.640392","timezone_type":3,"timezone":"UTC"}}]
+        //[{"url":"\/uploads\/pinballs\/upload_68e2d22d35bf11.54831852.webp","title":"Pinball","uid":"68e2d22d576c2","created_at":{"date":"2025-10-05 20:16:45.358105","timezone_type":3,"timezone":"UTC"}},{"url":"\/uploads\/pinballs\/upload_68e2d22d577005.78958778.webp","title":"Rhokapa","uid":"68e2d22d681ba","created_at":{"date":"2025-10-05 20:16:45.426438","timezone_type":3,"timezone":"UTC"}},{"url":"\/uploads\/pinballs\/upload_68e2d22d681f10.60067721.webp","title":"Skull","uid":"68e2d22d9c57b","created_at":{"date":"2025-10-05 20:16:45.640392","timezone_type":3,"timezone":"UTC"}}]
         $fileSystem = new Filesystem();
         // Remove old images
         foreach ($pinball->getImages() as $oldImage) {
@@ -230,12 +233,42 @@ final class MachineController extends AbstractController
 
         $pinball->setImages($uploadedFilePaths);
         $entityManager->flush();
+
         // Réponse JSON avec le statut et les chemins des fichiers uploadés
         return $this->json([
             'status' => 'success',
             'files' => $uploadedFilePaths,
         ]);
 
+    }
+
+    #[Route('/api/machine/{id}', name: 'api_collection_machine_delete', methods: ['DELETE'])]
+    public function delete(
+        Pinball $pinball,
+        EntityManagerInterface $entityManager,
+        TranslatorInterface $translator,
+    ): Response {
+        if ($pinball->getCurrentOwner() !== $this->getUser()) {
+            return $this->json(['error' => $translator->trans('You are not the owner of this machine')],
+                Response::HTTP_FORBIDDEN);
+        }
+
+        $uploadDir = $this->getParameter('pinball_images_directory'); // Défini dans `services.yaml` ou `.env`
+        $fileSystem = new Filesystem();
+
+        foreach ($pinball->getImages() as $image) {
+            if (isset($image['url'])) {
+                $file = $uploadDir.'/'.str_replace('/uploads/pinballs/', '', $image['url']);
+                if ($fileSystem->exists($file)) {
+                    $fileSystem->remove($file);
+                }
+            }
+        }
+
+        $entityManager->remove($pinball);
+        $entityManager->flush();
+
+        return $this->json([]);
     }
 
 }

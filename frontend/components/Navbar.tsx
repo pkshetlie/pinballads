@@ -59,7 +59,7 @@ export default function Navbar() {
                                 <a href="/sell" className="text-muted-foreground hover:text-foreground transition-colors">
                                     {t("nav.sell")}
                                 </a>
-                                <span className="text-sm text-foreground font-medium">{user.email}</span>
+                                <span className="text-sm text-foreground font-medium">{user.name}</span>
 
                                 <Button size="sm" asChild>
                                     <a href="/collection">{t('collection.myCollections')}</a>

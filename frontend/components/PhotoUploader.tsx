@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Upload, X } from "lucide-react";
+import {useToast} from "@/hooks/use-toast";
+import {useLanguage} from "@/lib/language-context";
 
 type UploadedImage = {
   url: string; // URL Blob de l'image
@@ -16,6 +18,9 @@ export default function PhotoUploader({
 }) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const {t} = useLanguage();
+  const {toast} = useToast();
+  const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB in bytes
 
   const handleFiles = (files: FileList | null) => {
     if (!files) return;
@@ -23,6 +28,15 @@ export default function PhotoUploader({
 
     Array.from(files).forEach((file, index) => {
       if (file.type.startsWith("image/")) {
+        if (file.size > MAX_FILE_SIZE) {
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: `${t('collection.toasts.imageTooLarge')} "${file.name}" ${t('collection.toasts.imageTooLargeDescription')}`,
+          });
+          return;
+        }
+
         newImages.push({
           url: URL.createObjectURL(file),
           title: `Photo ${uploadedImages.length + index + 1}`, // Titre par défaut
