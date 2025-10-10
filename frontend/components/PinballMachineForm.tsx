@@ -15,6 +15,7 @@ import {useApi} from "@/lib/api";
 import {PinballDto} from "@/components/object/pinballDto";
 import {Manufacturers} from "@/components/object/manufacturer";
 import {useToast} from "@/hooks/use-toast";
+import {defaultFeatures, featuresType} from '@/components/object/features';
 
 
 type Game = {
@@ -56,44 +57,10 @@ export type MachineFormData = {
     manufacturer: string;
     year: string;
     description: string;
-    features: additionalOptionsType;
+    features: featuresType;
     condition: string;
     startDate?: string;
     images: UploadedImageResult[];
-}
-
-export type additionalOptionsType = {
-    pinsound: {
-        blaster: boolean;
-        invision: boolean;
-        sonataSpk: boolean;
-        noMoreReset: boolean;
-        headphoneStationUltra: boolean;
-        headphoneStationMaster: boolean;
-        motionControlShakerKit: boolean;
-        subwooferAndLineOutConnector: boolean;
-    },
-    dmd: {
-        xl: boolean;
-        color: boolean;
-    },
-    cabinet: {
-        artBlade: boolean;
-        mirrorBlade: boolean;
-        fullLed: boolean;
-        sternInsider: boolean;
-        mods: boolean;
-        playfieldProtector: boolean;
-        coinAcceptor: boolean;
-    },
-    other: {
-        coverMate: boolean;
-        numberOfPlayers: number;
-        officialTopper: boolean;
-        customTopper: boolean;
-        HomeUseOnly: boolean;
-        manual: boolean;
-    }
 }
 
 type UploadedImageResult = {
@@ -109,7 +76,7 @@ type UploadedImage = {
     uid: string; // Titre de l'image
 };
 
-type AnyObj = Record<string, any>;
+type AnyObj = Record<string, string>;
 
 function isPlainObject(v: any): v is AnyObj {
     return v !== null && typeof v === "object" && !Array.isArray(v);
@@ -137,43 +104,27 @@ function deepMerge<T extends AnyObj>(target: T, source: Partial<T>): T {
  * Déplace les anciennes clés qui étaient dans `other` (ou au root)
  * vers `cabinet` si `cabinet` n'a pas déjà la valeur.
  */
-function migrateLegacyFeatures(features: AnyObj): AnyObj {
-    if (!isPlainObject(features)) return features;
+function migrateLegacyFeatures(features: AnyObj): featuresType {
+    if (!isPlainObject(features)) return defaultFeatures;
 
-    // clone pour ne pas muter l'original
-    const f: AnyObj = JSON.parse(JSON.stringify(features));
-    f.cabinet = f.cabinet ?? {};
-
-    // liste des champs qui ont été déplacés dans la nouvelle schema
-    const legacyKeys = [
-        "fullLed",
-        "sternInsider",
-        "mods",
-        "playfieldProtector",
-        // ajoute d'autres keys ici si nécessaire
-    ];
-
-    for (const key of legacyKeys) {
-        // s'il existe dans other -> déplacer dans cabinet
-        if (f.other && key in f.other) {
-            // n'écrase pas une valeur explicite déjà présente dans cabinet
-            if (f.cabinet[key] === undefined) {
-                f.cabinet[key] = f.other[key];
+    // Mapper les valeurs existantes sur l'objet par défaut
+    return Object.entries(defaultFeatures).reduce((acc, [category, categoryDefaults]) => {
+        acc[category as keyof featuresType] = Object.keys(categoryDefaults).reduce((subAcc, key) => {
+            const value = features[key];
+            // Gestion spéciale pour numberOfPlayers qui est un number
+            if (key === 'numberOfPlayers') {
+                subAcc[key] = typeof value === 'number' ? value : 4;
+            } else {
+                subAcc[key] = !!value;
             }
-            delete f.other[key];
-        }
-
-        // s'il existait au root (vieille version) -> déplacer aussi
-        if (key in f && key !== "other" && key !== "cabinet") {
-            if (f.cabinet[key] === undefined) {
-                f.cabinet[key] = f[key];
-            }
-            delete f[key];
-        }
-    }
-
-    return f;
+            return subAcc;
+        }, {...categoryDefaults});
+        return acc;
+    }, {...defaultFeatures});
 }
+
+
+
 
 export default function MachineForm({initialData, onSubmit, buttonText}: MachineFormProps) {
     const {t} = useLanguage();
@@ -224,8 +175,7 @@ export default function MachineForm({initialData, onSubmit, buttonText}: Machine
         }
     }
 
-    // const [additionalOptions, setAdditionalOptions] = useState<additionalOptionsType>(initialData?.features || additionalOptionsData);
-    const [additionalOptions, setAdditionalOptions] = useState<additionalOptionsType>(() => {
+    const [additionalOptions, setAdditionalOptions] = useState<featuresType>(() => {
         if (initialData?.features) {
             const normalized = migrateLegacyFeatures(initialData.features);
             return deepMerge(additionalOptionsData, normalized);

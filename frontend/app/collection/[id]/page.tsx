@@ -1,7 +1,7 @@
 "use client"
 
 import {useEffect, useState} from "react"
-import {Calendar, Edit, Eye, Loader2, MapPin, Plus, Shield, Star, Trash2} from "lucide-react"
+import {Calendar, Edit, Eye, Loader2, MapPin, Plus, Shield, Trash2} from "lucide-react"
 import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardFooter} from "@/components/ui/card"
 import {Badge} from "@/components/ui/badge"
@@ -18,7 +18,6 @@ import {
 import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
-import {Textarea} from "@/components/ui/textarea"
 import {useApi} from "@/lib/api";
 import {PinballDto} from "@/components/object/pinballDto";
 import Navbar from "@/components/Navbar";
@@ -27,23 +26,22 @@ import {useToast} from "@/hooks/use-toast"
 import {useAuth} from "@/lib/auth-context";
 import {PinballImageCarousel} from "@/components/PinballImageCarousel";
 import {useLanguage} from "@/lib/language-context";
-import { useParams } from "next/navigation"
+import {useParams} from "next/navigation"
+import {currencies} from "@/components/object/currencies";
 
-// Mock user data
-const user = {
-    name: "Mike Johnson",
-    username: "mikej_pinball",
-    avatar: "/seller-avatar.jpg",
-    location: "Los Angeles, CA",
-    memberSince: "2019",
-    verified: true,
-    rating: 5,
-    reviewCount: 0,
-    stats: {
-        machinesOwned: 0,
-        totalViews: 0,
-        responseRate: 100,
-    },
+interface LocationResult {
+    display_name: string
+    lat: string
+    lon: string
+    postcode: string
+    county: string
+    name: string
+    address: {
+        city?: string
+        town?: string
+        village?: string
+        country?: string
+    }
 }
 
 export default function MyCollectionPage() {
@@ -53,25 +51,27 @@ export default function MyCollectionPage() {
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
     const [sellDialogOpen, setSellDialogOpen] = useState<number | null>(null)
     const [sellPrice, setSellPrice] = useState("")
-    const [currency, setCurrency] = useState("")
+    const [currency, setCurrency] = useState("EUR")
     const {apiGet} = useApi();
     const {token} = useAuth();
     const [loading, setLoading] = useState(true)
     const {toast} = useToast()
     const {t} = useLanguage();
     const {id} = useParams()
-    const {apiDelete} = useApi();
+    const {apiDelete, apiPost, apiPut} = useApi();
+    const {user} = useAuth();
+
+    const [locationQuery, setLocationQuery] = useState("")
+    const [locationResults, setLocationResults] = useState<LocationResult[]>([])
+    const [selectedLocation, setSelectedLocation] = useState<{
+        city: string
+        lat: number
+        lon: number
+    } | null>(null)
+    const [searchingLocation, setSearchingLocation] = useState(false)
 
     const handleEdit = (machine: any) => {
         window.location.href = `/machine/${machine.id}`
-    }
-
-    const handleSaveEdit = () => {
-        if (editingMachine) {
-            setCollection((prev) => prev.map((machine) => (machine.id === editingMachine.id ? editingMachine : machine)))
-            setIsEditDialogOpen(false)
-            setEditingMachine(null)
-        }
     }
 
     const handleDelete = (id: number) => {
@@ -85,6 +85,35 @@ export default function MyCollectionPage() {
         window.location.href = `/collection/${id}/machine/`
     }
 
+    const handleDeleteSell = (machineId:number) => {
+
+    }
+
+    const handleUpdateSale = (machineId:number) => {
+        if (sellPrice && Number(sellPrice) > 0) {
+            setCollection((prev) =>
+                prev.map((machine) =>
+                    machine.id === machineId ? {...machine, status: "For Sale", price: Number(sellPrice)} : machine,
+                ),
+            )
+
+            const sellMachine = {
+                price: Number(sellPrice),
+                currency: currency,
+                location: selectedLocation,
+            }
+
+            apiPut(`/api/machine/${machineId}/sell`, sellMachine).then((data: PinballDto) => {
+                setCollection((prev) => prev.map((machine) => (machine.id === machineId ? data : machine)))
+
+                toast({
+                    title: t("success"),
+                    description: t('collection.machineOnSalesUpdated'),
+                    variant: "success",
+                })
+            })
+        }
+    }
     const handlePutForSale = (machineId: number) => {
         if (sellPrice && Number(sellPrice) > 0) {
             setCollection((prev) =>
@@ -92,10 +121,63 @@ export default function MyCollectionPage() {
                     machine.id === machineId ? {...machine, status: "For Sale", price: Number(sellPrice)} : machine,
                 ),
             )
-            setSellDialogOpen(null)
-            setSellPrice("")
+
+            const sellMachine = {
+                price: Number(sellPrice),
+                currency: currency,
+                location: selectedLocation,
+            }
+
+            apiPost(`/api/machine/${machineId}/sell`, sellMachine).then((data: PinballDto) => {
+                setCollection((prev) => prev.map((machine) => (machine.id === machineId ? data : machine)))
+
+                toast({
+                    title: t("success"),
+                    description: t('collection.machineOnSales'),
+                    variant: "success",
+                })
+            })
         }
     }
+
+    const searchLocation = async (query: string) => {
+        if (query.length < 3) {
+            setLocationResults([])
+            return
+        }
+
+        try {
+            setSearchingLocation(true)
+            const response = await fetch(
+                `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=5`,
+                {
+                    headers: {
+                        "User-Agent": "CrazyPinball/1.0",
+                    },
+                },
+            )
+            const data = await response.json()
+            setLocationResults(data)
+        } catch (error) {
+            toast({
+                title: "Erreur",
+                description: "Impossible de rechercher la localisation. Veuillez réessayer.",
+                variant: "destructive",
+            })
+        } finally {
+            setSearchingLocation(false)
+        }
+    }
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (locationQuery) {
+                searchLocation(locationQuery)
+            }
+        }, 500)
+
+        return () => clearTimeout(timer)
+    }, [locationQuery])
 
     useEffect(() => {
         if (!token) return;
@@ -146,49 +228,46 @@ export default function MyCollectionPage() {
                             <CardContent className="p-6">
                                 <div className="text-center mb-6">
                                     <Avatar className="w-24 h-24 mx-auto mb-4">
-                                        <AvatarImage src={user.avatar || "/placeholder.svg"}/>
+                                        <AvatarImage src={user?.avatar || "/placeholder.svg"}/>
                                         <AvatarFallback className="text-2xl">
-                                            {user.name
+                                            {user?.name
                                                 .split(" ")
                                                 .map((n) => n[0])
                                                 .join("")}
                                         </AvatarFallback>
                                     </Avatar>
                                     <div className="flex items-center justify-center gap-2 mb-2">
-                                        <h2 className="text-xl font-bold text-foreground">{user.name}</h2>
-                                        {user.verified && <Shield className="w-5 h-5 text-primary"/>}
+                                        <h2 className="text-xl font-bold text-foreground">{user?.name}</h2>
+                                        {user?.isVerified && <Shield className="w-5 h-5 text-primary"/>}
                                     </div>
-                                    <p className="text-muted-foreground">@{user.username}</p>
-                                    <div className="flex items-center justify-center gap-1 mt-2">
-                                        <Star className="w-4 h-4 fill-accent text-accent"/>
-                                        <span className="font-medium">{user.rating}</span>
-                                        <span className="text-muted-foreground">({user.reviewCount} avis)</span>
-                                    </div>
+                                    <p className="text-muted-foreground">@{user?.name}</p>
+                                    {/*<div className="flex items-center justify-center gap-1 mt-2">*/}
+                                    {/*    <Star className="w-4 h-4 fill-accent text-accent"/>*/}
+                                    {/*    <span className="font-medium">{user?.rating}</span>*/}
+                                    {/*    <span className="text-muted-foreground">({user?.reviewCount} avis)</span>*/}
+                                    {/*</div>*/}
                                 </div>
 
                                 <div className="space-y-4 mb-6">
                                     <div className="flex items-center gap-2 text-sm">
                                         <MapPin className="w-4 h-4 text-muted-foreground"/>
-                                        <span className="text-muted-foreground">{user.location}</span>
+                                        <span className="text-muted-foreground">{user?.location}</span>
                                     </div>
                                     <div className="flex items-center gap-2 text-sm">
                                         <Calendar className="w-4 h-4 text-muted-foreground"/>
-                                        <span className="text-muted-foreground">Membre depuis {user.memberSince}</span>
+                                        <span className="text-muted-foreground">Membre depuis {user?.createdAt}</span>
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-1 gap-4 mb-6">
                                     <div className="text-center">
                                         <div
-                                            className="text-2xl font-bold text-primary">{user.stats.machinesOwned}</div>
+                                            className="text-2xl font-bold text-primary">{user?.numberOfMachine}</div>
                                         <div className="text-xs text-muted-foreground">Machines</div>
                                     </div>
+
                                     <div className="text-center">
-                                        <div className="text-2xl font-bold text-primary">{user.stats.totalViews}</div>
-                                        <div className="text-xs text-muted-foreground">Vues totales</div>
-                                    </div>
-                                    <div className="text-center">
-                                        <div className="text-2xl font-bold text-primary">{user.stats.responseRate}%
+                                        <div className="text-2xl font-bold text-primary">{user?.responseRate}%
                                         </div>
                                         <div className="text-xs text-muted-foreground">Taux de réponse</div>
                                     </div>
@@ -218,7 +297,7 @@ export default function MyCollectionPage() {
                                           noPadding={true}>
                                         <div className="relative">
                                             <PinballImageCarousel
-                                                 machine={machine}
+                                                machine={machine}
                                                 showActions={false}
                                                 className="rounded-t-lg overflow-hidden"
                                             />
@@ -251,8 +330,14 @@ export default function MyCollectionPage() {
                                                         {machine.condition}
                                                     </Badge>
                                                     {machine.price > 0 && (
-                                                        <span
-                                                            className="font-bold text-primary">{machine.devise}{machine.price?.toLocaleString()}</span>
+                                                        <>
+                                                            <div
+                                                                className="font-bold text-primary">
+                                                                {currencies[machine.currency ?? 'EUR']}
+                                                                {machine.price?.toLocaleString()}
+                                                            </div>
+
+                                                        </>
                                                     )}
                                                 </div>
                                                 <p className="text-xs text-muted-foreground line-clamp-2">{machine.description}</p>
@@ -262,50 +347,75 @@ export default function MyCollectionPage() {
                                             <div className="flex gap-2 w-full">
                                                 <Button size="sm" className="flex-1 gap-2 cursor-pointer"
                                                         onClick={() => handleEdit(machine)}>
-                                                <Edit className="w-4 h-4"/>
+                                                    <Edit className="w-4 h-4"/>
                                                     {t('collection.edit')}
                                                 </Button>
-                                                {!machine.isForSale && (
+                                                {(
                                                     <Dialog
                                                         open={sellDialogOpen === machine.id}
                                                         onOpenChange={(open) => setSellDialogOpen(open ? machine.id : null)}
                                                     >
                                                         <DialogTrigger asChild>
                                                             <Button size="sm" variant="outline"
+                                                                    onClick={() => {
+                                                                        if (machine.isForSale) {
+                                                                            setCurrency(machine.currency?.toString());
+                                                                            setSellPrice(machine.price.toString());
+                                                                            setLocationQuery(machine.location?.city || "");
+                                                                            // setLocationResults({
+                                                                            //     address: {
+                                                                            //         city: machine.location?.city,
+                                                                            //     },
+                                                                            //     display_name: machine.location?.city,
+                                                                            //     lat: machine.location?.lat,
+                                                                            //     lon: machine.location?.lon
+                                                                            // })
+                                                                            setSelectedLocation({
+                                                                                    city: machine.location?.city,
+                                                                                display_name: machine.location?.city,
+                                                                                lat: machine.location?.lat,
+                                                                                lon: machine.location?.lon
+                                                                            })
+                                                                            setSearchingLocation(false)
+                                                                        }
+                                                                    }}
                                                                     className="gap-2 bg-transparent cursor-pointer">
-                                                                {t('collection.sell')}
+                                                                {!machine.isForSale ? t('collection.sell') : t('collection.editSell')}
                                                             </Button>
                                                         </DialogTrigger>
                                                         <DialogContent>
                                                             <DialogHeader>
-                                                                <DialogTitle>Mettre en vente</DialogTitle>
+                                                                <DialogTitle>{t('collection.putSell')}
+                                                                    {/*Mettre en vente*/}
+                                                                </DialogTitle>
                                                                 <DialogDescription>
-                                                                    Définissez le prix de vente pour "{machine.name}".
-                                                                    Cette machine sera visible dans
-                                                                    les annonces publiques.
+                                                                    {t('collection.sellDescription', {machine: machine.name})}
                                                                 </DialogDescription>
                                                             </DialogHeader>
                                                             <div className="space-y-4 py-4">
                                                                 <div className="space-y-2">
                                                                     <Label
-                                                                        htmlFor="sell-price">{t('pinball.price')}</Label>
+                                                                        htmlFor="sell-price">{t('collection.machine.price')} *</Label>
                                                                     <div className="flex gap-2">
                                                                         <Select
-                                                                            defaultValue="EUR"
-                                                                            onValueChange={(value) => setCurrency(value)}
+                                                                            required={true}
+                                                                            value={currency}
+                                                                            onValueChange={(value) => setCurrency(value as string)}
                                                                         >
                                                                             <SelectTrigger className="w-[100px]">
                                                                                 <SelectValue placeholder="Currency"/>
                                                                             </SelectTrigger>
                                                                             <SelectContent>
-                                                                                <SelectItem value="EUR">€ EUR</SelectItem>
-                                                                                <SelectItem value="USD">$ USD</SelectItem>
-                                                                                <SelectItem value="GBP">£ GBP</SelectItem>
+                                                                                {Object.entries(currencies).map(([value, label]) => (
+                                                                                    <SelectItem key={value}
+                                                                                                value={value}>{label}</SelectItem>
+                                                                                ))}
                                                                             </SelectContent>
                                                                         </Select>
                                                                         <Input
                                                                             id="sell-price"
                                                                             type="number"
+                                                                            required={true}
                                                                             placeholder="Ex: 5000"
                                                                             value={sellPrice}
                                                                             onChange={(e) => setSellPrice(e.target.value)}
@@ -313,33 +423,139 @@ export default function MyCollectionPage() {
                                                                         />
                                                                     </div>
                                                                 </div>
+                                                                <div className="space-y-2">
+                                                                    <Label
+                                                                        htmlFor="location-search">{t('collection.machine.locationCity')} *</Label>
+                                                                    <div className="relative">
+                                                                        <Input
+                                                                            id="location-search"
+                                                                            type="text"
+                                                                            required={true}
+                                                                            placeholder={t('collection.searchCity')}
+                                                                            value={locationQuery}
+                                                                            onChange={(e) => setLocationQuery(e.target.value)}
+                                                                            className="pr-10"
+                                                                        />
+                                                                        {searchingLocation && (
+                                                                            <Loader2
+                                                                                className="w-4 h-4 animate-spin absolute right-3 top-3 text-muted-foreground"/>
+                                                                        )}
+                                                                    </div>
+                                                                    {locationResults.length > 0 && !selectedLocation && (
+                                                                        <div
+                                                                            className="border rounded-lg divide-y max-h-48 overflow-y-auto">
+                                                                            {locationResults.map((result, index) => {
+                                                                                    if ((result.address.city || result.name)) {
+                                                                                        return <button
+                                                                                            key={index}
+                                                                                            type="button"
+                                                                                            onClick={() => {
+                                                                                                const city = (result.address.city || result.name) + (result.address.postcode ? ' (' + result.address.postcode + ')': '')
+                                                                                                setSelectedLocation({
+                                                                                                    city,
+                                                                                                    lat: Number.parseFloat(result.lat),
+                                                                                                    lon: Number.parseFloat(result.lon),
+                                                                                                })
+                                                                                                setLocationQuery(city)
+                                                                                                setLocationResults([])
+                                                                                            }}
+                                                                                            className="w-full text-left p-3 hover:bg-muted transition-colors text-sm"
+                                                                                        >
+                                                                                            <div className="font-medium">
+                                                                                                {result.address.city || result.name} {result.address.postcode && (<span>({result.address.postcode})</span>)}
+                                                                                            </div>
+                                                                                            <div
+                                                                                                className="text-xs text-muted-foreground truncate">
+                                                                                                {result.address.county || result.address.state_district || result.address.state}, {result.address.country}
+                                                                                            </div>
+                                                                                        </button>
+                                                                                    }
+                                                                                    return <></>;
+                                                                                }
+                                                                            )}
+                                                                        </div>
+                                                                    )}
+                                                                    {selectedLocation && (
+                                                                        <div
+                                                                            className="flex items-start gap-2 p-3 bg-primary/10 border border-primary/20 rounded-lg">
+                                                                            <MapPin
+                                                                                className="w-4 h-4 text-primary mt-0.5 flex-shrink-0"/>
+                                                                            <div className="flex-1 min-w-0">
+                                                                                <div
+                                                                                    className="font-medium text-sm">{selectedLocation.city}</div>
+                                                                                <div
+                                                                                    className="text-xs text-muted-foreground">
+                                                                                    Lat: {selectedLocation.lat.toFixed(6)},
+                                                                                    Lon:{" "}
+                                                                                    {selectedLocation.lon.toFixed(6)}
+                                                                                </div>
+                                                                            </div>
+                                                                            <Button
+                                                                                type="button"
+                                                                                variant="ghost"
+                                                                                size="sm"
+                                                                                onClick={() => {
+                                                                                    setSelectedLocation(null)
+                                                                                    setLocationQuery("")
+                                                                                }}
+                                                                                className="h-auto p-1 cursor-pointer"
+                                                                            >
+                                                                                ×
+                                                                            </Button>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
                                                             </div>
                                                             <DialogFooter>
                                                                 <Button
+                                                                    className={'cursor-pointer'}
                                                                     variant="outline"
                                                                     onClick={() => {
                                                                         setSellDialogOpen(null)
-                                                                        setSellPrice("")
                                                                     }}
                                                                 >
-                                                                    Annuler
+                                                                    {t('cancel')}
+
                                                                 </Button>
-                                                                <Button
+                                                                {!machine.isForSale && (<Button
+                                                                    className={'cursor-pointer'}
                                                                     onClick={() => handlePutForSale(machine.id)}
                                                                     disabled={!sellPrice || Number(sellPrice) <= 0}
                                                                 >
                                                                     {t('collection.sell')}
-                                                                </Button>
+                                                                </Button>)}
+                                                                {machine.isForSale && (
+                                                                    <>
+                                                                        <Button
+                                                                            className={'cursor-pointer'}
+                                                                            onClick={() => handleUpdateSale(machine.id)}
+                                                                            disabled={!sellPrice || Number(sellPrice) <= 0}
+                                                                        >
+                                                                            {t('update')}
+                                                                        </Button>
+                                                                        <Button variant="destructive"
+                                                                                className="cursor-pointer"
+                                                                                onClick={() => {
+                                                                                    if (confirm(t('collection.confirmDeleteSell'))) {
+                                                                                        handleDeleteSell(machine.id);
+                                                                                    }
+                                                                                }}>
+                                                                            <Trash2 className="w-5 h-5"/>
+                                                                        </Button>
+                                                                    </>
+                                                                )}
                                                             </DialogFooter>
                                                         </DialogContent>
                                                     </Dialog>
                                                 )}
+
                                                 <Dialog
                                                     open={deleteConfirm === machine.id}
                                                     onOpenChange={(open) => setDeleteConfirm(open ? machine.id : null)}
                                                 >
                                                     <DialogTrigger asChild>
-                                                        <Button size="sm" variant="destructive" className="cursor-pointer">
+                                                        <Button size="sm" variant="destructive"
+                                                                className="cursor-pointer">
                                                             <Trash2 className="w-4 h-4"/>
                                                         </Button>
                                                     </DialogTrigger>
@@ -354,12 +570,14 @@ export default function MyCollectionPage() {
                                                         </DialogHeader>
                                                         <DialogFooter>
                                                             <Button variant="outline"
+                                                                    className="cursor-pointer"
                                                                     onClick={() => setDeleteConfirm(null)}>
-                                                                Annuler
+                                                                {t('cancel')}
                                                             </Button>
                                                             <Button variant="destructive"
+                                                                    className={'cursor-pointer'}
                                                                     onClick={() => handleDelete(machine.id)}>
-                                                                Supprimer
+                                                                {t('delete')}
                                                             </Button>
                                                         </DialogFooter>
                                                     </DialogContent>
@@ -373,127 +591,6 @@ export default function MyCollectionPage() {
                     </div>
                 </div>
             </div>
-
-            {/* Edit Dialog */}
-            <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-                <DialogContent className="max-w-2xl">
-                    <DialogHeader>
-                        <DialogTitle>Éditer la machine</DialogTitle>
-                        <DialogDescription>Modifiez les informations de votre machine pinball.</DialogDescription>
-                    </DialogHeader>
-                    {editingMachine && (
-                        <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="title">Titre</Label>
-                                    <Input
-                                        id="title"
-                                        value={editingMachine.title}
-                                        onChange={(e) => setEditingMachine({...editingMachine, title: e.target.value})}
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="manufacturer">Fabricant</Label>
-                                    <Input
-                                        id="manufacturer"
-                                        value={editingMachine.manufacturer}
-                                        onChange={(e) => setEditingMachine({
-                                            ...editingMachine,
-                                            manufacturer: e.target.value
-                                        })}
-                                    />
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="year">Année</Label>
-                                    <Input
-                                        id="year"
-                                        type="number"
-                                        value={editingMachine.year}
-                                        onChange={(e) => setEditingMachine({
-                                            ...editingMachine,
-                                            year: Number.parseInt(e.target.value)
-                                        })}
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="condition">État</Label>
-                                    <Select
-                                        value={editingMachine.condition}
-                                        onValueChange={(value) => setEditingMachine({
-                                            ...editingMachine,
-                                            condition: value
-                                        })}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue/>
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Excellent">Excellent</SelectItem>
-                                            <SelectItem value="Very Good">Très bon</SelectItem>
-                                            <SelectItem value="Good">Bon</SelectItem>
-                                            <SelectItem value="Fair">Correct</SelectItem>
-                                            <SelectItem value="Poor">Mauvais</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="status">Statut</Label>
-                                    <Select
-                                        value={editingMachine.status}
-                                        onValueChange={(value) => setEditingMachine({...editingMachine, status: value})}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue/>
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Collection">Collection</SelectItem>
-                                            <SelectItem value="For Sale">À vendre</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                {editingMachine.status === "For Sale" && (
-                                    <div className="space-y-2">
-                                        <Label htmlFor="price">Prix ($)</Label>
-                                        <Input
-                                            id="price"
-                                            type="number"
-                                            value={editingMachine.price || ""}
-                                            onChange={(e) =>
-                                                setEditingMachine({
-                                                    ...editingMachine,
-                                                    price: Number.parseInt(e.target.value) || null
-                                                })
-                                            }
-                                        />
-                                    </div>
-                                )}
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="description">Description</Label>
-                                <Textarea
-                                    id="description"
-                                    value={editingMachine.description}
-                                    onChange={(e) => setEditingMachine({
-                                        ...editingMachine,
-                                        description: e.target.value
-                                    })}
-                                    rows={3}
-                                />
-                            </div>
-                        </div>
-                    )}
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
-                            Annuler
-                        </Button>
-                        <Button onClick={handleSaveEdit}>Sauvegarder</Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
 
             {/* Footer */}
             <Footer/>

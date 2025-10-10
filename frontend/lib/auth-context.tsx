@@ -1,14 +1,26 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { loginUser, refreshToken } from './api';
+import {loginUser, refreshToken} from './api';
 import { isTokenExpired } from './utils';
+
+type userType = {
+    id: number,
+    name: string,
+    avatar: string,
+    numberOfMachine: number,
+    createdAt: string,
+    location: string,
+    responseRate: number,
+    isVerified: boolean,
+};
 
 interface AuthContextValue {
     token: string | null;
-    user: { name: string; email: string, avatar: string, isProfessionnal: boolean, accountType: string } | null; // Information utilisateur
+    user: userType | null; // Information utilisateur
     login: (email: string, password: string) => Promise<void>;
     logout: () => void;
+    refreshUser: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -16,7 +28,7 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [token, setToken] = useState<string | null>(null);
     const [refreshTokenValue, setRefreshTokenValue] = useState<string | null>(null);
-    const [user, setUser] = useState<{ name: string; email: string } | null>(null);
+    const [user, setUser] = useState<userType | null>(null);
 
     // Initial load from localStorage
     useEffect(() => {
@@ -74,10 +86,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setToken(null);
         setUser(null);
         setRefreshTokenValue(null);
+        window.location.href = '/';
     };
 
+    const refreshUser = (user: userType) => {
+        setUser(user)
+    }
+
     return (
-        <AuthContext.Provider value={{ token, user, login, logout }}>
+        <AuthContext.Provider value={{ token, user, login, logout, refreshUser: refreshUser}}>
             {children}
         </AuthContext.Provider>
     );

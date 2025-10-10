@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageToggle } from "@/components/language-toggle";
 import {useLanguage} from "@/lib/language-context";
-import { Radar } from "lucide-react"
+import {LogOutIcon, Moon, Radar, Sun} from "lucide-react"
 
 function LanguageToggleWrapper() {
     const { language, setLanguage } = useLanguage()
@@ -64,6 +64,7 @@ export default function Navbar() {
                                 <Button size="sm" asChild>
                                     <a href="/collection">{t('collection.myCollections')}</a>
                                 </Button>
+
                             </>) : (
                                 // Sinon, afficher le bouton Sign In
                                 <Button variant="outline" size="sm" asChild>
@@ -74,6 +75,12 @@ export default function Navbar() {
                         <div className="flex items-center gap-2">
                             <LanguageToggleWrapper />
                             <ThemeToggle />
+                            {user ?
+                                <Button onClick={() => logout()} variant="secondary" size="icon" className={'cursor-pointer'}>
+                                    <LogOutIcon />
+
+                                    <span className="sr-only">Logout</span>
+                                </Button> : <></>}
                         </div>
                     </nav>
                 </div>

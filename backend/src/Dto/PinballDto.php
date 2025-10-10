@@ -3,7 +3,6 @@
 namespace App\Dto;
 
 use App\Entity\Pinball;
-use App\Entity\PinballCollection;
 use App\Entity\PinballOwner;
 use App\Entity\PinballSale;
 use App\Interface\DtoableInterface;
@@ -25,6 +24,8 @@ class PinballDto implements DtoInterface
     public ?array $currentOwner; // { id, username, email } ou null
     public bool $isForSale = false;
     public float $price = 0;
+    public array $priceHistory = [];
+    public array $location = [];
     public string $currency = '€';
     public ?string $owningDate;
 
@@ -52,8 +53,10 @@ class PinballDto implements DtoInterface
         $this->currentOwner = $data['currentOwner'] ?? null;
         $this->isForSale = $data['isForSale'];
         $this->price = $data['price'];
+        $this->priceHistory = $data['priceHistory'];
         $this->currency = $data['currency'];
         $this->owningDate = $data['owningDate']?->format('Y-m-d') ?? null;
+        $this->location = $data['location'];
     }
 
     /**
@@ -64,13 +67,23 @@ class PinballDto implements DtoInterface
     public static function fromEntity(DtoableInterface $entity): self
     {
         $sales = $entity->getPinballSales()->filter(function (PinballSale $sale) {
-            return $sale->getSeller() === $sale->getPinball()->getCurrentOwner() && $sale->getSoldAt() === null;
+            return $sale->getSeller() === $sale->getPinball()->getCurrentOwner() && $sale->getFinalPrice() === null;
         });
 
         $sale = $sales->first();
         $owner = $entity->getPinballOwners()->filter(function (PinballOwner $po) {
             return $po->getEndAt() === null;
         })->first();
+
+        $history = [];
+        foreach($sales as $sale) {
+            $history[] = [
+                'price' => $sale->getStartPrice(),
+                'date' => $sale->getCreatedAt()?->format('Y-m-d')
+            ];
+        }
+
+        $location = $sale?->getLocation() ?? [];
 
         return new self([
             'id' => $entity->getId(),
@@ -82,11 +95,13 @@ class PinballDto implements DtoInterface
             'images' => $entity->getImages(),
             'isForSale' => $sales->count() > 0,
             'price' => $sale ? $sales->first()->getStartPrice() : 0,
+            'priceHistory' => $history,
             'currency' => $sale ? $sales->first()?->getCurrency() : "€",
             'year' => $entity->getYear(),
             'manufacturer' => $entity->getManufacturer(),
             'currentOwnerId' => $entity->getCurrentOwner()?->getId(),
             'owningDate' => $owner ?  $owner->getStartAt() : null,
+            'location' => $location,
             'currentOwner' => [
                 'id' => $entity->getCurrentOwner()?->getId(),
                 'email' => $entity->getCurrentOwner()?->getEmail(),

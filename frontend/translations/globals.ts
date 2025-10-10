@@ -32,6 +32,7 @@ export const translations = {
         loading: "Loading...",
         error: "Error",
         save: "Save",
+        update: 'Update',
         cancel: "Cancel",
         submit: "Submit",
         back: "Back",
@@ -61,6 +62,7 @@ export const translations = {
         cancel: "Annuler",
         submit: "Soumettre",
         back: "Retour",
+        update: 'Mettre à jour'
     }
 }
 

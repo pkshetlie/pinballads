@@ -6,6 +6,7 @@ use App\Repository\PinballSaleRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Jsor\Doctrine\PostGIS\Types\PostGISType;
 
 #[ORM\Entity(repositoryClass: PinballSaleRepository::class)]
 class PinballSale
@@ -38,6 +39,15 @@ class PinballSale
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $sold_at = null;
+
+    #[ORM\Column(length: 255)]
+    private string $city;
+
+    #[ORM\Column(
+        type: PostGISType::GEOGRAPHY,
+        options: ['geometry_type' => 'POINT', 'srid' => 4326],
+    )]
+    private string $geography;
 
     public function getId(): ?int
     {
@@ -126,5 +136,62 @@ class PinballSale
         $this->sold_at = $sold_at;
 
         return $this;
+    }
+
+    public function getCity(): string
+    {
+        return $this->city;
+    }
+
+    public function setCity(string $city): static
+    {
+        $this->city = $city;
+
+        return $this;
+    }
+
+    public function getGeography(): string
+    {
+        return $this->geography;
+    }
+
+    public function setGeography(string $geography): static
+    {
+        $this->geography = $geography;
+
+        return $this;
+    }
+
+    public function setGeographyWithPoints(string $long, string $lat): static
+    {
+        $this->geography = 'SRID=4326;POINT('.$long.' '.$lat.')';
+        return $this;
+    }
+
+    public function getLocation(): array
+    {
+        return [
+            'city' => $this->city,
+            'lat' => $this->getLatitude(),
+            'lon' => $this->getLongitude(),
+        ];
+    }
+
+    public function getLatitude(): ?float
+    {
+        if (preg_match('/POINT\(([-\d.]+) ([-\d.]+)\)/', $this->geography, $matches)) {
+            return (float) $matches[2]; // La latitude est en second
+        }
+
+        return null;
+    }
+
+    public function getLongitude(): ?float
+    {
+        if (preg_match('/POINT\(([-\d.]+) ([-\d.]+)\)/', $this->geography, $matches)) {
+            return (float) $matches[1]; // La longitude est en premier
+        }
+
+        return null;
     }
 }

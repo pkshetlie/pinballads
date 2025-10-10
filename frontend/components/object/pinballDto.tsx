@@ -21,10 +21,16 @@ export type PinballDto = {
     coinDoor: boolean;
     homeUse: boolean;
     owningDate?: string | null;
-
+    currency?: string | null;
     currentOwner?: {
         id: number;
         username: string;
         email?: string;
     } | null;
+    location?: {
+        city: string;
+        lat: number;
+        lon: number;
+        country: string;
+    }| null;
 };

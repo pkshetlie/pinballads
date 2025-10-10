@@ -5,8 +5,10 @@ namespace App\Controller;
 use App\Entity\Pinball;
 use App\Entity\PinballCollection;
 use App\Entity\PinballOwner;
+use App\Entity\PinballSale;
 use App\Service\DtoService;
 use Doctrine\ORM\EntityManagerInterface;
+use Jsor\Doctrine\PostGIS\Functions\Geography;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -41,6 +43,12 @@ final class MachineController extends AbstractController
 
         $data = json_decode($request->getContent(), false);
 
+        $features = [];
+        foreach ($data->features as $feature) {
+            foreach ($feature as $key => $value) {
+                $features[$key] = $value;
+            }
+        }
 
         $pinball = new Pinball()
             ->setOpdbId($data->opdbId)
@@ -48,7 +56,7 @@ final class MachineController extends AbstractController
             ->setName($data->name)
             ->setCondition($data->condition)
             ->setYear($data->year)
-            ->setFeatures((array)$data->features)
+            ->setFeatures($features)
             ->setCurrentOwner($this->getUser())
             ->setManufacturer($data->manufacturer);
 
@@ -78,13 +86,20 @@ final class MachineController extends AbstractController
     ): Response {
         $data = json_decode($request->getContent(), false);
 
+        $features = [];
+        foreach ($data->features as $feature) {
+            foreach ($feature as $key => $value) {
+                $features[$key] = $value;
+            }
+        }
+
         $pinball
             ->setOpdbId($data->opdbId)
             ->setDescription($data->description)
             ->setName($data->name)
             ->setCondition($data->condition)
             ->setYear($data->year)
-            ->setFeatures((array)$data->features)
+            ->setFeatures($features)
             ->setCurrentOwner($this->getUser())
             ->setManufacturer($data->manufacturer);
 
@@ -121,6 +136,112 @@ final class MachineController extends AbstractController
 
         return $this->json($pinballService->toDto($pinball));
     }
+
+    #[Route('/api/machine/{id}/sell', name: 'api_collection_machine_sell', methods: ['POST'])]
+    public function addForSales(
+        Request $request,
+        Pinball $pinball,
+        DtoService $pinballService,
+        TranslatorInterface $translator,
+        EntityManagerInterface $entityManager,
+    ): Response {
+        if ($pinball->getCurrentOwner() !== $this->getUser()) {
+            return $this->json(['error' => $translator->trans('You are not the owner of this machine')],
+                Response::HTTP_FORBIDDEN);
+        }
+
+
+        $countPinballOnSale = $pinball->getPinballSales()->filter(function(PinballSale $po) {
+            if ($po->getSeller() === $this->getUser()) {
+                if ($po->getFinalPrice() === null) {
+                    return true;
+                }
+            }
+
+            return false;
+        })->count();
+
+        if ($countPinballOnSale > 0) {
+            return $this->json(['error' => $translator->trans('You already have an active sale for this machine')],
+                Response::HTTP_FORBIDDEN);
+        }
+
+        $data = json_decode($request->getContent(), false);
+
+        $pinballSale = new PinballSale()
+            ->setPinball($pinball)
+            ->setCity($data->location->city)
+            ->setGeographyWithPoints($data->location->lon, $data->location->lat)
+            ->setCurrency($data->currency)
+            ->setStartPrice($data->price)
+            ->setSeller($this->getUser());
+        $entityManager->persist($pinballSale);
+        $entityManager->flush();
+
+        $pinball->addPinballSale($pinballSale);
+
+        return $this->json($pinballService->toDto($pinball));
+    }
+
+    #[Route('/api/machine/{id}/sell', name: 'api_collection_machine_update_sell', methods: ['PUT'])]
+    public function editForSales(
+        Request $request,
+        Pinball $pinball,
+        DtoService $pinballService,
+        TranslatorInterface $translator,
+        EntityManagerInterface $entityManager,
+    ): Response {
+        if ($pinball->getCurrentOwner() !== $this->getUser()) {
+            return $this->json(['error' => $translator->trans('You are not the owner of this machine')],
+                Response::HTTP_FORBIDDEN);
+        }
+
+        $pinballOnSale = $pinball->getPinballSales()->filter(function(PinballSale $po) {
+            if ($po->getSeller() === $this->getUser()) {
+                if ($po->getFinalPrice() === null) {
+                    return true;
+                }
+            }
+
+            return false;
+        })->first();
+
+        $data = json_decode($request->getContent(), false);
+
+        if ($pinballOnSale &&
+            $pinballOnSale->getStartPrice() == $data->price &&
+            $pinballOnSale->getCity() == $data->location->city &&
+            $pinballOnSale->getLatitude() == $data->location->lat &&
+            $pinballOnSale->getLongitude() == $data->location->lon &&
+            $pinballOnSale->getStartPrice() == $data->price
+        ) {
+            return $this->json($pinballService->toDto($pinball));
+        }
+
+        if ($pinballOnSale) {
+            $pinballOnSale->setFinalPrice($pinballOnSale->getStartPrice());
+        }
+
+        $point = new Geography(
+            'POINT(4.3217677 46.0991652)',
+            4326
+        );
+
+        $pinballSale = new PinballSale()
+            ->setPinball($pinball)
+            ->setCity($data->location->city)
+            ->setGeographyWithPoints($data->location->lon, $data->location->lat)
+            ->setCurrency($data->currency)
+            ->setStartPrice($data->price)
+            ->setSeller($this->getUser());
+        $entityManager->persist($pinballSale);
+        $entityManager->flush();
+
+        $pinball->addPinballSale($pinballSale);
+
+        return $this->json($pinballService->toDto($pinball));
+    }
+
 
     #[Route('/api/machine/{id}', name: 'api_collection_machine_get_one', methods: ['GET'])]
     public function getOne(
