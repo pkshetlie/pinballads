@@ -23,9 +23,9 @@ class DtoService
      *
      * @return array<DtoInterface>
      */
-    public function toDtos(array $array): array
+    public function toDtos(?array $array): array
     {
-        if (!count($array)) {
+        if (!$array || !count($array)) {
             return [];
         }
 

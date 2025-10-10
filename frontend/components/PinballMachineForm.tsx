@@ -362,7 +362,7 @@ export default function MachineForm({initialData, onSubmit, buttonText}: Machine
                                     <SelectItem value="very-good">{t('sell.conditions.veryGood')}</SelectItem>
                                     <SelectItem value="good">{t('sell.conditions.good')}</SelectItem>
                                     <SelectItem value="fair">{t('sell.conditions.fair')}</SelectItem>
-                                    <SelectItem value="project">{t('sell.conditions.projectRestauration')}</SelectItem>
+                                    <SelectItem value="project">{t('sell.conditions.project')}</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

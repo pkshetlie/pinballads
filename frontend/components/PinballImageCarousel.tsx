@@ -78,12 +78,12 @@ export function PinballImageCarousel({
             {/* Action buttons */}
             {showActions && (
                 <div className="absolute top-4 right-4 flex gap-2">
-                    <Button size="sm" variant="secondary" className="bg-background/90 hover:bg-background">
-                        <Heart className="w-4 h-4"/>
-                    </Button>
-                    <Button size="sm" variant="secondary" className="bg-background/90 hover:bg-background">
-                        <Share2 className="w-4 h-4"/>
-                    </Button>
+                    {/*<Button size="sm" variant="secondary" className="bg-background/90 hover:bg-background">*/}
+                    {/*    <Heart className="w-4 h-4"/>*/}
+                    {/*</Button>*/}
+                    {/*<Button size="sm" variant="secondary" className="bg-background/90 hover:bg-background">*/}
+                    {/*    <Share2 className="w-4 h-4"/>*/}
+                    {/*</Button>*/}
                 </div>
             )}
             <ImageZoomModal
