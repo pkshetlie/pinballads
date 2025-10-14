@@ -40,7 +40,7 @@ class RegisterController extends AbstractController
 
         if ($existingUser) {
             return $this->json([
-                'error' => $translator->trans('user_already_exists'),
+                'error' => $translator->trans('User already exists'),
             ], Response::HTTP_CONFLICT);
         }
 
@@ -56,9 +56,9 @@ class RegisterController extends AbstractController
         $this->entityManager->flush();
         // Traiter les données reçues ici
         $defaultPinballCollection = new PinballCollection()
-            ->setName($translator->trans('default_collection_name', ['%username%' => $content['username']]))
+            ->setName($translator->trans('Default collection', ['%username%' => $content['username']]))
             ->setIsDefault(true)
-            ->setDescription($translator->trans('default_collection_description'))
+            ->setDescription($translator->trans('This collection is created automatically when you register.'))
             ->setOwner($user);
         $this->entityManager->persist($defaultPinballCollection);
         $this->entityManager->flush();
@@ -67,7 +67,7 @@ class RegisterController extends AbstractController
 
         // Retourner une réponse JSON
         return $this->json([
-            'message' => $translator->trans('user_created'),
+            'message' => $translator->trans('User created'),
             'data' => $content,
         ], Response::HTTP_CREATED);
     }

@@ -11,50 +11,7 @@ import Navbar from "@/components/Navbar";
 
 // Mock data for featured pinball machines
 const featuredMachines = [
-  {
-    id: 1,
-    title: "Medieval Madness",
-    manufacturer: "Williams",
-    year: 1997,
-    price: 8500,
-    location: "Los Angeles, CA",
-    image: "/medieval-madness-pinball-machine.jpg",
-    rating: 4.8,
-    condition: "Excellent",
-  },
-  {
-    id: 2,
-    title: "Attack from Mars",
-    manufacturer: "Bally",
-    year: 1995,
-    price: 7200,
-    location: "Chicago, IL",
-    image: "/attack-from-mars-pinball-machine.jpg",
-    rating: 4.7,
-    condition: "Very Good",
-  },
-  {
-    id: 3,
-    title: "The Twilight Zone",
-    manufacturer: "Bally",
-    year: 1993,
-    price: 6800,
-    location: "New York, NY",
-    image: "/twilight-zone-pinball-machine.jpg",
-    rating: 4.9,
-    condition: "Excellent",
-  },
-  {
-    id: 4,
-    title: "Cirqus Voltaire",
-    manufacturer: "Bally",
-    year: 1997,
-    price: 5500,
-    location: "Austin, TX",
-    image: "/cirqus-voltaire-pinball-machine.jpg",
-    rating: 4.6,
-    condition: "Good",
-  },
+
 ]
 
 

@@ -16,8 +16,8 @@ const pricingPlans = [
         popular: false,
         features: [
             {name: "Jusqu'à 2 collections", included: true, soon: true},
-            {name: "Jusqu'à 5 machines dans votre collection", included: true, soon: true},
-            {name: "3 photos par machine", included: true, soon: true},
+            {name: "Jusqu'à 10 machines dans votre collection", included: true, soon: true},
+            {name: "10 photos par machine", included: true, soon: true},
             {name: "Profil public basique", included: true, soon: true},
             {name: "Recherche et navigation complète", included: true, soon: true},
             {name: "Historique des prix", included: true, soon: true},
@@ -39,7 +39,7 @@ const pricingPlans = [
         features: [
             {name: "Jusqu'à 5 collections", included: true, soon: true},
             {name: "Jusqu'à 20 machines dans votre collection", included: true, soon: true},
-            {name: "10 photos par machine", included: true, soon: true},
+            {name: "15 photos par machine", included: true, soon: true},
             {name: "Profil public personnalisé", included: true, soon: true},
             {name: "Recherche et navigation complète", included: true, soon: true},
             {name: "Historique des prix", included: true, soon: true},

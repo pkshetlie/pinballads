@@ -17,6 +17,38 @@
         <source>You cannot delete default collection</source>
         <target>Vous ne pouvez pas supprimer votre collection par défaut</target>
       </trans-unit>
+      <trans-unit id="MZOMLUS" resname="You are not the owner of this machine">
+        <source>You are not the owner of this machine</source>
+        <target>Vous n'êtes pas le proprietaire de ce flipper</target>
+      </trans-unit>
+      <trans-unit id="jPYOHow" resname="You already have an active sale for this machine">
+        <source>You already have an active sale for this machine</source>
+        <target>Ce flipper est déjà en vente</target>
+      </trans-unit>
+      <trans-unit id="P0NZNQx" resname="No files uploaded">
+        <source>No files uploaded</source>
+        <target>Pas de fichier envoyé</target>
+      </trans-unit>
+      <trans-unit id="tmyLjcE" resname="Invalid file upload">
+        <source>Invalid file upload</source>
+        <target>Fichier envoyé non valide</target>
+      </trans-unit>
+      <trans-unit id="BjXq2yZ" resname="User already exists">
+        <source>User already exists</source>
+        <target>L'utilisateur existe déjà</target>
+      </trans-unit>
+      <trans-unit id="QPLOgH2" resname="Default collection">
+        <source>Default collection</source>
+        <target>Collection par défaut</target>
+      </trans-unit>
+      <trans-unit id="5F98pSR" resname="This collection is created automatically when you register.">
+        <source>This collection is created automatically when you register.</source>
+        <target>Cette collection est créée automatiquement lors de votre inscription.</target>
+      </trans-unit>
+      <trans-unit id="aSyDWZe" resname="User created">
+        <source>User created</source>
+        <target>Utilisateur créé</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

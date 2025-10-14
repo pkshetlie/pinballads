@@ -21,18 +21,21 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+      <html lang="en" suppressHydrationWarning>
+      <head>
+          <link rel="icon" href="/images/logo.ico"/>
+      </head>
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
       <AuthProvider>
           <Toaster/>
-      <Suspense fallback={null}>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-            <LanguageProvider>{children}</LanguageProvider>
-          </ThemeProvider>
-        </Suspense>
-        <Analytics />
+          <Suspense fallback={null}>
+              <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+                  <LanguageProvider>{children}</LanguageProvider>
+              </ThemeProvider>
+          </Suspense>
+          <Analytics/>
       </AuthProvider>
       </body>
-    </html>
+      </html>
   )
 }

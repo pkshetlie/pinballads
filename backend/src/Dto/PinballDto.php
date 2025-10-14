@@ -40,10 +40,10 @@ class PinballDto implements DtoInterface
         $baseUrl = $_SERVER['HTTP_HOST']; // Récupération de l'URL de la requête
         $images = array_map(function (array $imagePath) use ($baseUrl) {
             return [
-                'url'=>"https://{$baseUrl}{$imagePath['url']}",
-                'title'=> $imagePath['title'] ?? '',
+                'url' => "https://{$baseUrl}{$imagePath['url']}",
+                'title' => $imagePath['title'] ?? '',
                 'uid' => $imagePath['uid'] ?? uniqid(),
-                ];
+            ];
         }, $data['images']);
         $this->images = $images;
 
@@ -76,14 +76,17 @@ class PinballDto implements DtoInterface
         })->first();
 
         $history = [];
-        foreach($sales as $sale) {
+        foreach ($sales as $sale) {
             $history[] = [
                 'price' => $sale->getStartPrice(),
-                'date' => $sale->getCreatedAt()?->format('Y-m-d')
+                'date' => $sale->getCreatedAt()?->format('Y-m-d'),
             ];
         }
-
-        $location = $sale?->getLocation() ?? [];
+        if ($sale) {
+            $location = $sale?->getLocation() ?? [];
+        } else {
+            $location = [];
+        }
 
         return new self([
             'id' => $entity->getId(),
@@ -100,11 +103,11 @@ class PinballDto implements DtoInterface
             'year' => $entity->getYear(),
             'manufacturer' => $entity->getManufacturer(),
             'currentOwnerId' => $entity->getCurrentOwner()?->getId(),
-            'owningDate' => $owner ?  $owner->getStartAt() : null,
+            'owningDate' => $owner ? $owner->getStartAt() : null,
             'location' => $location,
             'currentOwner' => [
                 'id' => $entity->getCurrentOwner()?->getId(),
-                'email' => $entity->getCurrentOwner()?->getEmail(),
+                'username' => $entity->getCurrentOwner()?->getDisplayName(),
             ],
         ]);
     }

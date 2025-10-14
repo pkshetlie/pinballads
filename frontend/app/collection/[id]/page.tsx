@@ -64,9 +64,10 @@ export default function MyCollectionPage() {
     const [locationQuery, setLocationQuery] = useState("")
     const [locationResults, setLocationResults] = useState<LocationResult[]>([])
     const [selectedLocation, setSelectedLocation] = useState<{
-        city: string
-        lat: number
-        lon: number
+        city: string|null,
+        display_name :string|null,
+        lat: number|null,
+        lon: number|null
     } | null>(null)
     const [searchingLocation, setSearchingLocation] = useState(false)
 
@@ -371,7 +372,7 @@ export default function MyCollectionPage() {
                                                                             //     lon: machine.location?.lon
                                                                             // })
                                                                             setSelectedLocation({
-                                                                                    city: machine.location?.city,
+                                                                                city: machine.location?.city,
                                                                                 display_name: machine.location?.city,
                                                                                 lat: machine.location?.lat,
                                                                                 lon: machine.location?.lon

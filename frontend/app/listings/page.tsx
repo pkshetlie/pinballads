@@ -1,6 +1,6 @@
 "use client"
 
-import {ChevronDown, ChevronUp, Filter, Grid, List, MapPin, Search, Star} from "lucide-react"
+import {ChevronDown, ChevronUp, Filter, Grid, List, MapPin, Search, Star, User} from "lucide-react"
 import {Button} from "@/components/ui/button"
 import {Input} from "@/components/ui/input"
 import {Card, CardContent, CardFooter} from "@/components/ui/card"
@@ -42,25 +42,26 @@ function FilterSidebar({className = ""}: { className?: string }) {
     const [showAllManufacturer, setShowAllManufacturer] = useState(false); // Afficher les résultats supplémentaires
 
     const conditions = [
-        {name: "sell.conditions.excellent", count: 23},
-        {name: "sell.conditions.veryGood", count: 34},
-        {name: "sell.conditions.good", count: 28},
-        {name: "sell.conditions.fair", count: 15},
-        {name: "sell.conditions.project", count: 8},
+        {name: "sell.conditions.excellent", count: 'x'},
+        {name: "sell.conditions.veryGood", count: 'x'},
+        {name: "sell.conditions.good", count: 'x'},
+        {name: "sell.conditions.fair", count: 'x'},
+        {name: "sell.conditions.project", count: 'x'},
     ]
 
     const decades = [
-        {name: "2020s", count: 8},
-        {name: "2010s", count: 15},
-        {name: "2000s", count: 22},
-        {name: "1990s", count: 45},
-        {name: "1980s", count: 28},
-        {name: "1970s", count: 12},
+        {name: "2020s", count: 'x'},
+        {name: "2010s", count: 'x'},
+        {name: "2000s", count: 'x'},
+        {name: "1990s", count: 'x'},
+        {name: "1980s", count: 'x'},
+        {name: "1970s", count: 'x'},
     ]
 
     const filteredManufacturers = Object.entries(Manufacturers).filter((manufacturer) =>
         manufacturer.includes(searchManufacturerQuery.toLowerCase())
     );
+
     const displayedManufacturers = showAllManufacturer
         ? filteredManufacturers
         : filteredManufacturers.slice(0, 8);
@@ -221,6 +222,7 @@ export default function ListingsPage() {
     const [pinballMachines, setPinballMachines] = useState<PinballDto[]|[]>([]); // Afficher les résultats supplémentaires
     const {token} = useAuth();
     const {apiGet} = useApi();
+    const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
 
     useEffect(() => {
         if (!token) return;
@@ -285,11 +287,21 @@ export default function ListingsPage() {
                             </Select>
 
                             <div className="flex items-center border rounded-lg">
-                                <Button variant="ghost" size="sm" className="rounded-r-none">
+                                <Button
+                                    variant={viewMode === "grid" ? "default" : "ghost"}
+                                    size="sm"
+                                    className="rounded-r-none cursor-pointer"
+                                    onClick={() => setViewMode("grid")}
+                                >
                                     <Grid className="w-4 h-4"/>
                                 </Button>
                                 <Separator orientation="vertical" className="h-6"/>
-                                <Button variant="ghost" size="sm" className="rounded-l-none">
+                                <Button
+                                    variant={viewMode === "list" ? "default" : "ghost"}
+                                    size="sm"
+                                    className="rounded-l-none cursor-pointer"
+                                    onClick={() => setViewMode("list")}
+                                >
                                     <List className="w-4 h-4"/>
                                 </Button>
                             </div>
@@ -344,7 +356,8 @@ export default function ListingsPage() {
 
                     {/* Listings Grid */}
                     <section className="container mx-auto px-4 pb-12 lg:px-6">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                        {viewMode === "grid" ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                             {pinballMachines.map((machine) => (
                                 <Card noPadding={true} key={machine.id}
                                       className="group hover:shadow-lg transition-all duration-300 cursor-pointer">
@@ -363,17 +376,20 @@ export default function ListingsPage() {
                                             </h4>
                                             <div className="flex items-center gap-1 text-sm text-muted-foreground ml-2">
                                                 <Star className="w-4 h-4 fill-accent text-accent"/>
-                                                {machine.rating}
+                                                {machine.rating ?? 5}
                                             </div>
                                         </div>
                                         <p className="text-sm text-muted-foreground mb-3">
                                             {machine.manufacturer} • {machine.year}
                                         </p>
+                                        <div className="flex flex-wrap items-center gap-1 text-sm text-muted-foreground mb-4">
+                                            <User className="w-4 h-4" />
+                                            <div>{machine.currentOwner.username}</div>
+                                        </div>
                                         <div className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
                                             <MapPin className="w-4 h-4"/>
-                                            {machine.location.city}
+                                            {machine.location?.city} - {machine.distance ?? 0} km away
                                         </div>
-                                        <div className="text-xs text-muted-foreground">{machine.distance} away</div>
                                     </CardContent>
                                     <CardFooter className="p-4 pt-0">
                                         <div className="flex items-center justify-between w-full">
@@ -390,6 +406,59 @@ export default function ListingsPage() {
                                 </Card>
                             ))}
                         </div>
+                        ) : (
+                            <div className="space-y-4">
+                                {pinballMachines.map((machine) => (
+                                    <Card key={machine.id} className="group hover:shadow-lg transition-all duration-300 cursor-pointer">
+                                        <div className="flex flex-col sm:flex-row">
+                                            <div className="sm:w-64 aspect-[4/3] sm:aspect-auto overflow-hidden relative">
+                                                <PinballImageCarousel machine={machine}></PinballImageCarousel>
+                                                <div className="absolute top-3 right-3">
+                                                    <Badge variant="secondary" className="bg-background/90 text-foreground">
+                                                        {machine.condition}
+                                                    </Badge>
+                                                </div>
+                                            </div>
+                                            <div className="flex-1 p-6">
+                                                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                                                    <div className="flex-1">
+                                                        <div className="flex items-start justify-between mb-2">
+                                                            <h4 className="font-semibold text-foreground text-xl leading-tight">{machine.name}</h4>
+                                                            <div className="flex items-center gap-1 text-sm text-muted-foreground ml-4">
+                                                                <Star className="w-4 h-4 fill-accent text-accent" />
+                                                                {machine.rating ?? 5}
+                                                            </div>
+                                                        </div>
+                                                        <p className="text-muted-foreground mb-4">
+                                                            {machine.manufacturer} • {machine.year}
+                                                        </p>
+                                                        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-4">
+                                                            <div className="flex items-center gap-1">
+                                                                <MapPin className="w-4 h-4" />
+                                                                {machine.location?.city ?? ''}
+                                                            </div>
+                                                            <div>{machine.distance ?? 0} km away</div>
+                                                        </div>
+                                                        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-4">
+                                                            <User className="w-4 h-4" />
+                                                            <div>{machine.currentOwner.username}</div>
+                                                        </div>
+
+                                                        <p className="text-sm text-muted-foreground line-clamp-2">
+                                                            {machine.description}
+                                                        </p>
+                                                    </div>
+                                                    <div className="flex flex-col items-end gap-3 sm:min-w-[180px]">
+                                                        <span className="text-2xl font-bold text-primary">{currencies[machine.currency]}{machine.price.toLocaleString()}</span>
+                                                        <Button className="w-full sm:w-auto">{t('details')}</Button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Card>
+                                ))}
+                            </div>
+                        )}
                     </section>
 
                     {/* Pagination */}

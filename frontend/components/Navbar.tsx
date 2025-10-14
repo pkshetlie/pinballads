@@ -39,8 +39,10 @@ export default function Navbar() {
             <div className="container mx-auto px-4 py-4">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                            <span className="text-primary-foreground font-bold text-lg"><Radar/></span>
+                        <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                            <span className="text-primary-foreground text-lg">
+                                <img src="/images/logo.svg" alt="Logo" />
+                            </span>
                         </div>
                         <h1 className="text-xl font-bold text-foreground">Crazy Pinball</h1>
                     </div>

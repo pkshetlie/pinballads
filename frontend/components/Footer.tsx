@@ -32,28 +32,28 @@ export default function Footer() {
                                 {t("footer.sellYourMachine")}
                             </a>
                         </li>
-                        <li>
-                            <a href="#" className="hover:text-foreground transition-colors">
-                                {t("footer.priceGuide")}
-                            </a>
-                        </li>
+                        {/*<li>*/}
+                        {/*    <a href="#" className="hover:text-foreground transition-colors">*/}
+                        {/*        {t("footer.priceGuide")}*/}
+                        {/*    </a>*/}
+                        {/*</li>*/}
                     </ul>
                 </div>
                 <div>
                     <h5 className="font-semibold text-foreground mb-3">{t("footer.support")}</h5>
                     <ul className="space-y-2 text-sm text-muted-foreground">
+                        {/*<li>*/}
+                        {/*    <a href="#" className="hover:text-foreground transition-colors">*/}
+                        {/*        {t("footer.helpCenter")}*/}
+                        {/*    </a>*/}
+                        {/*</li>*/}
+                        {/*<li>*/}
+                        {/*    <a href="#" className="hover:text-foreground transition-colors">*/}
+                        {/*        {t("footer.safetyTips")}*/}
+                        {/*    </a>*/}
+                        {/*</li>*/}
                         <li>
-                            <a href="#" className="hover:text-foreground transition-colors">
-                                {t("footer.helpCenter")}
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" className="hover:text-foreground transition-colors">
-                                {t("footer.safetyTips")}
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" className="hover:text-foreground transition-colors">
+                            <a href="mailto:contact@crazy-pinball.com" className="hover:text-foreground transition-colors">
                                 {t("footer.contactUs")}
                             </a>
                         </li>
@@ -63,20 +63,25 @@ export default function Footer() {
                     <h5 className="font-semibold text-foreground mb-3">{t("footer.community")}</h5>
                     <ul className="space-y-2 text-sm text-muted-foreground">
                         <li>
-                            <a href="#" className="hover:text-foreground transition-colors">
-                                {t("footer.forums")}
+                            <a href="https://www.facebook.com/crazypinballcom" target="_blank" className="hover:text-foreground transition-colors">
+                                {t("footer.facebook")}
                             </a>
                         </li>
-                        <li>
-                            <a href="#" className="hover:text-foreground transition-colors">
-                                {t("footer.events")}
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" className="hover:text-foreground transition-colors">
-                                {t("footer.newsletter")}
-                            </a>
-                        </li>
+                        {/*<li>*/}
+                        {/*    <a href="#" className="hover:text-foreground transition-colors">*/}
+                        {/*        {t("footer.forums")}*/}
+                        {/*    </a>*/}
+                        {/*</li>*/}
+                        {/*<li>*/}
+                        {/*    <a href="#" className="hover:text-foreground transition-colors">*/}
+                        {/*        {t("footer.events")}*/}
+                        {/*    </a>*/}
+                        {/*</li>*/}
+                        {/*<li>*/}
+                        {/*    <a href="#" className="hover:text-foreground transition-colors">*/}
+                        {/*        {t("footer.newsletter")}*/}
+                        {/*    </a>*/}
+                        {/*</li>*/}
                     </ul>
                 </div>
             </div>
