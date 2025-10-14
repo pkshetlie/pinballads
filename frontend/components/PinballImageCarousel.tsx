@@ -3,8 +3,7 @@
 import {useState} from "react"
 import {Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious} from "@/components/ui/carousel"
 import {Badge} from "@/components/ui/badge"
-import {Button} from "@/components/ui/button"
-import {Heart, Share2, ZoomIn} from "lucide-react"
+import {ZoomIn} from "lucide-react"
 import { ImageZoomModal } from "./image-zoom-modal"
 import config from "@/config"
 import {useLanguage} from "@/lib/language-context";

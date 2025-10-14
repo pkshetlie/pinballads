@@ -1,8 +1,8 @@
 export const Manufacturers: { [key: string]: string } = {
     "stern": "Stern",
-    "jersey-jack": "Jersey Jack Pinball",
+    "jersey-jack-pinball": "Jersey Jack Pinball",
     "hexa-pinball": "HEXA Pinball",
-    "spooky": "Spooky Pinball",
+    "spooky-pinball": "Spooky Pinball",
     "williams": "Williams",
     "bally": "Bally",
     "american-pinball": "American Pinball",

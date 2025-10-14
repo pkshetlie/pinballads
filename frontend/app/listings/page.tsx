@@ -20,7 +20,6 @@ import Footer from "@/components/Footer";
 import {PinballImageCarousel} from "@/components/PinballImageCarousel";
 import {Manufacturers} from "@/components/object/manufacturer";
 import {currencies} from "@/components/object/currencies";
-import ManufacturerList from "@/components/filters/ManufacturerList";
 import FeaturesList from "@/components/filters/FeaturesList";
 import {useAuth} from "@/lib/auth-context";
 import {useApi} from "@/lib/api";
@@ -38,33 +37,51 @@ function FilterSidebar({className = ""}: { className?: string }) {
     const [yearOpen, setYearOpen] = useState(true)
     const [featuresOpen, setFeaturesOpen] = useState(true)
     const [conditionOpen, setConditionOpen] = useState(true)
-    const [searchManufacturerQuery, setSearchManufacturerQuery] = useState(""); // Recherche dynamique
-    const [showAllManufacturer, setShowAllManufacturer] = useState(false); // Afficher les résultats supplémentaires
+    const [searchQuery, setSearchQuery] = useState(""); // Pour la recherche
+    const [showAll, setShowAll] = useState(false); // Contrôle l'état "Afficher plus"
+    const [selectedManufacturers, setSelectedManufacturers] = useState<string[]>([]);
+
+    const manufacturerList = Object.values(Manufacturers);
+    const filteredManufacturers = manufacturerList.filter((manufacturer) =>
+        manufacturer.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const displayedManufacturers = showAll
+        ? filteredManufacturers
+        : filteredManufacturers.slice(0, 8);filteredManufacturers.slice(0, 8);
+
 
     const conditions = [
-        {name: "sell.conditions.excellent", count: 'x'},
-        {name: "sell.conditions.veryGood", count: 'x'},
-        {name: "sell.conditions.good", count: 'x'},
-        {name: "sell.conditions.fair", count: 'x'},
-        {name: "sell.conditions.project", count: 'x'},
+        {key: 'excellent',name: "sell.conditions.excellent", count: 'x'},
+        {key: 'veryGood',name: "sell.conditions.veryGood", count: 'x'},
+        {key: 'good',name: "sell.conditions.good", count: 'x'},
+        {key: 'fair',name: "sell.conditions.fair", count: 'x'},
+        {key: 'project',name: "sell.conditions.project", count: 'x'},
     ]
 
     const decades = [
-        {name: "2020s", count: 'x'},
-        {name: "2010s", count: 'x'},
-        {name: "2000s", count: 'x'},
-        {name: "1990s", count: 'x'},
-        {name: "1980s", count: 'x'},
-        {name: "1970s", count: 'x'},
+        {name: "2020s", count: 'x', min: 2020, max: 2030},
+        {name: "2010s", count: 'x', min: 2010, max: 2019},
+        {name: "2000s", count: 'x', min: 2000, max: 2009},
+        {name: "1990s", count: 'x', min: 1990, max: 1999},
+        {name: "1980s", count: 'x', min: 1980, max: 1989},
+        {name: "1970s", count: 'x', min: 1970, max: 1979},
     ]
 
-    const filteredManufacturers = Object.entries(Manufacturers).filter((manufacturer) =>
-        manufacturer.includes(searchManufacturerQuery.toLowerCase())
-    );
-
-    const displayedManufacturers = showAllManufacturer
-        ? filteredManufacturers
-        : filteredManufacturers.slice(0, 8);
+    const filterAll = () => {
+        const filter = {
+            price: {
+                min: priceRange[0],
+                max: priceRange[1],
+            },
+            distance: {
+                min: distanceRange[0],
+                max: distanceRange[1],
+            },
+            manufacturer: selectedManufacturers.map(m => m.toLowerCase()),
+            condition: conditions.map(c => c.key),
+            features: [],
+        }
+    }
 
     return (
         <div className={`bg-card border-r h-full ${className}`}>
@@ -76,6 +93,9 @@ function FilterSidebar({className = ""}: { className?: string }) {
             </div>
 
             <div className="p-6 space-y-6 overflow-y-auto">
+                <Button variant="default" size="lg" onClick={filterAll} className="cursor-pointer">
+                    {t("filter")}
+                </Button>
                 {/* Price Range Filter */}
                 <div className="space-y-4">
                     <h4 className="font-medium text-foreground">{t("listings.priceRange")}</h4>
@@ -106,8 +126,7 @@ function FilterSidebar({className = ""}: { className?: string }) {
                                 </SelectTrigger>
                                 <SelectContent>
                                     {Object.entries(currencies).map(([value, label]) => (
-                                        <SelectItem key={value}
-                                                    value={value}>{label}</SelectItem>
+                                        <SelectItem key={value} value={value}>{label}</SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
@@ -144,7 +163,59 @@ function FilterSidebar({className = ""}: { className?: string }) {
                         )}
                     </CollapsibleTrigger>
                     <CollapsibleContent className="space-y-3 mt-3">
-                        <ManufacturerList></ManufacturerList>
+                        <div className="space-y-4">
+                            {/* Barre de recherche */}
+                            <Input
+                                type="text"
+                                placeholder="Rechercher un fabricant..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full"
+                            />
+
+                            {/* Liste des fabricants */}
+                            <div className="space-y-2">
+                                {Object.entries(Manufacturers).map(([key, manufacturer]) => (
+                                    displayedManufacturers.includes(manufacturer) && (
+                                        <div
+                                            key={key}
+                                            className="flex items-center space-x-2"
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                id={`manufacturer-${key}`}
+                                                className="cursor-pointer"
+                                                checked={selectedManufacturers.includes(key)}
+                                                onChange={() => {
+                                                    const newSelected = selectedManufacturers.includes(key)
+                                                        ? selectedManufacturers.filter(m => m !== key)
+                                                        : [...selectedManufacturers, key];
+                                                    setSelectedManufacturers(newSelected);
+                                                    // onChange(newSelected);
+                                                }}
+                                            />
+                                            <label
+                                                htmlFor={`manufacturer-${key}`}
+                                                className="text-sm text-foreground cursor-pointer"
+                                            >
+                                                {manufacturer}
+                                            </label>
+                                        </div>
+                                    )
+                                ))}
+                            </div>
+
+                            {/* Bouton "Afficher plus" ou "Afficher moins" */}
+                            {filteredManufacturers.length > 8 && (
+                                <Button
+                                    variant="outline"
+                                    onClick={() => setShowAll((prev) => !prev)}
+                                    className="w-full"
+                                >
+                                    {showAll ? "Afficher moins" : "Afficher plus"}
+                                </Button>
+                            )}
+                        </div>
                     </CollapsibleContent>
                 </Collapsible>
 
@@ -184,8 +255,8 @@ function FilterSidebar({className = ""}: { className?: string }) {
                     </CollapsibleTrigger>
                     <CollapsibleContent className="space-y-3 mt-3">
                         {conditions.map((condition) => (
-                            <div key={condition.name} className="flex items-center space-x-2">
-                                <Checkbox id={`condition-${condition.name}`}/>
+                            <div key={condition.key} className="flex items-center space-x-2">
+                                <Checkbox id={`condition-${condition.key}`}/>
                                 <Label
                                     htmlFor={`condition-${condition.name}`}
                                     className="text-sm text-foreground cursor-pointer flex-1"
@@ -380,7 +451,7 @@ export default function ListingsPage() {
                                             </div>
                                         </div>
                                         <p className="text-sm text-muted-foreground mb-3">
-                                            {machine.manufacturer} • {machine.year}
+                                            {Manufacturers[machine.manufacturer]} • {machine.year}
                                         </p>
                                         <div className="flex flex-wrap items-center gap-1 text-sm text-muted-foreground mb-4">
                                             <User className="w-4 h-4" />
@@ -394,7 +465,7 @@ export default function ListingsPage() {
                                     <CardFooter className="p-4 pt-0">
                                         <div className="flex items-center justify-between w-full">
                                             <span
-                                                className="text-xl font-bold text-primary">${machine.price.toLocaleString()}</span>
+                                                className="text-xl font-bold text-primary">{currencies[machine.currency]}{machine.price.toLocaleString()}</span>
                                             <Link href={`/listings/detail?id=${machine.id}`}>
 
                                                 <Button size="sm" className={'cursor-pointer'} variant="outline">
@@ -441,7 +512,7 @@ export default function ListingsPage() {
                                                         </div>
                                                         <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-4">
                                                             <User className="w-4 h-4" />
-                                                            <div>{machine.currentOwner.username}</div>
+                                                            <div>{machine.currentOwner?.username}</div>
                                                         </div>
 
                                                         <p className="text-sm text-muted-foreground line-clamp-2">

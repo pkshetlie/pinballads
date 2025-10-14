@@ -28,6 +28,7 @@ import {PinballImageCarousel} from "@/components/PinballImageCarousel";
 import {useLanguage} from "@/lib/language-context";
 import {useParams} from "next/navigation"
 import {currencies} from "@/components/object/currencies";
+import {Manufacturers} from "@/components/object/manufacturer";
 
 interface LocationResult {
     display_name: string
@@ -324,7 +325,7 @@ export default function MyCollectionPage() {
                                                     {machine.name}
                                                 </h4>
                                                 <p className="text-sm text-muted-foreground">
-                                                    {machine.manufacturer} • {machine.year}
+                                                    {Manufacturers[machine.manufacturer]} • {machine.year}
                                                 </p>
                                                 <div className="flex items-center justify-between">
                                                     <Badge variant="outline" className="text-xs">
