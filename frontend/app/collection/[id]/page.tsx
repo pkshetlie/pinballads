@@ -353,47 +353,199 @@ export default function MyCollectionPage() {
                                                     {t('collection.edit')}
                                                 </Button>
                                                 {(
-                                                    // Replace the Button with destructive variant with this Dialog component
-                                                    <Dialog>
+                                                    <Dialog
+                                                        open={sellDialogOpen === machine.id}
+                                                        onOpenChange={(open) => setSellDialogOpen(open ? machine.id : null)}
+                                                    >
                                                         <DialogTrigger asChild>
-                                                            <Button
-                                                                variant="destructive"
-                                                                className="cursor-pointer"
-                                                            >
-                                                                <Trash2 className="w-5 h-5"/>
+                                                            <Button size="sm" variant="outline"
+                                                                    onClick={() => {
+                                                                        if (machine.isForSale) {
+                                                                            setCurrency(machine.currency?.toString());
+                                                                            setSellPrice(machine.price.toString());
+                                                                            setLocationQuery(machine.location?.city || "");
+                                                                            // setLocationResults({
+                                                                            //     address: {
+                                                                            //         city: machine.location?.city,
+                                                                            //     },
+                                                                            //     display_name: machine.location?.city,
+                                                                            //     lat: machine.location?.lat,
+                                                                            //     lon: machine.location?.lon
+                                                                            // })
+                                                                            setSelectedLocation({
+                                                                                city: machine.location?.city,
+                                                                                display_name: machine.location?.city,
+                                                                                lat: machine.location?.lat,
+                                                                                lon: machine.location?.lon
+                                                                            })
+                                                                            setSearchingLocation(false)
+                                                                        }
+                                                                    }}
+                                                                    className="gap-2 bg-transparent cursor-pointer">
+                                                                {!machine.isForSale ? t('collection.sell') : t('collection.editSell')}
                                                             </Button>
                                                         </DialogTrigger>
                                                         <DialogContent>
                                                             <DialogHeader>
-                                                                <DialogTitle>{t('collection.deleteSell')}</DialogTitle>
+                                                                <DialogTitle>{t('collection.putSell')}
+                                                                    {/*Mettre en vente*/}
+                                                                </DialogTitle>
                                                                 <DialogDescription>
-                                                                    {t('collection.confirmDeleteSell')}
+                                                                    {t('collection.sellDescription', {machine: machine.name})}
                                                                 </DialogDescription>
                                                             </DialogHeader>
+                                                            <div className="space-y-4 py-4">
+                                                                <div className="space-y-2">
+                                                                    <Label
+                                                                        htmlFor="sell-price">{t('collection.machine.price')} *</Label>
+                                                                    <div className="flex gap-2">
+                                                                        <Select
+                                                                            required={true}
+                                                                            value={currency}
+                                                                            onValueChange={(value) => setCurrency(value as string)}
+                                                                        >
+                                                                            <SelectTrigger className="w-[100px]">
+                                                                                <SelectValue placeholder="Currency"/>
+                                                                            </SelectTrigger>
+                                                                            <SelectContent>
+                                                                                {Object.entries(currencies).map(([value, label]) => (
+                                                                                    <SelectItem key={value}
+                                                                                                value={value}>{label}</SelectItem>
+                                                                                ))}
+                                                                            </SelectContent>
+                                                                        </Select>
+                                                                        <Input
+                                                                            id="sell-price"
+                                                                            type="number"
+                                                                            required={true}
+                                                                            placeholder="Ex: 5000"
+                                                                            value={sellPrice}
+                                                                            onChange={(e) => setSellPrice(e.target.value)}
+                                                                            className="flex-1"
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                                <div className="space-y-2">
+                                                                    <Label
+                                                                        htmlFor="location-search">{t('collection.machine.locationCity')} *</Label>
+                                                                    <div className="relative">
+                                                                        <Input
+                                                                            id="location-search"
+                                                                            type="text"
+                                                                            required={true}
+                                                                            placeholder={t('collection.searchCity')}
+                                                                            value={locationQuery}
+                                                                            onChange={(e) => setLocationQuery(e.target.value)}
+                                                                            className="pr-10"
+                                                                        />
+                                                                        {searchingLocation && (
+                                                                            <Loader2
+                                                                                className="w-4 h-4 animate-spin absolute right-3 top-3 text-muted-foreground"/>
+                                                                        )}
+                                                                    </div>
+                                                                    {locationResults.length > 0 && !selectedLocation && (
+                                                                        <div
+                                                                            className="border rounded-lg divide-y max-h-48 overflow-y-auto">
+                                                                            {locationResults.map((result, index) => {
+                                                                                    if ((result.address.city || result.name)) {
+                                                                                        return <button
+                                                                                            key={index}
+                                                                                            type="button"
+                                                                                            onClick={() => {
+                                                                                                const city = (result.address.city || result.name) + (result.address.postcode ? ' (' + result.address.postcode + ')': '')
+                                                                                                setSelectedLocation({
+                                                                                                    city,
+                                                                                                    lat: Number.parseFloat(result.lat),
+                                                                                                    lon: Number.parseFloat(result.lon),
+                                                                                                })
+                                                                                                setLocationQuery(city)
+                                                                                                setLocationResults([])
+                                                                                            }}
+                                                                                            className="w-full text-left p-3 hover:bg-muted transition-colors text-sm"
+                                                                                        >
+                                                                                            <div className="font-medium">
+                                                                                                {result.address.city || result.name} {result.address.postcode && (<span>({result.address.postcode})</span>)}
+                                                                                            </div>
+                                                                                            <div
+                                                                                                className="text-xs text-muted-foreground truncate">
+                                                                                                {result.address.county || result.address.state_district || result.address.state}, {result.address.country}
+                                                                                            </div>
+                                                                                        </button>
+                                                                                    }
+                                                                                    return <></>;
+                                                                                }
+                                                                            )}
+                                                                        </div>
+                                                                    )}
+                                                                    {selectedLocation && (
+                                                                        <div
+                                                                            className="flex items-start gap-2 p-3 bg-primary/10 border border-primary/20 rounded-lg">
+                                                                            <MapPin
+                                                                                className="w-4 h-4 text-primary mt-0.5 flex-shrink-0"/>
+                                                                            <div className="flex-1 min-w-0">
+                                                                                <div
+                                                                                    className="font-medium text-sm">{selectedLocation.city}</div>
+                                                                                <div
+                                                                                    className="text-xs text-muted-foreground">
+                                                                                    Lat: {selectedLocation.lat.toFixed(6)},
+                                                                                    Lon:{" "}
+                                                                                    {selectedLocation.lon.toFixed(6)}
+                                                                                </div>
+                                                                            </div>
+                                                                            <Button
+                                                                                type="button"
+                                                                                variant="ghost"
+                                                                                size="sm"
+                                                                                onClick={() => {
+                                                                                    setSelectedLocation(null)
+                                                                                    setLocationQuery("")
+                                                                                }}
+                                                                                className="h-auto p-1 cursor-pointer"
+                                                                            >
+                                                                                ×
+                                                                            </Button>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            </div>
                                                             <DialogFooter>
-                                                                <Button 
-                                                                    variant="outline" 
+                                                                <Button
+                                                                    className={'cursor-pointer'}
+                                                                    variant="outline"
                                                                     onClick={() => {
-                                                                        const dialogElement = document.querySelector('[role="dialog"]');
-                                                                        if (dialogElement) {
-                                                                            dialogElement.setAttribute('data-state', 'closed');
-                                                                        }
+                                                                        setSellDialogOpen(null)
                                                                     }}
                                                                 >
                                                                     {t('cancel')}
+
                                                                 </Button>
-                                                                <Button 
-                                                                    variant="destructive"
-                                                                    onClick={() => {
-                                                                        handleDeleteSell(machine.id);
-                                                                        const dialogElement = document.querySelector('[role="dialog"]');
-                                                                        if (dialogElement) {
-                                                                            dialogElement.setAttribute('data-state', 'closed');
-                                                                        }
-                                                                    }}
+                                                                {!machine.isForSale && (<Button
+                                                                    className={'cursor-pointer'}
+                                                                    onClick={() => handlePutForSale(machine.id)}
+                                                                    disabled={!sellPrice || Number(sellPrice) <= 0}
                                                                 >
-                                                                    {t('delete')}
-                                                                </Button>
+                                                                    {t('collection.sell')}
+                                                                </Button>)}
+                                                                {machine.isForSale && (
+                                                                    <>
+                                                                        <Button
+                                                                            className={'cursor-pointer'}
+                                                                            onClick={() => handleUpdateSale(machine.id)}
+                                                                            disabled={!sellPrice || Number(sellPrice) <= 0}
+                                                                        >
+                                                                            {t('update')}
+                                                                        </Button>
+                                                                        <Button variant="destructive"
+                                                                                className="cursor-pointer"
+                                                                                onClick={() => {
+                                                                                    if (confirm(t('collection.confirmDeleteSell'))) {
+                                                                                        handleDeleteSell(machine.id);
+                                                                                    }
+                                                                                }}>
+                                                                            <Trash2 className="w-5 h-5"/>
+                                                                        </Button>
+                                                                    </>
+                                                                )}
                                                             </DialogFooter>
                                                         </DialogContent>
                                                     </Dialog>

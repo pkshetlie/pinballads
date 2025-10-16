@@ -14,7 +14,8 @@ import {useToast} from "@/hooks/use-toast"
 
 export default function MachineCollectionPage() {
     const router = useRouter();
-    const [modalOpen, setModalOpen] = useState(false);
+    const [progressOpen, setProgressOpen] = useState(false);
+    const [progress, setProgress] = useState<'data' | 'images' | 'success' | 'error'>('data');
     const { apiGet, apiPost } = useApi();
     const { id } = useParams()
     const { t } = useLanguage()
@@ -22,24 +23,25 @@ export default function MachineCollectionPage() {
 
     const handleCreate = async (formData: MachineFormData) => {
         try {
-            const data = await apiPost(`/api/collection/${id}/machine`, formData).then((data) => {
+            if(!formData.opdbId){
                 toast({
-                    title: t('toasts.success'),
-                    description: t('collection.toasts.machineCreated'),
-                    variant: "success",
+                    title: t('toasts.error'),
+                    description: t('collection.toasts.chooseAMachineInList'),
+                    variant: "destructive",
                 });
+                return;
+            }
+            setProgressOpen(true);
+            setProgress('data');
 
+            const data = await apiPost(`/api/collection/${id}/machine`, formData).then((data) => {
                 const machineId = data.id;
                 if(formData.images.length === 0) {
-                    setTimeout(function(){
-                        toast({
-                            title: t('toasts.success'),
-                            description: t('collection.toasts.machineCreated'),
-                            variant: "success",
-                        });
+                    setTimeout(function () {
                         window.location.href = `/collection/${id}`;
-                    },5000)
+                    }, 2000)
                 }
+                
                 const images = formData.images;
 
                 const formDataImage = new FormData();
@@ -48,10 +50,12 @@ export default function MachineCollectionPage() {
                     formDataImage.append("titles[]", image.title)
                     formDataImage.append("uids[]", image.uid)
                 });
+                setProgress('images');
                 apiPost(`/api/machine/${machineId}/images`, formDataImage).then(data => {
-                    setTimeout(function(){
+                    setProgress('success');
+                    setTimeout(function () {
                         window.location.href = `/collection/${id}`;
-                    },5000)
+                    }, 2000)
                 });
 
 
@@ -63,7 +67,7 @@ export default function MachineCollectionPage() {
             toast({
                 title: t('toasts.error'),
                 description: error instanceof Error ? error.message : t('collection.toasts.machineCreationError'),
-                variant: "success",
+                variant: "destructive",
             });
         }
     };
@@ -85,20 +89,17 @@ export default function MachineCollectionPage() {
 
                 <MachineForm onSubmit={handleCreate} buttonText={t('collection.addMachine')}/>
 
-                <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+                <Dialog open={progressOpen} onOpenChange={setProgressOpen}>
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle>Flipper ajouté !</DialogTitle>
-                            <DialogDescription>Votre flipper a été ajouté à la collection avec succès.</DialogDescription>
+                            <DialogTitle>{t('collection.progress.title')}</DialogTitle>
+                            <DialogDescription>
+                                {progress === 'data' && t('collection.progress.savingData')}
+                                {progress === 'images' && t('collection.progress.uploadingImages')}
+                                {progress === 'success' && t('collection.progress.success')}
+                                {progress === 'error' && t('collection.progress.error')}
+                            </DialogDescription>
                         </DialogHeader>
-                        <DialogFooter>
-                            <button
-                                className="bg-primary text-white px-4 py-2 rounded hover:bg-primary/90"
-                                onClick={() => router.push("/collection/all")}
-                            >
-                                OK
-                            </button>
-                        </DialogFooter>
                     </DialogContent>
                 </Dialog>
             </main>

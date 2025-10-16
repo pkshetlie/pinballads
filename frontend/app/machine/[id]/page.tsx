@@ -19,10 +19,11 @@ export default function EditMachinePage() {
     const router = useRouter();
     const { apiGet, apiPost, apiPut } = useApi();
     const { t } = useLanguage();
-    const [modalOpen, setModalOpen] = useState(false);
     const [pinball, setPinball] = useState<PinballDto>();
     const {token} = useAuth();
     const {toast} = useToast();
+    const [progressOpen, setProgressOpen] = useState(false);
+    const [progress, setProgress] = useState<'data' | 'images' | 'success' | 'error'>('data');
 
     const machineId = params.id;
 
@@ -41,6 +42,18 @@ export default function EditMachinePage() {
         const images = formData.images;
         const maxSize = 2 * 1024 * 1024; // 2MB in bytes
 
+        if(!formData.opdbId){
+            toast({
+                title: t('toasts.error'),
+                description: t('collection.toasts.chooseAMachineInList'),
+                variant: "destructive",
+            });
+            return;
+        }
+
+        setProgressOpen(true);
+        setProgress('data');
+
         // Check image sizes first
         for (const image of images || []) {
             if (image.file.size > maxSize) {
@@ -49,6 +62,8 @@ export default function EditMachinePage() {
                     description: `${t('collection.toasts.imageTooLarge')} "${image.title}" (${(image.file.size / (1024 * 1024)).toFixed(2)}MB), ${t('collection.toasts.imageTooLargeDescription')}.`,
                     variant: 'destructive',
                 });
+                setProgress('error');
+                setProgressOpen(false);
                 return; // Stop the process if any image is too large
             }
         }
@@ -73,9 +88,14 @@ export default function EditMachinePage() {
             });
         }
             try{
-              
-            await apiPost(`/api/machine/${machineId}/images`, formDataImage);
-            toast({
+                setProgress('images');
+                await apiPost(`/api/machine/${machineId}/images`, formDataImage).then(data => {
+                    setProgress('success');
+                    setTimeout(function () {
+                        router.back()
+                    }, 2000)
+                });
+                toast({
                 title: t('toasts.success'),
                 description: t('collection.toasts.machineUpdated'),
                 variant: "success",
@@ -114,19 +134,17 @@ export default function EditMachinePage() {
                 <h1 className="text-3xl font-bold mb-6">{t('collection.editMachine')}</h1>
                 <MachineForm initialData={pinball} onSubmit={handleUpdate} buttonText={t('collection.updateMachine')}/>
 
-                <Dialog open={modalOpen} onOpenChange={(open) => setModalOpen(open)}>
+                <Dialog open={progressOpen} onOpenChange={setProgressOpen}>
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle>Machine mise à jour !</DialogTitle>
+                            <DialogTitle>{t('collection.progress.title')}</DialogTitle>
                             <DialogDescription>
-                                La machine a été mise à jour avec succès.
+                                {progress === 'data' && t('collection.progress.savingData')}
+                                {progress === 'images' && t('collection.progress.uploadingImages')}
+                                {progress === 'success' && t('collection.progress.success')}
+                                {progress === 'error' && t('collection.progress.error')}
                             </DialogDescription>
                         </DialogHeader>
-                        <DialogFooter>
-                            <Button onClick={() => router.push("/collection/all")}>
-                                OK
-                            </Button>
-                        </DialogFooter>
                     </DialogContent>
                 </Dialog>
             </main>
