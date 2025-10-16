@@ -1,12 +1,20 @@
 export const collection = {
     en: {
         collection: {
+            progress : {
+                title: 'Progress',
+                savingData : 'Saving data...',
+                uploadingImages: 'Uploading images...',
+                success: 'Upload successful, redirecting to your collection in progress.',
+                error: 'Upload failed',
+            },
             toasts: {
                 collectionCreated: 'Collection created',
                 collectionUpdated: 'Collection updated',
                 collectionDeleted: 'Collection deleted',
                 cantLoadCollections: 'Failed to load your collections',//"Impossible de charger vos collections. Veuillez réessayer."
                 machineUpdated: "Pinball upated",
+                chooseAMachineInList: "Choose a pinball in the list",
                 machineCreated: "Pinball created, you are going to be redirected to your collection",
                 imageTooLargeDescription: 'The max size is 2Mb. Please resize your image and try again.',
                 imageTooLarge: 'Image too large',
@@ -118,6 +126,13 @@ export const collection = {
     },
     fr: {
         collection: {
+            progress : {
+                title: 'Sauvegarde en cours',
+                savingData : 'Enregistrement des données...',
+                uploadingImages: 'Envoi des images...',
+                success: 'Sauvegarde terminée, redirection à la collection en cours.',
+                error: 'Sauvegarde échouée',
+            },
             toasts: {
                 collectionCreated: "Collection créée",
                 collectionUpdated: "Collection mise à jour",
@@ -125,6 +140,7 @@ export const collection = {
                 cantLoadCollections: "Impossible de charger vos collections. Veuillez réessayer.",
                 machineUpdated: "Flipper mis à jour",
                 machineCreated: "Flipper ajouté, vous allez etre redirigé vers votre collection",
+                chooseAMachineInList: "Choisissez un flipper dans la liste",
                 imageTooLargeDescription: 'la taille maximum des images est de 2Mb. Redimensionnez la et recommencez.',
                 imageTooLarge: 'Image trop grosse',
             },

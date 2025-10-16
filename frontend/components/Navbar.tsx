@@ -58,9 +58,6 @@ export default function Navbar() {
                                 {t("nav.browse")}
                             </a>
                             {user ? (<>
-                                <a href="/sell" className="text-muted-foreground hover:text-foreground transition-colors">
-                                    {t("nav.sell")}
-                                </a>
                                 <span className="text-sm text-foreground font-medium">{user.name}</span>
 
                                 <Button size="sm" asChild>

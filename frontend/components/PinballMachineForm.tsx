@@ -190,6 +190,10 @@ export default function MachineForm({initialData, onSubmit, buttonText}: Machine
 
     const handleKeyDown = () => {
         // Si une saisie au clavier est détectée, activez le menu.
+        setSelectedGame(null);
+        setManufacturer(null)
+        setYear(null)
+        setOpdbId(null)
         setShowDropdown(true);
     };
     const handleInput = (value: string) => {
@@ -305,7 +309,8 @@ export default function MachineForm({initialData, onSubmit, buttonText}: Machine
                                    placeholder={t('collection.searchForGame')}
                                    required value={query}
                                    onKeyDown={handleKeyDown} // Ne s'active que sur saisie clavier
-                                   onChange={(e) => setQuery(e.target.value)}/>
+                                   onChange={(e) => setQuery(e.target.value)}
+                            />
                             {showDropdown && results.length > 0 && (
                                 <ul className="mt-2 border rounded-lg p-2 bg-card shadow bg-"
                                     style={{position: 'absolute', zIndex: 200}}>
@@ -325,7 +330,7 @@ export default function MachineForm({initialData, onSubmit, buttonText}: Machine
                             <Select required
                                     value={manufacturer}
                                     onValueChange={(value) => setManufacturer(value as string)}
-                                    disabled={!!manufacturer}>
+                                    disabled={true}>
                                 <SelectTrigger>
                                     <SelectValue placeholder={t('sell.selectManufacturer')}/>
                                 </SelectTrigger>
@@ -350,12 +355,12 @@ export default function MachineForm({initialData, onSubmit, buttonText}: Machine
                                 onChange={(e) => setYear(e.target.value)} 
                                 min="1930" 
                                 required
-                                disabled={!!year} // Disable the input if year has a value
+                                disabled={true} // Disable the input if year has a value
                             />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="condition">{t('sell.condition')} *</Label>
-                            <Select required value={condition} onValueChange={(value) => setCondition(value)}>
+                            <Select required value={condition ?? 'good'} onValueChange={(value) => setCondition(value)}>
                                 <SelectTrigger><SelectValue placeholder={t('sell.selectCondition')}/></SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="excellent">{t('sell.conditions.excellent')}</SelectItem>
