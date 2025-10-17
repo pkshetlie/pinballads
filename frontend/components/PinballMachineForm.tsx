@@ -1,6 +1,6 @@
 "use client"
 
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
 import {Input} from "@/components/ui/input"
@@ -11,11 +11,10 @@ import {Checkbox} from "@/components/ui/checkbox"
 import {Settings, Upload} from "lucide-react"
 import PhotoUploader from "@/components/PhotoUploader"
 import {useLanguage} from "@/lib/language-context"
-import {useApi} from "@/lib/api";
 import {PinballDto} from "@/components/object/pinballDto";
 import {Manufacturers} from "@/components/object/manufacturer";
-import {useToast} from "@/hooks/use-toast";
 import {defaultFeatures, featuresType} from '@/components/object/features';
+import SearchDropdown from "@/components/SearchDropdown";
 
 
 type Game = {
@@ -128,7 +127,6 @@ function migrateLegacyFeatures(features: AnyObj): featuresType {
 
 export default function MachineForm({initialData, onSubmit, buttonText}: MachineFormProps) {
     const {t} = useLanguage();
-    const {apiGet} = useApi();
     const [query, setQuery] = useState(initialData?.name || "");
     const [opdbId, setOpdbId] = useState(initialData?.opdbId || "");
     const [manufacturer, setManufacturer] = useState(initialData?.manufacturer || "");
@@ -137,9 +135,6 @@ export default function MachineForm({initialData, onSubmit, buttonText}: Machine
     const [condition, setCondition] = useState(initialData?.condition || "");
     const [startDate, setStartDate] = useState(initialData?.owningDate || "");
     const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>(initialData?.images||[]);
-    const [selectedGame, setSelectedGame] = useState<Game | null>(null);
-    const [results, setResults] = useState<any[]>([]); // Pour autocomplete si nécessaire
-    const {toast} = useToast();
 
     const additionalOptionsData = {
         pinsound: {
@@ -183,29 +178,6 @@ export default function MachineForm({initialData, onSubmit, buttonText}: Machine
         return additionalOptionsData;
     });
 
-
-
-
-    const [showDropdown, setShowDropdown] = useState(false); // Contrôle de l'ouverture du menu.
-
-    const handleKeyDown = () => {
-        // Si une saisie au clavier est détectée, activez le menu.
-        setSelectedGame(null);
-        setManufacturer(null)
-        setYear(null)
-        setOpdbId(null)
-        setShowDropdown(true);
-    };
-    const handleInput = (value: string) => {
-        setQuery(value);
-
-        // Si la saisie provient d'un script (comme lors du chargement), ne pas afficher la liste déroulante.
-        if (!selectedGame || value !== selectedGame.name) {
-            setShowDropdown(true);
-        } else {
-            setShowDropdown(false);
-        }
-    };
     // Gestion des changements par catégorie pour les options supplémentaires
     const handleOptionChange = (category: string, key: string, value: boolean | number | string) => {
         setAdditionalOptions((prev) => ({
@@ -216,38 +188,6 @@ export default function MachineForm({initialData, onSubmit, buttonText}: Machine
                 [key]: value,
             },
         }));
-    };
-
-    useEffect(() => {
-        if (query.length < 3 || !showDropdown) {
-            setResults([]);
-            return;
-        }
-
-        const timer = setTimeout(() => {
-            // Exemple d'appel API pour chercher des jeux correspondants
-            apiGet(`/api/search/game?query=${encodeURIComponent(query)}`)
-                .then((data) => setResults(data))
-                .catch(() => setResults([]));
-        }, 400);
-
-        return () => clearTimeout(timer);
-    }, [query, showDropdown]);
-
-    const handleSelectGame = (game: Game) => {
-        setSelectedGame(game);
-        setOpdbId(game.opdb_id)
-        setQuery(game.name);
-        setShowDropdown(false);
-        setManufacturer(game.manufacturer?.name.toLowerCase()
-            .replace(/\./g, "")      // enlève tous les points
-            .replace(/&/g, "and")    // remplace tous les &
-            .replace(/\s+/g, "-")    // tous les espaces (1+)
-            .trim() || "");
-        setYear(game.manufacture_date ? new Date(game.manufacture_date).getFullYear().toString() : "");
-        setDescription(game.description || "");
-
-        setResults([]); // on ferme la liste
     };
 
     const convertBlobUrlsToFiles = async (blobUrls: UploadedImage[]): Promise<UploadedImageResult[]> => {
@@ -292,6 +232,14 @@ export default function MachineForm({initialData, onSubmit, buttonText}: Machine
         })
     }
 
+    const handleSelectGame = (game: Game) => {
+        setQuery(game.name);
+        setOpdbId(game.opdb_id);
+        setManufacturer(game.manufacturer?.full_name?.toLowerCase() || "");
+        setYear(game.manufacture_date ? new Date(game.manufacture_date).getFullYear().toString() : "");
+        setDescription(game.description || "");
+    };
+
     return (
         <form className="space-y-8" onSubmit={handleSubmit}>
             {/* Basic Info */}
@@ -305,26 +253,15 @@ export default function MachineForm({initialData, onSubmit, buttonText}: Machine
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                             <Label htmlFor="title">{t('sell.machineTitle')} *</Label>
-                            <Input id="title"
-                                   placeholder={t('collection.searchForGame')}
-                                   required value={query}
-                                   onKeyDown={handleKeyDown} // Ne s'active que sur saisie clavier
-                                   onChange={(e) => setQuery(e.target.value)}
+
+                            <SearchDropdown
+                                id="title"
+                                placeholder={t("collection.searchForGame")}
+                                query={query}
+                                setQuery={setQuery}
+                                onGameSelect={handleSelectGame}
                             />
-                            {showDropdown && results.length > 0 && (
-                                <ul className="mt-2 border rounded-lg p-2 bg-card shadow bg-"
-                                    style={{position: 'absolute', zIndex: 200}}>
-                                    {results.map((game) => (
-                                        <li
-                                            key={game.opdb_id}
-                                            className="p-1 hover:bg-card/80 cursor-pointer"
-                                            onClick={() => handleSelectGame(game)}
-                                        >
-                                            {game.name} ({game.manufacturer?.full_name} {game.manufacture_date})
-                                        </li>
-                                    ))}
-                                </ul>
-                            )} </div>
+                        </div>
                         <div className="space-y-2">
                             <Label htmlFor="manufacturer">{t('sell.manufacturer')} *</Label>
                             <Select required

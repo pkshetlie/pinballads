@@ -299,12 +299,13 @@ export default function ListingsPage({ params }: { params: { opdb_id?: string } 
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
 
     useEffect(() => {
+        if (!token) return;
         fetchCollection();
     }, [token]);
 
     const fetchCollection = async () => {
         try {
-            const result = await apiGet(`/api/public/sales`)
+            const result = await apiGet(`sales`)
 
             if (result) {
                 setPinballMachines(result.pinballs)

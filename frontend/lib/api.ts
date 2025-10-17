@@ -2,7 +2,6 @@ import config from '../config';
 import { useAuth } from './auth-context';
 import {useLanguage} from "@/lib/language-context";
 
-
 export async function loginUser(email: string, password: string) {
   const url = new URL('login_check', config.API_BASE_URL).href; // Gère les slashes correctement
 
@@ -24,7 +23,7 @@ export async function loginUser(email: string, password: string) {
 
 export async function refreshToken(refreshToken: string) {
   const url = new URL('token/refresh', config.API_BASE_URL).href; // Gère les slashes correctement
-
+  
   const response = await fetch(url, {
     method: 'POST',
     headers: {
@@ -49,21 +48,24 @@ export function useApi() {
     endpoint: string,
     body?: Record<string, any> | FormData // Permet maintenant de supporter FormData
 ) => {
-  if (!token) {
-    throw new Error('No token available');
-  }
+    // Check if the endpoint starts with /api/public
+    const isPublicEndpoint = endpoint.startsWith('/api/public');
 
-  const url = new URL(endpoint, config.API_BASE_URL).href;
+    if (!token && !isPublicEndpoint) {
+      throw new Error('No token available');
+    }
 
-  // Configuration initiale
-  const options: RequestInit = {
-    method,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Accept-Language': language,
-    },
-    body: undefined, // Par défaut, aucun corps
-  };
+    const url = new URL(endpoint, config.API_BASE_URL).href;
+
+    // Configuration initiale
+    const options: RequestInit = {
+      method,
+      headers: {
+        ...(isPublicEndpoint ? {} : {Authorization: `Bearer ${token}`}),
+        'Accept-Language': language,
+      },
+      body: undefined, // Par défaut, aucun corps
+    };
 
   // Gestion du corps de la requête selon son type
   if (body) {

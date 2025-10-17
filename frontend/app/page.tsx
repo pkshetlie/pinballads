@@ -8,18 +8,84 @@ import { Badge } from "@/components/ui/badge"
 import { useLanguage } from "@/lib/language-context"
 import { useAuth } from '@/lib/auth-context';
 import Navbar from "@/components/Navbar";
+import {useEffect, useState} from "react";
+import {useApi} from "@/lib/api";
+import SearchDropdown from "@/components/SearchDropdown";
 
 // Mock data for featured pinball machines
 const featuredMachines = [
 
 ]
 
+type Game = {
+  opdb_id: string
+  is_machine: boolean
+  name: string
+  common_name: string | null
+  shortname: string | null
+  physical_machine: number
+  ipdb_id: number | null
+  manufacture_date: string | null
+  manufacturer: {
+    manufacturer_id: number
+    name: string
+    full_name: string
+    created_at: string
+    updated_at: string
+  } | null
+  type: string | null
+  display: string | null
+  player_count: number | null
+  features: string[]
+  keywords: string[]
+  description: string | null
+  created_at: string
+  updated_at: string
+  images: UploadedImageResult[];
+}
+
 
 
 export default function HomePage() {
   const { t } = useLanguage()
   const { login, user, logout } = useAuth(); // Récupère le contexte utilisateur
+  const [query, setQuery] = useState("");
+  const [opdbId, setOpdbId] = useState( "");
+  const [manufacturer, setManufacturer] = useState("");
+  const [year, setYear] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false); // Contrôle de l'ouverture du menu.
+  const [selectedGame, setSelectedGame] = useState<null>(null);
+  const [results, setResults] = useState<any[]>([]); // Pour autocomplete si nécessaire
+  const {apiGet} = useApi();
+  const [description, setDescription] = useState("");
 
+  useEffect(() => {
+    if (query.length < 3 || !showDropdown) {
+      setResults([]);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      // Exemple d'appel API pour chercher des jeux correspondants
+      apiGet(`/api/public/search/game?query=${encodeURIComponent(query)}`)
+          .then((data) => setResults(data))
+          .catch(() => setResults([]));
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [query, showDropdown]);
+
+  const searchPinball = () => {
+    window.location.href = `/listings/${opdbId}`;
+  }
+
+  const handleSelectGame = (game: Game) => {
+    setQuery(game.name);
+    setOpdbId(game.opdb_id);
+    setManufacturer(game.manufacturer?.full_name?.toLowerCase() || "");
+    setYear(game.manufacture_date ? new Date(game.manufacture_date).getFullYear().toString() : "");
+    setDescription(game.description || "");
+  };
   return (
     <div className="min-h-screen bg-background">
     <Navbar/>
@@ -34,13 +100,20 @@ export default function HomePage() {
             <div className="flex flex-col md:flex-row gap-4 bg-card p-4 rounded-lg shadow-lg">
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-                <Input placeholder={t("home.searchPlaceholder")} className="pl-10 h-12 text-lg" />
+                <SearchDropdown
+                    id="title"
+                    placeholder={t("collection.searchForGame")}
+                    className={'pl-10 h-12 text-lg"'}
+                    query={query}
+                    setQuery={setQuery}
+                    onGameSelect={handleSelectGame}
+                ></SearchDropdown>
               </div>
-              <div className="flex-1 relative">
-                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-                <Input placeholder={t("home.locationPlaceholder")} className="pl-10 h-12 text-lg" />
-              </div>
-              <Button size="lg" className="h-12 px-8">
+              {/*<div className="flex-1 relative">*/}
+              {/*  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />*/}
+              {/*  <Input placeholder={t("home.locationPlaceholder")} className="pl-10 h-12 text-lg" />*/}
+              {/*</div>*/}
+              <Button size="lg" className="h-12 px-8 cursor-pointer" onClick={(e)=>searchPinball()}>
                 <Search className="w-5 h-5 mr-2" />
                 {t("home.searchButton")}
               </Button>

@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class SalesController extends AbstractController
 {
-    #[Route('/api/sales', name: 'app_sales', methods: ['GET'])]
+    #[Route('/api/public/sales', name: 'app_sales', methods: ['GET'])]
     public function index(
         Request $request,
         DtoService $dtoService,

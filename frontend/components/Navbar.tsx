@@ -84,11 +84,6 @@ export default function Navbar() {
                                 {t("nav.browse")}
                             </a>
                             {user ? (<>
-                                <a href="/sell" className="text-muted-foreground hover:text-foreground transition-colors">
-                                    {t("nav.sell")}
-                                </a>
-                                <span className="text-sm text-foreground font-medium">{user.name}</span>
-
                                 <Button size='default' asChild>
                                     <a href="/collection" className={`text-foreground font-medium ${isMobileMenuOpen ? 'text-2xl' : ''}`}>{t('collection.myCollections')}</a>
                                 </Button>
