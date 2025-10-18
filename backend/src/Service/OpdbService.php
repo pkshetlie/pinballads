@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Dto\Opdb\ManufacturerDto;
+use App\Dto\PinballDto;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use App\Dto\Opdb\GameDto;
@@ -67,12 +68,13 @@ class OpdbService
         $filteredMachines = array_filter($data, function ($machine) use ($searchTerm) {
             $name = strtolower($machine['name']);
             $shortname = strtolower($machine['shortname'] ?? '');
-            $isAlias = strtolower($machine['isAlias'] ?? false);
+            $opdbId = strtolower($machine['opdb_id'] ?? '');
             $manufacturer = strtolower($machine['manufacturer']['name'] ?? '');
             $manufacturerFullName = strtolower($machine['manufacturer']['full_name'] ?? '');
             $search = strtolower($searchTerm);
 
             return !str_contains($name, 'premium/le') && (similar_text($name, $search, $percentName) > 0 && $percentName > 80
+                || $opdbId == $search
                 || (strlen($shortname) > 0 && similar_text(
                         $shortname,
                         $search,
@@ -115,5 +117,51 @@ class OpdbService
         }, $filteredMachines);
 
         return $machineDtos;
+    }
+
+    public function searchMachine(string $searchTerm): ?GameDto
+    {
+        $data = $this->getLocalOpdbData();
+
+        $machines = array_filter($data, function ($machine) use ($searchTerm) {
+            $opdbId = strtolower($machine['opdb_id'] ?? '');
+            $search = strtolower($searchTerm);
+
+            return $opdbId == $search;
+        });
+
+        if (!$machines || count($machines) == 0) {
+            return null;
+        }
+
+        $machine = array_values($machines)[0];
+
+        $gameDto = new GameDto();
+        $gameDto->opdbId = $machine['opdb_id'];
+            $gameDto->isMachine = $machine['is_machine'] ?? false;
+            $gameDto->name = $machine['name'];
+            $gameDto->commonName = $machine['common_name'] ?? null;
+            $gameDto->shortname = $machine['shortname'] ?? null;
+            $gameDto->physicalMachine = $machine['physical_machine'] ?? 0;
+            $gameDto->ipdbId = $machine['ipdb_id'] ?? null;
+            $gameDto->manufactureDate = $machine['manufacture_date'] ?? null;
+            $gameDto->type = $machine['type'] ?? null;
+            $gameDto->display = $machine['display'] ?? null;
+            $gameDto->playerCount = $machine['player_count'] ?? null;
+            $gameDto->features = $machine['features'] ?? [];
+            $gameDto->keywords = $machine['keywords'] ?? [];
+            $gameDto->description = $machine['description'] ?? null;
+            $gameDto->createdAt = $machine['created_at'];
+            $gameDto->updatedAt = $machine['updated_at'];
+            $gameDto->images = $machine['images'] ?? [];
+
+            if (isset($machine['manufacturer'])) {
+                $manufacturerDto = new ManufacturerDto();
+                $manufacturerDto->name = $machine['manufacturer']['name'] ?? null;
+                $manufacturerDto->fullName = $machine['manufacturer']['full_name'] ?? null;
+                $gameDto->manufacturer = $manufacturerDto;
+            }
+
+            return $gameDto;
     }
 }

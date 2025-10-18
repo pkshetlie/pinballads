@@ -11,40 +11,11 @@ import Navbar from "@/components/Navbar";
 import {useEffect, useState} from "react";
 import {useApi} from "@/lib/api";
 import SearchDropdown from "@/components/SearchDropdown";
-
-// Mock data for featured pinball machines
-const featuredMachines = [
-
-]
-
-type Game = {
-  opdb_id: string
-  is_machine: boolean
-  name: string
-  common_name: string | null
-  shortname: string | null
-  physical_machine: number
-  ipdb_id: number | null
-  manufacture_date: string | null
-  manufacturer: {
-    manufacturer_id: number
-    name: string
-    full_name: string
-    created_at: string
-    updated_at: string
-  } | null
-  type: string | null
-  display: string | null
-  player_count: number | null
-  features: string[]
-  keywords: string[]
-  description: string | null
-  created_at: string
-  updated_at: string
-  images: UploadedImageResult[];
-}
-
-
+import Footer from "@/components/Footer";
+import {PinballDto} from "@/components/object/pinballDto";
+import {toast} from "@/components/ui/use-toast";
+import {PinballCardToSell} from "@/components/PinballCardToSell";
+import {GameDto} from "@/components/object/GameDto";
 
 export default function HomePage() {
   const { t } = useLanguage()
@@ -54,12 +25,16 @@ export default function HomePage() {
   const [manufacturer, setManufacturer] = useState("");
   const [year, setYear] = useState("");
   const [showDropdown, setShowDropdown] = useState(false); // Contrôle de l'ouverture du menu.
-  const [selectedGame, setSelectedGame] = useState<null>(null);
   const [results, setResults] = useState<any[]>([]); // Pour autocomplete si nécessaire
+  const [featuredMachines, setFeaturedMachines] = useState<PinballDto[]|[]>([]); // Pour autocomplete si nécessaire
   const {apiGet} = useApi();
+  const {token} = useAuth();
   const [description, setDescription] = useState("");
 
   useEffect(() => {
+    if(featuredMachines.length === 0){
+      fetchFeatured();
+    }
     if (query.length < 3 || !showDropdown) {
       setResults([]);
       return;
@@ -75,11 +50,29 @@ export default function HomePage() {
     return () => clearTimeout(timer);
   }, [query, showDropdown]);
 
-  const searchPinball = () => {
-    window.location.href = `/listings/${opdbId}`;
+  const fetchFeatured = async () => {
+    try {
+      const result = await apiGet(`/api/public/featured`)
+
+      if (result) {
+        setFeaturedMachines(result.pinballs)
+      } else {
+        throw new Error(result.error || "Failed to fetch collection")
+      }
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: `${t('collection.cantLoadMachines')}`,
+        variant: "destructive",
+      })
+    }
   }
 
-  const handleSelectGame = (game: Game) => {
+  const searchPinball = () => {
+    window.location.href = `/listings/?opdbid=${opdbId}`;
+  }
+
+  const handleSelectGame = (game: GameDto) => {
     setQuery(game.name);
     setOpdbId(game.opdb_id);
     setManufacturer(game.manufacturer?.full_name?.toLowerCase() || "");
@@ -135,42 +128,7 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredMachines.map((machine) => (
-              <Card key={machine.id} className="group hover:shadow-lg transition-shadow cursor-pointer">
-                <div className="aspect-[4/3] overflow-hidden rounded-t-lg">
-                  <img
-                    src={machine.image || "/placeholder.svg"}
-                    alt={machine.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between mb-2">
-                    <h4 className="font-semibold text-foreground text-lg leading-tight">{machine.title}</h4>
-                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                      <Star className="w-4 h-4 fill-accent text-accent" />
-                      {machine.rating}
-                    </div>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    {machine.manufacturer} • {machine.year}
-                  </p>
-                  <div className="flex items-center gap-2 mb-3">
-                    <Badge variant="secondary" className="text-xs">
-                      {machine.condition}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
-                    <MapPin className="w-4 h-4" />
-                    {machine.location}
-                  </div>
-                </CardContent>
-                <CardFooter className="p-4 pt-0">
-                  <div className="flex items-center justify-between w-full">
-                    <span className="text-2xl font-bold text-primary">${machine.price.toLocaleString()}</span>
-                    <Button size="sm">{t("home.viewDetails")}</Button>
-                  </div>
-                </CardFooter>
-              </Card>
+              <PinballCardToSell machine={machine} key={machine.id} />
             ))}
           </div>
         </div>
@@ -184,129 +142,49 @@ export default function HomePage() {
             <Card className="group hover:shadow-lg transition-shadow cursor-pointer">
               <div className="aspect-[16/9] overflow-hidden rounded-t-lg">
                 <img
-                  src="/vintage-pinball-machines-1970s.jpg"
+                  src="/images/vintage.jpg"
                   alt="Vintage Pinball Machines"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
-              <CardContent className="p-6 text-center">
-                <h4 className="text-xl font-semibold text-foreground mb-2">Vintage (1970s-1980s)</h4>
-                <p className="text-muted-foreground">Classic electromechanical and early solid-state machines</p>
+              <CardContent className="p-6 text-center" onClick={() => {window.location.href = '/listings/?years=1970,1980'}}>
+                <h4 className="text-xl font-semibold text-foreground mb-2">{t('home.vintage')} (1970-1980)</h4>
+                <p className="text-muted-foreground">{t('home.vintageText')}</p>
               </CardContent>
             </Card>
 
             <Card className="group hover:shadow-lg transition-shadow cursor-pointer">
               <div className="aspect-[16/9] overflow-hidden rounded-t-lg">
                 <img
-                  src="/modern-pinball-machines-1990s.jpg"
+                  src="/images/modern.jpg"
                   alt="Modern Pinball Machines"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
-              <CardContent className="p-6 text-center">
-                <h4 className="text-xl font-semibold text-foreground mb-2">Modern (1990s-2000s)</h4>
-                <p className="text-muted-foreground">DMD era machines with advanced features and themes</p>
+              <CardContent className="p-6 text-center" onClick={() => {window.location.href = '/listings/?years=1990,2000'}}>
+                <h4 className="text-xl font-semibold text-foreground mb-2">{t('home.modern')} (1990-2000)</h4>
+                <p className="text-muted-foreground">{t('home.modernText')}</p>
               </CardContent>
             </Card>
 
             <Card className="group hover:shadow-lg transition-shadow cursor-pointer">
               <div className="aspect-[16/9] overflow-hidden rounded-t-lg">
                 <img
-                  src="/contemporary-pinball-machines-2010s.jpg"
+                  src="/images/contemporary.jpg"
                   alt="Contemporary Pinball Machines"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
-              <CardContent className="p-6 text-center">
-                <h4 className="text-xl font-semibold text-foreground mb-2">Contemporary (2010s+)</h4>
-                <p className="text-muted-foreground">Latest technology with LCD displays and interactive features</p>
+              <CardContent className="p-6 text-center" onClick={() => {window.location.href = '/listings/?years=2010,2020'}}>
+                <h4 className="text-xl font-semibold text-foreground mb-2">{t('home.contemporary')} (2010+)</h4>
+                <p className="text-muted-foreground">{t('home.contemporaryText')}</p>
               </CardContent>
             </Card>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-card border-t py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                  <span className="text-primary-foreground font-bold text-lg">P</span>
-                </div>
-                <span className="text-xl font-bold text-foreground">PinballMarket</span>
-              </div>
-              <p className="text-muted-foreground text-sm">
-                The premier marketplace for pinball enthusiasts worldwide.
-              </p>
-            </div>
-            <div>
-              <h5 className="font-semibold text-foreground mb-3">Marketplace</h5>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Browse Machines
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Sell Your Machine
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Price Guide
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h5 className="font-semibold text-foreground mb-3">Support</h5>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Help Center
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Safety Tips
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Contact Us
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h5 className="font-semibold text-foreground mb-3">Community</h5>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Forums
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Events
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Newsletter
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; 2024 PinballMarket. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer></Footer>
     </div>
   )
 }

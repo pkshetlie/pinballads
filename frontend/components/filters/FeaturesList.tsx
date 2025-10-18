@@ -3,11 +3,14 @@ import {defaultFeatures, featuresType} from "@/components/object/features";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {useLanguage} from "@/lib/language-context";
+import {Checkbox} from "@/components/ui/checkbox";
 
-export default function FeaturesList() {
+export default function FeaturesList({handleFeatureSelection, preselectedFeatures}: {handleFeatureSelection: (features: string[]) => void, preselectedFeatures: string[] | undefined}) {
     const [searchQuery, setSearchQuery] = useState(""); // Recherche globale
     const [showAllCategories, setShowAllCategories] = useState<string[]>([]); // Les catégories "afficher plus"
+    const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
     const {t} = useLanguage();
+
     const features: featuresType = defaultFeatures;
 
     // Gestion de la logique de recherche
@@ -57,9 +60,16 @@ export default function FeaturesList() {
                     <div className="space-y-2">
                         {getDisplayedFeatures(category, features).map((feature) => (
                             <div key={feature} className="flex items-center space-x-2">
-                                <input
-                                    type="checkbox"
+                                <Checkbox
                                     id={`feature-${category}-${feature}`}
+                                    checked={selectedFeatures.includes(feature)}
+                                    onCheckedChange={(checked) => {
+                                        const newSelectedFeatures = checked
+                                            ? [...selectedFeatures, feature]
+                                            : selectedFeatures.filter(f => f !== feature);
+                                        setSelectedFeatures(newSelectedFeatures);
+                                        handleFeatureSelection(newSelectedFeatures);
+                                    }}
                                     className="cursor-pointer"
                                 />
                                 <label

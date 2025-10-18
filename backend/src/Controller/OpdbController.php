@@ -33,14 +33,14 @@ die;
     }
 
 
-    #[Route('/api/public/search/game', methods: ['GET'])]
-    public function index(Request $request, OpdbService $opdbService): JsonResponse
+    #[Route('/api/public/search/game/{opdbid}', methods: ['GET'])]
+    public function index(string $opdbid, OpdbService $opdbService): JsonResponse
     {
-        $machines = $opdbService->searchMachineGroups($request->query->get('query'));
-        return $this->json(array_values($machines));
+        $machines = $opdbService->searchMachine($opdbid);
+        return $this->json($machines);
     }
 
-    #[Route('/test/public/search', methods: ['GET'])]
+    #[Route('/api/public/search/game', methods: ['GET'])]
     public function test2(Request $request, OpdbService $opdbService): JsonResponse
     {
         $machines = $opdbService->searchMachineGroups($request->query->get('query'));

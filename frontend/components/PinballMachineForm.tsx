@@ -15,34 +15,8 @@ import {PinballDto} from "@/components/object/pinballDto";
 import {Manufacturers} from "@/components/object/manufacturer";
 import {defaultFeatures, featuresType} from '@/components/object/features';
 import SearchDropdown from "@/components/SearchDropdown";
-
-
-type Game = {
-    opdb_id: string
-    is_machine: boolean
-    name: string
-    common_name: string | null
-    shortname: string | null
-    physical_machine: number
-    ipdb_id: number | null
-    manufacture_date: string | null
-    manufacturer: {
-        manufacturer_id: number
-        name: string
-        full_name: string
-        created_at: string
-        updated_at: string
-    } | null
-    type: string | null
-    display: string | null
-    player_count: number | null
-    features: string[]
-    keywords: string[]
-    description: string | null
-    created_at: string
-    updated_at: string
-    images: UploadedImageResult[];
-}
+import {UploadedImageResult} from "@/components/object/UploadedImageResult";
+import {GameDto} from "@/components/object/GameDto";
 
 type MachineFormProps = {
     initialData?: PinballDto;
@@ -61,13 +35,6 @@ export type MachineFormData = {
     startDate?: string;
     images: UploadedImageResult[];
 }
-
-type UploadedImageResult = {
-    file: File; // URL Blob de l'image
-    url: string; // URL Blob de l'image
-    title: string; // Titre de l'image
-    uid: string; // Titre de l'image
-};
 
 type UploadedImage = {
     url: string; // URL Blob de l'image
@@ -232,7 +199,7 @@ export default function MachineForm({initialData, onSubmit, buttonText}: Machine
         })
     }
 
-    const handleSelectGame = (game: Game) => {
+    const handleSelectGame = (game: GameDto) => {
         setQuery(game.name);
         setOpdbId(game.opdb_id);
         setManufacturer(game.manufacturer?.full_name?.toLowerCase() || "");

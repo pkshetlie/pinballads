@@ -67,26 +67,16 @@ export default function Footer() {
                                 {t("footer.facebook")}
                             </a>
                         </li>
-                        {/*<li>*/}
-                        {/*    <a href="#" className="hover:text-foreground transition-colors">*/}
-                        {/*        {t("footer.forums")}*/}
-                        {/*    </a>*/}
-                        {/*</li>*/}
-                        {/*<li>*/}
-                        {/*    <a href="#" className="hover:text-foreground transition-colors">*/}
-                        {/*        {t("footer.events")}*/}
-                        {/*    </a>*/}
-                        {/*</li>*/}
-                        {/*<li>*/}
-                        {/*    <a href="#" className="hover:text-foreground transition-colors">*/}
-                        {/*        {t("footer.newsletter")}*/}
-                        {/*    </a>*/}
-                        {/*</li>*/}
+                        <li>
+                            <a href="https://discord.gg/vS393ZSvE2" target="_blank" className="hover:text-foreground transition-colors">
+                                {t("footer.discord")}
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
             <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-                <p>&copy; 2024 PinballMarket. {t("footer.allRightsReserved")}.</p>
+                <p>&copy; 2025 crazy-pinball. {t("footer.allRightsReserved")}.</p>
             </div>
         </div>
     </footer>)

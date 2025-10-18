@@ -25,14 +25,30 @@ import {useAuth} from "@/lib/auth-context";
 import {useApi} from "@/lib/api";
 import {PinballDto} from "@/components/object/pinballDto";
 import {toast} from "@/components/ui/use-toast";
-import {useRouter} from "next/navigation";
+import SearchDropdown from "@/components/SearchDropdown";
 
 // Mock data for pinball machine listings
 
-function FilterSidebar({className = ""}: { className?: string }) {
+function FilterSidebar({
+                           className = "",
+                           onChange
+                       }:
+                       {
+                           className?: string,
+                           onChange: (arg0: FiltersSidebarProps) => void
+                       },
+) {
+    const searchParams = useSearchParams();
+
+    const opdbid = searchParams.get('opdbid') ?? null;
+    const features = searchParams.get('features') ? searchParams.get('features')?.split(',') : [];
+    const years = searchParams.get('years') ? searchParams.get('years')?.split(',').map(Number) : [];
+
+    const {apiGet} = useApi()
     const {t} = useLanguage()
+    const [filterLoaded, setfilterLoaded] = useState(false)
     const [currency, setCurrency] = useState('EUR')
-    const [priceRange, setPriceRange] = useState([1000, 15000])
+    const [priceRange, setPriceRange] = useState([200, 50000])
     const [distanceRange, setDistanceRange] = useState([50])
     const [manufacturerOpen, setManufacturerOpen] = useState(true)
     const [yearOpen, setYearOpen] = useState(true)
@@ -41,6 +57,48 @@ function FilterSidebar({className = ""}: { className?: string }) {
     const [searchQuery, setSearchQuery] = useState(""); // Pour la recherche
     const [showAll, setShowAll] = useState(false); // Contrôle l'état "Afficher plus"
     const [selectedManufacturers, setSelectedManufacturers] = useState<string[]>([]);
+    const [selectedDecades, setSelectedDecades] = useState<string[]>([]);
+    const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
+    const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
+    const [selectedOpdbid, setSelectedopdbId] = useState<string | null>(null);
+    const [selectedGame, setSelectedGame] = useState<GameDto | null>(null);
+    const [selectedCity, setSelectedCity] = useState<string|null>(null);
+    const [selectedLocation, setSelectedLocation] = useState<{lat: null, long: null}|null>(null);
+
+    useEffect(() => {
+        if(!opdbid) return;
+
+        apiGet(`/api/public/search/game/${opdbid}`).then((data)=>{
+            setSelectedGame(data)
+            console.log(data)
+        });
+    }, [opdbid]);
+
+    useEffect(() => {
+        if (filterLoaded) return;
+
+        const selectedDecadesFromYears = decades
+            .filter(decade => years?.some(year => year >= decade.min && year <= decade.max))
+            .map(decade => decade.key);
+        setSelectedDecades(selectedDecadesFromYears);
+        setSelectedopdbId(opdbid);
+
+        setfilterLoaded(true);
+    }, [filterLoaded]);
+
+
+    useEffect(() => {
+        if(
+            selectedFeatures.length === 0
+            && selectedManufacturers.length === 0
+            && selectedDecades.length === 0
+            && selectedConditions.length === 0
+            && selectedGame === null
+            && selectedOpdbid === null
+        ) return;
+        onChange(filterAll());
+        console.log('changeFilter')
+    }, [selectedFeatures, selectedManufacturers, selectedDecades, selectedConditions, selectedGame]);
 
     const manufacturerList = Object.values(Manufacturers);
     const filteredManufacturers = manufacturerList.filter((manufacturer) =>
@@ -48,28 +106,35 @@ function FilterSidebar({className = ""}: { className?: string }) {
     );
     const displayedManufacturers = showAll
         ? filteredManufacturers
-        : filteredManufacturers.slice(0, 8);filteredManufacturers.slice(0, 8);
+        : filteredManufacturers.slice(0, 8);
+    filteredManufacturers.slice(0, 8);
 
 
     const conditions = [
-        {key: 'excellent',name: "sell.conditions.excellent", count: 'x'},
-        {key: 'veryGood',name: "sell.conditions.veryGood", count: 'x'},
-        {key: 'good',name: "sell.conditions.good", count: 'x'},
-        {key: 'fair',name: "sell.conditions.fair", count: 'x'},
-        {key: 'project',name: "sell.conditions.project", count: 'x'},
+        {key: 'excellent', name: "sell.conditions.excellent", count: 'x'},
+        {key: 'veryGood', name: "sell.conditions.veryGood", count: 'x'},
+        {key: 'good', name: "sell.conditions.good", count: 'x'},
+        {key: 'fair', name: "sell.conditions.fair", count: 'x'},
+        {key: 'project', name: "sell.conditions.project", count: 'x'},
     ]
 
     const decades = [
-        {name: "2020s", count: 'x', min: 2020, max: 2030},
-        {name: "2010s", count: 'x', min: 2010, max: 2019},
-        {name: "2000s", count: 'x', min: 2000, max: 2009},
-        {name: "1990s", count: 'x', min: 1990, max: 1999},
-        {name: "1980s", count: 'x', min: 1980, max: 1989},
-        {name: "1970s", count: 'x', min: 1970, max: 1979},
+        {key: '2020', name: "2020s", count: 'x', min: 2020, max: 2030},
+        {key: '2010', name: "2010s", count: 'x', min: 2010, max: 2019},
+        {key: '2000', name: "2000s", count: 'x', min: 2000, max: 2009},
+        {key: '1990', name: "1990s", count: 'x', min: 1990, max: 1999},
+        {key: '1980', name: "1980s", count: 'x', min: 1980, max: 1989},
+        {key: '1970', name: "1970s", count: 'x', min: 1970, max: 1979},
     ]
 
     const filterAll = () => {
-        const filter = {
+        return {
+            opdbId: selectedOpdbid,
+            game: selectedGame,
+            location: {
+                lon: null,
+                lat: null
+            },
             price: {
                 min: priceRange[0],
                 max: priceRange[1],
@@ -79,8 +144,9 @@ function FilterSidebar({className = ""}: { className?: string }) {
                 max: distanceRange[1],
             },
             manufacturer: selectedManufacturers.map(m => m.toLowerCase()),
-            condition: conditions.map(c => c.key),
-            features: [],
+            condition: selectedConditions.map(c => c.toLowerCase()),
+            features: selectedFeatures,
+            decade: selectedDecades.map(d => d.toLowerCase()),
         }
     }
 
@@ -114,7 +180,6 @@ function FilterSidebar({className = ""}: { className?: string }) {
                             <span>{currencies[currency]}{priceRange[1].toLocaleString()}</span>
                         </div>
                         <div className="flex gap-2">
-
                             <Input placeholder="Min" value={priceRange[0]} className="h-8 text-sm" readOnly/>
                             <Input placeholder="Max" value={priceRange[1]} className="h-8 text-sm" readOnly/>
                             <Select
@@ -136,22 +201,29 @@ function FilterSidebar({className = ""}: { className?: string }) {
                 </div>
 
                 {/* Distance Filter */}
-                <div className="space-y-4">
-                    <h4 className="font-medium text-foreground">{t("listings.distance")}</h4>
-                    <div className="space-y-3">
-                        <Slider
-                            value={distanceRange}
-                            onValueChange={setDistanceRange}
-                            max={100}
-                            min={5}
-                            step={5}
-                            className="w-full"
-                        />
-                        <div className="text-sm text-muted-foreground">
-                            {t("listings.within")} {distanceRange[0]} {t("listings.miles")}
-                        </div>
-                    </div>
-                </div>
+                {/*<div className="space-y-4">*/}
+                {/*    <h4 className="font-medium text-foreground">{t("listings.distance")}</h4>*/}
+                {/*    <div className="space-y-3 relative">*/}
+                {/*        <MapPin*/}
+                {/*            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5"/>*/}
+                {/*        <Input placeholder={t("listings.locationPlaceholder")} className="pl-10 h-11"*/}
+                {/*               onChange={(e)=> setSelectedCity(e.target.value)}*/}
+                {/*               defaultValue=""/>*/}
+                {/*    </div>*/}
+                {/*    <div className={`space-y-3 ${selectedLocation ? '' : 'hidden'}`}>*/}
+                {/*        <Slider*/}
+                {/*            value={distanceRange}*/}
+                {/*            onValueChange={setDistanceRange}*/}
+                {/*            max={100}*/}
+                {/*            min={5}*/}
+                {/*            step={5}*/}
+                {/*            className="w-full"*/}
+                {/*        />*/}
+                {/*        <div className="text-sm text-muted-foreground">*/}
+                {/*            {t("listings.within")} {distanceRange[0]} {t("listings.miles")}*/}
+                {/*        </div>*/}
+                {/*    </div>*/}
+                {/*</div>*/}
 
                 {/* Manufacturer Filter */}
                 <Collapsible open={manufacturerOpen} onOpenChange={setManufacturerOpen}>
@@ -182,8 +254,7 @@ function FilterSidebar({className = ""}: { className?: string }) {
                                             key={key}
                                             className="flex items-center space-x-2"
                                         >
-                                            <input
-                                                type="checkbox"
+                                            <Checkbox
                                                 id={`manufacturer-${key}`}
                                                 className="cursor-pointer"
                                                 checked={selectedManufacturers.includes(key)}
@@ -233,9 +304,19 @@ function FilterSidebar({className = ""}: { className?: string }) {
                     <CollapsibleContent className="space-y-3 mt-3">
                         {decades.map((decade) => (
                             <div key={decade.name} className="flex items-center space-x-2">
-                                <Checkbox id={`decade-${decade.name}`}/>
-                                <Label htmlFor={`decade-${decade.name}`}
-                                       className="text-sm text-foreground cursor-pointer flex-1">
+                                <Checkbox className={'cursor-pointer'}
+                                          id={`decade-${decade.name}`}
+                                          checked={selectedDecades?.includes(decade.key)}
+                                          onCheckedChange={(checked) => {
+                                              const newSelected = checked
+                                                  ? [...selectedDecades, decade.key]
+                                                  : selectedDecades.filter(d => d !== decade.key);
+                                              setSelectedDecades(newSelected);
+                                          }}
+                                />
+                                <Label
+                                    htmlFor={`decade-${decade.name}`}
+                                    className="text-sm text-foreground cursor-pointer flex-1">
                                     {decade.name}
                                 </Label>
                                 <span className="text-xs text-muted-foreground">({decade.count})</span>
@@ -257,9 +338,17 @@ function FilterSidebar({className = ""}: { className?: string }) {
                     <CollapsibleContent className="space-y-3 mt-3">
                         {conditions.map((condition) => (
                             <div key={condition.key} className="flex items-center space-x-2">
-                                <Checkbox id={`condition-${condition.key}`}/>
+                                <Checkbox id={`condition-${condition.key}`}
+                                          checked={selectedConditions?.includes(condition.key)}
+                                          onCheckedChange={(checked) => {
+                                              const newSelected = checked
+                                                  ? [...selectedConditions, condition.key]
+                                                  : selectedConditions.filter(c => c !== condition.key);
+                                              setSelectedConditions(newSelected);
+                                          }}
+                                />
                                 <Label
-                                    htmlFor={`condition-${condition.name}`}
+                                    htmlFor={`condition-${condition.key}`}
                                     className="text-sm text-foreground cursor-pointer flex-1"
                                 >
                                     {t(condition.name)}
@@ -280,7 +369,9 @@ function FilterSidebar({className = ""}: { className?: string }) {
                         )}
                     </CollapsibleTrigger>
                     <CollapsibleContent className="space-y-3 mt-3">
-                        <FeaturesList></FeaturesList>
+                        <FeaturesList handleFeatureSelection={(features) => {
+                            setSelectedFeatures(features);
+                        }} preselectedFeatures={[]}></FeaturesList>
                     </CollapsibleContent>
                 </Collapsible>
             </div>
@@ -288,23 +379,61 @@ function FilterSidebar({className = ""}: { className?: string }) {
     )
 }
 
-export default function ListingsPage({ params }: { params: { opdb_id?: string } }) {
-    const router = useRouter();
-    const opdbId = params.opdb_id;
+interface FiltersSidebarProps {
+    opdbId?: string | null,
+    game?: GameDto | null,
+    location: {
+        lon: string|null,
+        lat: string|null
+    },
+    price: {
+        min: number,
+        max: number,
+    },
+    distance: {
+        min: number,
+        max: number,
+    },
+    manufacturer: string[],
+    condition: string[],
+    features: string[],
+    decade: string[],
+}
+
+interface QueryParams {
+    years?: string;
+    features?: string;
+    opdbid?: string;
+    manufacturer?: string;
+}
+
+
+import {useSearchParams} from 'next/navigation';
+import {GameDto} from "@/components/object/GameDto";
+
+export default function ListingsPage({params}: {
+    params: { opdb_id?: string },
+}) {
+
     const {t} = useLanguage()
     const [showMobileFilters, setShowMobileFilters] = useState(false)
-    const [pinballMachines, setPinballMachines] = useState<PinballDto[]|[]>([]); // Afficher les résultats supplémentaires
+    const [pinballMachines, setPinballMachines] = useState<PinballDto[] | []>([]); // Afficher les résultats supplémentaires
     const {token} = useAuth();
     const {apiGet} = useApi();
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
+    const [filters, setFilters] = useState<FiltersSidebarProps|null>(null)
 
     useEffect(() => {
+        if (pinballMachines.length !== 0) {
+            return;
+        }
+
         fetchCollection();
     }, [token]);
 
     const fetchCollection = async () => {
         try {
-            const result = await apiGet(`/api/public/sales`)
+            const result = await apiGet(`public/sales`)
 
             if (result) {
                 setPinballMachines(result.pinballs)
@@ -320,6 +449,12 @@ export default function ListingsPage({ params }: { params: { opdb_id?: string } 
         }
     }
 
+    useEffect(() => {
+        if(!filters) return;
+        console.log('startSearch', filters)
+    }, [filters]);
+
+
     return (
         <div className="min-h-screen bg-background">
             <Navbar/>
@@ -332,14 +467,14 @@ export default function ListingsPage({ params }: { params: { opdb_id?: string } 
                             <div className="flex-1 relative">
                                 <Search
                                     className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5"/>
-                                <Input placeholder={t("listings.searchPlaceholder")} className="pl-10 h-11"
-                                       defaultValue=""/>
-                            </div>
-                            <div className="flex-1 relative">
-                                <MapPin
-                                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5"/>
-                                <Input placeholder={t("listings.locationPlaceholder")} className="pl-10 h-11"
-                                       defaultValue=""/>
+                                <SearchDropdown
+                                    id={'search-title'}
+                                                placeholder={t("listings.searchPlaceholder")}
+                                    className={'pl-10 h-11'}
+                                    query={filters?.game?.name || ''}
+                                    setQuery={()=>{}}
+                                    onGameSelect={()=>{}}
+                                    ></SearchDropdown>
                             </div>
                         </div>
 
@@ -390,7 +525,7 @@ export default function ListingsPage({ params }: { params: { opdb_id?: string } 
                                     <SheetHeader className="p-6 border-b">
                                         <SheetTitle>{t("listings.filters")}</SheetTitle>
                                     </SheetHeader>
-                                    <FilterSidebar/>
+                                    <FilterSidebar onChange={(filters)=> setFilters(filters)}/>
                                 </SheetContent>
                             </Sheet>
 
@@ -406,7 +541,7 @@ export default function ListingsPage({ params }: { params: { opdb_id?: string } 
             <div className="flex">
                 {/* Desktop Sidebar */}
                 <aside className="hidden lg:block w-80 min-h-screen">
-                    <FilterSidebar/>
+                    <FilterSidebar onChange={(filters)=> setFilters(filters)}/>
                 </aside>
 
                 {/* Main Content */}
@@ -431,89 +566,98 @@ export default function ListingsPage({ params }: { params: { opdb_id?: string } 
                     <section className="container mx-auto px-4 pb-12 lg:px-6">
                         {viewMode === "grid" ? (
                             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                            {pinballMachines.map((machine) => (
-                                <Card noPadding={true} key={machine.id}
-                                      className="group hover:shadow-lg transition-all duration-300 cursor-pointer">
-                                    <div className="aspect-[4/3] overflow-hidden rounded-t-lg relative">
-                                        <PinballImageCarousel machine={machine}></PinballImageCarousel>
-                                        <div className="absolute top-3 right-3">
-                                            <Badge variant="secondary" className="bg-background/90 text-foreground">
-                                                {machine.condition}
-                                            </Badge>
-                                        </div>
-                                    </div>
-                                    <CardContent className="p-4">
-                                        <div className="flex items-start justify-between mb-2">
-                                            <h4 className="font-semibold text-foreground text-lg leading-tight line-clamp-2">
-                                                {machine.name}
-                                            </h4>
-                                            <div className="flex items-center gap-1 text-sm text-muted-foreground ml-2">
-                                                <Star className="w-4 h-4 fill-accent text-accent"/>
-                                                {machine.rating ?? 5}
+                                {pinballMachines.map((machine) => (
+                                    <Card noPadding={true} key={machine.id}
+                                          className="group hover:shadow-lg transition-all duration-300 cursor-pointer">
+                                        <div className="aspect-[4/3] overflow-hidden rounded-t-lg relative">
+                                            <PinballImageCarousel machine={machine}></PinballImageCarousel>
+                                            <div className="absolute top-3 right-3">
+                                                <Badge variant="secondary" className="bg-background/90 text-foreground">
+                                                    {machine.condition}
+                                                </Badge>
                                             </div>
                                         </div>
-                                        <p className="text-sm text-muted-foreground mb-3">
-                                            {Manufacturers[machine.manufacturer]} • {machine.year}
-                                        </p>
-                                        <div className="flex flex-wrap items-center gap-1 text-sm text-muted-foreground mb-4">
-                                            <User className="w-4 h-4" />
-                                            <div>{machine.currentOwner.username}</div>
-                                        </div>
-                                        <div className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
-                                            <MapPin className="w-4 h-4"/>
-                                            {machine.location?.city} - {machine.distance ?? 0} km away
-                                        </div>
-                                    </CardContent>
-                                    <CardFooter className="p-4 pt-0">
-                                        <div className="flex items-center justify-between w-full">
+                                        <CardContent className="p-4">
+                                            <div className="flex items-start justify-between mb-2">
+                                                <h4 className="font-semibold text-foreground text-lg leading-tight line-clamp-2">
+                                                    {machine.name}
+                                                </h4>
+                                                <div
+                                                    className="flex items-center gap-1 text-sm text-muted-foreground ml-2">
+                                                    <Star className="w-4 h-4 fill-accent text-accent"/>
+                                                    {machine.rating ?? 5}
+                                                </div>
+                                            </div>
+                                            <p className="text-sm text-muted-foreground mb-3">
+                                                {Manufacturers[machine.manufacturer]} • {machine.year}
+                                            </p>
+                                            <div
+                                                className="flex flex-wrap items-center gap-1 text-sm text-muted-foreground mb-4">
+                                                <User className="w-4 h-4"/>
+                                                <div>{machine.currentOwner.username}</div>
+                                            </div>
+                                            <div className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
+                                                <MapPin className="w-4 h-4"/>
+                                                {machine.location?.city} - {machine.distance ?? 0} km away
+                                            </div>
+                                        </CardContent>
+                                        <CardFooter className="p-4 pt-0">
+                                            <div className="flex items-center justify-between w-full">
                                             <span
                                                 className="text-xl font-bold text-primary">{currencies[machine.currency]}{machine.price.toLocaleString()}</span>
-                                            <Link href={`/listings/detail?id=${machine.id}`}>
+                                                <Link href={`/listings/detail?id=${machine.id}`}>
 
-                                                <Button size="sm" className={'cursor-pointer'} variant="outline">
-                                                    {t("listings.viewDetails")}
-                                                </Button>
-                                            </Link>
-                                        </div>
-                                    </CardFooter>
-                                </Card>
-                            ))}
-                        </div>
+                                                    <Button size="sm" className={'cursor-pointer'} variant="outline">
+                                                        {t("listings.viewDetails")}
+                                                    </Button>
+                                                </Link>
+                                            </div>
+                                        </CardFooter>
+                                    </Card>
+                                ))}
+                            </div>
                         ) : (
                             <div className="space-y-4">
                                 {pinballMachines.map((machine) => (
-                                    <Card key={machine.id} className="group hover:shadow-lg transition-all duration-300 cursor-pointer">
+                                    <Card key={machine.id}
+                                          className="group hover:shadow-lg transition-all duration-300 cursor-pointer">
                                         <div className="flex flex-col sm:flex-row">
-                                            <div className="sm:w-64 aspect-[4/3] sm:aspect-auto overflow-hidden relative">
+                                            <div
+                                                className="sm:w-64 aspect-[4/3] sm:aspect-auto overflow-hidden relative">
                                                 <PinballImageCarousel machine={machine}></PinballImageCarousel>
                                                 <div className="absolute top-3 right-3">
-                                                    <Badge variant="secondary" className="bg-background/90 text-foreground">
+                                                    <Badge variant="secondary"
+                                                           className="bg-background/90 text-foreground">
                                                         {machine.condition}
                                                     </Badge>
                                                 </div>
                                             </div>
                                             <div className="flex-1 p-6">
-                                                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                                                <div
+                                                    className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                                                     <div className="flex-1">
                                                         <div className="flex items-start justify-between mb-2">
                                                             <h4 className="font-semibold text-foreground text-xl leading-tight">{machine.name}</h4>
-                                                            <div className="flex items-center gap-1 text-sm text-muted-foreground ml-4">
-                                                                <Star className="w-4 h-4 fill-accent text-accent" />
+                                                            <div
+                                                                className="flex items-center gap-1 text-sm text-muted-foreground ml-4">
+                                                                <Star className="w-4 h-4 fill-accent text-accent"/>
                                                                 {machine.rating ?? 5}
                                                             </div>
                                                         </div>
                                                         <p className="text-muted-foreground mb-4">
                                                             {machine.manufacturer} • {machine.year}
                                                         </p>
-                                                        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-4">
+                                                        <div
+                                                            className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-4">
                                                             <div className="flex items-center gap-1">
-                                                                <MapPin className="w-4 h-4" />
+                                                                <MapPin className="w-4 h-4"/>
                                                                 {machine.location?.city ?? ''}
                                                             </div>
                                                             <div>{machine.distance ?? 0} km away</div>
                                                         </div>
-                                                        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-4">
-                                                            <User className="w-4 h-4" />
+                                                        <div
+                                                            className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-4">
+                                                            <User className="w-4 h-4"/>
                                                             <div>{machine.currentOwner?.username}</div>
                                                         </div>
 
@@ -522,7 +666,8 @@ export default function ListingsPage({ params }: { params: { opdb_id?: string } 
                                                         </p>
                                                     </div>
                                                     <div className="flex flex-col items-end gap-3 sm:min-w-[180px]">
-                                                        <span className="text-2xl font-bold text-primary">{currencies[machine.currency]}{machine.price.toLocaleString()}</span>
+                                                        <span
+                                                            className="text-2xl font-bold text-primary">{currencies[machine.currency]}{machine.price.toLocaleString()}</span>
                                                         <Button className="w-full sm:w-auto">{t('details')}</Button>
                                                     </div>
                                                 </div>
