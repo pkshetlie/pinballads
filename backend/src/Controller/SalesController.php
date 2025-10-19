@@ -66,7 +66,8 @@ final class SalesController extends AbstractController
             $qb->andWhere('ps.startPrice BETWEEN :minPrice AND :maxPrice')
                 ->setParameter('minPrice', $requestData->price->min)
                 ->setParameter('maxPrice', $requestData->price->max)
-                ->andWhere('ps.currency = :currency');
+                ->andWhere('ps.currency = :currency')
+            ->setParameter('currency',  $requestData->price->currency ?? 'EUR');
         }
 
         if (!empty($requestData->conditions)) {
