@@ -1,4 +1,4 @@
-import {additionalOptionsType} from "@/components/PinballMachineForm";
+import {featuresType} from "@/components/object/features";
 
 export type PinballDto = {
     devise: string;
@@ -8,7 +8,7 @@ export type PinballDto = {
     id: number;
     name: string;
     opdbId: string | null;
-    features: additionalOptionsType;
+    features: featuresType;
     description: string | null;
     condition: string;
     images: { title: string, url: string, uid: string }[];

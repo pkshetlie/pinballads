@@ -26,7 +26,7 @@ class Pinball implements DtoableInterface
     #[ORM\Column(nullable: true)]
     private ?string $opdbId = null;
 
-    #[ORM\Column(options: ['jsonb' => true] )]
+    #[ORM\Column(type:'jsonb')]
     private array $features = [];
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]

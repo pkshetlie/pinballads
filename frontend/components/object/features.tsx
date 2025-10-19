@@ -21,14 +21,16 @@ const schema = {
         mods: false,
         playfieldProtector: false,
         coinAcceptor: false,
+        antiReflectiveGlass: false,
     },
     other: {
         coverMate: false,
-        numberOfPlayers: 4,
+        // numberOfPlayers: 4,
         officialTopper: false,
         customTopper: false,
         HomeUseOnly: false,
         manual: false,
+        goodies: false,
     }
 };
 

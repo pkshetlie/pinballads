@@ -103,39 +103,7 @@ export default function MachineForm({initialData, onSubmit, buttonText}: Machine
     const [startDate, setStartDate] = useState(initialData?.owningDate || "");
     const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>(initialData?.images||[]);
 
-    const additionalOptionsData = {
-        pinsound: {
-            blaster: false,
-            invision: false,
-            sonataSpk: false,
-            noMoreReset: false,
-            headphoneStationUltra: false,
-            headphoneStationMaster: false,
-            motionControlShakerKit: false,
-            subwooferAndLineOutConnector: false
-        },
-        dmd: {
-            xl: false,
-            color: false,
-        },
-        cabinet : {
-            artBlade: false,
-            mirrorBlade: false,
-            fullLed: false,
-            sternInsider: false,
-            mods: false,
-            playfieldProtector: false,
-            coinAcceptor: false
-        },
-        other: {
-            coverMate: false,
-            numberOfPlayers: 4,
-            officialTopper: false,
-            customTopper: false,
-            HomeUseOnly: false,
-            manual: false,
-        }
-    }
+    const additionalOptionsData = defaultFeatures;
 
     const [additionalOptions, setAdditionalOptions] = useState<featuresType>(() => {
         if (initialData?.features) {

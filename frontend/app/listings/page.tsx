@@ -26,6 +26,8 @@ import {useApi} from "@/lib/api";
 import {PinballDto} from "@/components/object/pinballDto";
 import {toast} from "@/components/ui/use-toast";
 import SearchDropdown from "@/components/SearchDropdown";
+import {useSearchParams} from 'next/navigation';
+import {GameDto} from "@/components/object/GameDto";
 
 // Mock data for pinball machine listings
 
@@ -62,13 +64,13 @@ function FilterSidebar({
     const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
     const [selectedOpdbid, setSelectedopdbId] = useState<string | null>(null);
     const [selectedGame, setSelectedGame] = useState<GameDto | null>(null);
-    const [selectedCity, setSelectedCity] = useState<string|null>(null);
-    const [selectedLocation, setSelectedLocation] = useState<{lat: null, long: null}|null>(null);
+    const [selectedCity, setSelectedCity] = useState<string | null>(null);
+    const [selectedLocation, setSelectedLocation] = useState<{ lat: null, long: null } | null>(null);
 
     useEffect(() => {
-        if(!opdbid) return;
+        if (!opdbid) return;
 
-        apiGet(`/api/public/search/game/${opdbid}`).then((data)=>{
+        apiGet(`/api/public/search/game/${opdbid}`).then((data) => {
             setSelectedGame(data)
             console.log(data)
         });
@@ -88,7 +90,7 @@ function FilterSidebar({
 
 
     useEffect(() => {
-        if(
+        if (
             selectedFeatures.length === 0
             && selectedManufacturers.length === 0
             && selectedDecades.length === 0
@@ -97,7 +99,6 @@ function FilterSidebar({
             && selectedOpdbid === null
         ) return;
         onChange(filterAll());
-        console.log('changeFilter')
     }, [selectedFeatures, selectedManufacturers, selectedDecades, selectedConditions, selectedGame]);
 
     const manufacturerList = Object.values(Manufacturers);
@@ -143,10 +144,10 @@ function FilterSidebar({
                 min: distanceRange[0],
                 max: distanceRange[1],
             },
-            manufacturer: selectedManufacturers.map(m => m.toLowerCase()),
-            condition: selectedConditions.map(c => c.toLowerCase()),
+            manufacturers: selectedManufacturers.map(m => m.toLowerCase()),
+            conditions: selectedConditions.map(c => c.toLowerCase()),
             features: selectedFeatures,
-            decade: selectedDecades.map(d => d.toLowerCase()),
+            decades: selectedDecades.map(d => d.toLowerCase()),
         }
     }
 
@@ -258,12 +259,11 @@ function FilterSidebar({
                                                 id={`manufacturer-${key}`}
                                                 className="cursor-pointer"
                                                 checked={selectedManufacturers.includes(key)}
-                                                onChange={() => {
-                                                    const newSelected = selectedManufacturers.includes(key)
-                                                        ? selectedManufacturers.filter(m => m !== key)
-                                                        : [...selectedManufacturers, key];
+                                                onCheckedChange={(checked) => {
+                                                    const newSelected = checked
+                                                        ? [...selectedManufacturers, key]
+                                                        : selectedManufacturers.filter(m => m !== key);
                                                     setSelectedManufacturers(newSelected);
-                                                    // onChange(newSelected);
                                                 }}
                                             />
                                             <label
@@ -383,8 +383,8 @@ interface FiltersSidebarProps {
     opdbId?: string | null,
     game?: GameDto | null,
     location: {
-        lon: string|null,
-        lat: string|null
+        lon: string | null,
+        lat: string | null
     },
     price: {
         min: number,
@@ -394,34 +394,21 @@ interface FiltersSidebarProps {
         min: number,
         max: number,
     },
-    manufacturer: string[],
-    condition: string[],
+    manufacturers: string[],
+    conditions: string[],
     features: string[],
-    decade: string[],
+    decades: string[],
 }
 
-interface QueryParams {
-    years?: string;
-    features?: string;
-    opdbid?: string;
-    manufacturer?: string;
-}
-
-
-import {useSearchParams} from 'next/navigation';
-import {GameDto} from "@/components/object/GameDto";
-
-export default function ListingsPage({params}: {
-    params: { opdb_id?: string },
-}) {
-
+export default function ListingsPage() {
     const {t} = useLanguage()
     const [showMobileFilters, setShowMobileFilters] = useState(false)
     const [pinballMachines, setPinballMachines] = useState<PinballDto[] | []>([]); // Afficher les résultats supplémentaires
     const {token} = useAuth();
-    const {apiGet} = useApi();
+    const {apiPost} = useApi();
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
-    const [filters, setFilters] = useState<FiltersSidebarProps|null>(null)
+    const [filters, setFilters] = useState<FiltersSidebarProps | null>(null)
+    const [isLoadingMachine, setIsLoadingMachine] = useState(true)
 
     useEffect(() => {
         if (pinballMachines.length !== 0) {
@@ -432,13 +419,19 @@ export default function ListingsPage({params}: {
     }, [token]);
 
     const fetchCollection = async () => {
+        setIsLoadingMachine(true);
         try {
-            const result = await apiGet(`public/sales`)
+            const result = await apiPost(`public/sales`, filters ?? {});
 
             if (result) {
                 setPinballMachines(result.pinballs)
+                setIsLoadingMachine(false);
             } else {
-                throw new Error(result.error || "Failed to fetch collection")
+                toast({
+                    title: "Erreur",
+                    description: `${t('collection.cantLoadMachines')}`,
+                    variant: "destructive",
+                })
             }
         } catch (error) {
             toast({
@@ -450,7 +443,8 @@ export default function ListingsPage({params}: {
     }
 
     useEffect(() => {
-        if(!filters) return;
+        if (!filters) return;
+        fetchCollection()
         console.log('startSearch', filters)
     }, [filters]);
 
@@ -469,12 +463,14 @@ export default function ListingsPage({params}: {
                                     className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5"/>
                                 <SearchDropdown
                                     id={'search-title'}
-                                                placeholder={t("listings.searchPlaceholder")}
+                                    placeholder={t("listings.searchPlaceholder")}
                                     className={'pl-10 h-11'}
                                     query={filters?.game?.name || ''}
-                                    setQuery={()=>{}}
-                                    onGameSelect={()=>{}}
-                                    ></SearchDropdown>
+                                    setQuery={() => {
+                                    }}
+                                    onGameSelect={() => {
+                                    }}
+                                ></SearchDropdown>
                             </div>
                         </div>
 
@@ -525,7 +521,7 @@ export default function ListingsPage({params}: {
                                     <SheetHeader className="p-6 border-b">
                                         <SheetTitle>{t("listings.filters")}</SheetTitle>
                                     </SheetHeader>
-                                    <FilterSidebar onChange={(filters)=> setFilters(filters)}/>
+                                    <FilterSidebar onChange={(filters) => setFilters(filters)}/>
                                 </SheetContent>
                             </Sheet>
 
@@ -541,89 +537,41 @@ export default function ListingsPage({params}: {
             <div className="flex">
                 {/* Desktop Sidebar */}
                 <aside className="hidden lg:block w-80 min-h-screen">
-                    <FilterSidebar onChange={(filters)=> setFilters(filters)}/>
+                    <FilterSidebar onChange={(filters) => setFilters(filters)}/>
                 </aside>
-
-                {/* Main Content */}
-                <main className="flex-1">
-                    {/* Results Header */}
-                    <section className="container mx-auto px-4 py-6 lg:px-6">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <h2 className="text-2xl font-bold text-foreground">{t("listings.pinballMachines")}</h2>
-                                <p className="text-muted-foreground">
-                                    {pinballMachines.length} {t("listings.machinesFound")}
-                                </p>
+                {isLoadingMachine ? (
+                    <main className="flex-1">
+                        <section className="container mx-auto px-4 pb-12 lg:px-6">
+                            <div className="flex flex-col items-center justify-center py-20">
+                                <div
+                                    className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"/>
+                                <p className="text-lg text-muted-foreground">{t('listings.searchPlaceholder')}</p>
                             </div>
-                            <div className="text-sm text-muted-foreground">
-                                {t("listings.showing")} 1-{pinballMachines.length} {t("listings.of")} {pinballMachines.length}{" "}
-                                {t("listings.results")}
+                        </section>
+                    </main>
+                ) : (
+                    <main className="flex-1">
+                        <section className="container mx-auto px-4 py-6 lg:px-6">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h2 className="text-2xl font-bold text-foreground">{t("listings.pinballMachines")}</h2>
+                                    <p className="text-muted-foreground">
+                                        {pinballMachines.length} {t("listings.machinesFound")}
+                                    </p>
+                                </div>
+                                <div className="text-sm text-muted-foreground">
+                                    {t("listings.showing")} 1-{pinballMachines.length} {t("listings.of")} {pinballMachines.length}{" "}
+                                    {t("listings.results")}
+                                </div>
                             </div>
-                        </div>
-                    </section>
-
-                    {/* Listings Grid */}
-                    <section className="container mx-auto px-4 pb-12 lg:px-6">
-                        {viewMode === "grid" ? (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                                {pinballMachines.map((machine) => (
-                                    <Card noPadding={true} key={machine.id}
-                                          className="group hover:shadow-lg transition-all duration-300 cursor-pointer">
-                                        <div className="aspect-[4/3] overflow-hidden rounded-t-lg relative">
-                                            <PinballImageCarousel machine={machine}></PinballImageCarousel>
-                                            <div className="absolute top-3 right-3">
-                                                <Badge variant="secondary" className="bg-background/90 text-foreground">
-                                                    {machine.condition}
-                                                </Badge>
-                                            </div>
-                                        </div>
-                                        <CardContent className="p-4">
-                                            <div className="flex items-start justify-between mb-2">
-                                                <h4 className="font-semibold text-foreground text-lg leading-tight line-clamp-2">
-                                                    {machine.name}
-                                                </h4>
-                                                <div
-                                                    className="flex items-center gap-1 text-sm text-muted-foreground ml-2">
-                                                    <Star className="w-4 h-4 fill-accent text-accent"/>
-                                                    {machine.rating ?? 5}
-                                                </div>
-                                            </div>
-                                            <p className="text-sm text-muted-foreground mb-3">
-                                                {Manufacturers[machine.manufacturer]} • {machine.year}
-                                            </p>
-                                            <div
-                                                className="flex flex-wrap items-center gap-1 text-sm text-muted-foreground mb-4">
-                                                <User className="w-4 h-4"/>
-                                                <div>{machine.currentOwner.username}</div>
-                                            </div>
-                                            <div className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
-                                                <MapPin className="w-4 h-4"/>
-                                                {machine.location?.city} - {machine.distance ?? 0} km away
-                                            </div>
-                                        </CardContent>
-                                        <CardFooter className="p-4 pt-0">
-                                            <div className="flex items-center justify-between w-full">
-                                            <span
-                                                className="text-xl font-bold text-primary">{currencies[machine.currency]}{machine.price.toLocaleString()}</span>
-                                                <Link href={`/listings/detail?id=${machine.id}`}>
-
-                                                    <Button size="sm" className={'cursor-pointer'} variant="outline">
-                                                        {t("listings.viewDetails")}
-                                                    </Button>
-                                                </Link>
-                                            </div>
-                                        </CardFooter>
-                                    </Card>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="space-y-4">
-                                {pinballMachines.map((machine) => (
-                                    <Card key={machine.id}
-                                          className="group hover:shadow-lg transition-all duration-300 cursor-pointer">
-                                        <div className="flex flex-col sm:flex-row">
-                                            <div
-                                                className="sm:w-64 aspect-[4/3] sm:aspect-auto overflow-hidden relative">
+                        </section>
+                        <section className="container mx-auto px-4 pb-12 lg:px-6">
+                            {viewMode === "grid" ? (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                                    {pinballMachines.map((machine) => (
+                                        <Card noPadding={true} key={machine.id}
+                                              className="group hover:shadow-lg transition-all duration-300 cursor-pointer">
+                                            <div className="aspect-[4/3] overflow-hidden rounded-t-lg relative">
                                                 <PinballImageCarousel machine={machine}></PinballImageCarousel>
                                                 <div className="absolute top-3 right-3">
                                                     <Badge variant="secondary"
@@ -632,79 +580,133 @@ export default function ListingsPage({params}: {
                                                     </Badge>
                                                 </div>
                                             </div>
-                                            <div className="flex-1 p-6">
-                                                <div
-                                                    className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                                                    <div className="flex-1">
-                                                        <div className="flex items-start justify-between mb-2">
-                                                            <h4 className="font-semibold text-foreground text-xl leading-tight">{machine.name}</h4>
-                                                            <div
-                                                                className="flex items-center gap-1 text-sm text-muted-foreground ml-4">
-                                                                <Star className="w-4 h-4 fill-accent text-accent"/>
-                                                                {machine.rating ?? 5}
-                                                            </div>
-                                                        </div>
-                                                        <p className="text-muted-foreground mb-4">
-                                                            {machine.manufacturer} • {machine.year}
-                                                        </p>
-                                                        <div
-                                                            className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-4">
-                                                            <div className="flex items-center gap-1">
-                                                                <MapPin className="w-4 h-4"/>
-                                                                {machine.location?.city ?? ''}
-                                                            </div>
-                                                            <div>{machine.distance ?? 0} km away</div>
-                                                        </div>
-                                                        <div
-                                                            className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-4">
-                                                            <User className="w-4 h-4"/>
-                                                            <div>{machine.currentOwner?.username}</div>
-                                                        </div>
-
-                                                        <p className="text-sm text-muted-foreground line-clamp-2">
-                                                            {machine.description}
-                                                        </p>
+                                            <CardContent className="p-4">
+                                                <div className="flex items-start justify-between mb-2">
+                                                    <h4 className="font-semibold text-foreground text-lg leading-tight line-clamp-2">
+                                                        {machine.name}
+                                                    </h4>
+                                                    <div
+                                                        className="flex items-center gap-1 text-sm text-muted-foreground ml-2">
+                                                        <Star className="w-4 h-4 fill-accent text-accent"/>
+                                                        {machine.rating ?? 5}
                                                     </div>
-                                                    <div className="flex flex-col items-end gap-3 sm:min-w-[180px]">
+                                                </div>
+                                                <p className="text-sm text-muted-foreground mb-3">
+                                                    {Manufacturers[machine.manufacturer]} • {machine.year}
+                                                </p>
+                                                <div
+                                                    className="flex flex-wrap items-center gap-1 text-sm text-muted-foreground mb-4">
+                                                    <User className="w-4 h-4"/>
+                                                    <div>{machine.currentOwner.username}</div>
+                                                </div>
+                                                <div
+                                                    className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
+                                                    <MapPin className="w-4 h-4"/>
+                                                    {machine.location?.city} - {machine.distance ?? 0} km away
+                                                </div>
+                                            </CardContent>
+                                            <CardFooter className="p-4 pt-0">
+                                                <div className="flex items-center justify-between w-full">
+                                            <span
+                                                className="text-xl font-bold text-primary">{currencies[machine.currency]}{machine.price.toLocaleString()}</span>
+                                                    <Link href={`/listings/detail?id=${machine.id}`}>
+
+                                                        <Button size="sm" className={'cursor-pointer'}
+                                                                variant="outline">
+                                                            {t("listings.viewDetails")}
+                                                        </Button>
+                                                    </Link>
+                                                </div>
+                                            </CardFooter>
+                                        </Card>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    {pinballMachines.map((machine) => (
+                                        <Card key={machine.id}
+                                              className="group hover:shadow-lg transition-all duration-300 cursor-pointer">
+                                            <div className="flex flex-col sm:flex-row">
+                                                <div
+                                                    className="sm:w-64 aspect-[4/3] sm:aspect-auto overflow-hidden relative">
+                                                    <PinballImageCarousel machine={machine}></PinballImageCarousel>
+                                                    <div className="absolute top-3 right-3">
+                                                        <Badge variant="secondary"
+                                                               className="bg-background/90 text-foreground">
+                                                            {machine.condition}
+                                                        </Badge>
+                                                    </div>
+                                                </div>
+                                                <div className="flex-1 p-6">
+                                                    <div
+                                                        className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                                                        <div className="flex-1">
+                                                            <div className="flex items-start justify-between mb-2">
+                                                                <h4 className="font-semibold text-foreground text-xl leading-tight">{machine.name}</h4>
+                                                                <div
+                                                                    className="flex items-center gap-1 text-sm text-muted-foreground ml-4">
+                                                                    <Star className="w-4 h-4 fill-accent text-accent"/>
+                                                                    {machine.rating ?? 5}
+                                                                </div>
+                                                            </div>
+                                                            <p className="text-muted-foreground mb-4">
+                                                                {machine.manufacturer} • {machine.year}
+                                                            </p>
+                                                            <div
+                                                                className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-4">
+                                                                <div className="flex items-center gap-1">
+                                                                    <MapPin className="w-4 h-4"/>
+                                                                    {machine.location?.city ?? ''}
+                                                                </div>
+                                                                <div>{machine.distance ?? 0} km away</div>
+                                                            </div>
+                                                            <div
+                                                                className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-4">
+                                                                <User className="w-4 h-4"/>
+                                                                <div>{machine.currentOwner?.username}</div>
+                                                            </div>
+
+                                                            <p className="text-sm text-muted-foreground line-clamp-2">
+                                                                {machine.description}
+                                                            </p>
+                                                        </div>
+                                                        <div className="flex flex-col items-end gap-3 sm:min-w-[180px]">
                                                         <span
                                                             className="text-2xl font-bold text-primary">{currencies[machine.currency]}{machine.price.toLocaleString()}</span>
-                                                        <Button className="w-full sm:w-auto">{t('details')}</Button>
+                                                            <Button className="w-full sm:w-auto">{t('details')}</Button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </Card>
-                                ))}
+                                        </Card>
+                                    ))}
+                                </div>
+                            )}
+                        </section>
+                        <section className="container mx-auto px-4 pb-12 lg:px-6">
+                            <div className="flex items-center justify-center gap-2">
+                                <Button variant="outline" disabled>
+                                    {t("listings.previous")}
+                                </Button>
+                                <Button variant="default" size="sm">
+                                    1
+                                </Button>
+                                <Button variant="outline" size="sm">
+                                    2
+                                </Button>
+                                <Button variant="outline" size="sm">
+                                    3
+                                </Button>
+                                <span className="text-muted-foreground px-2">...</span>
+                                <Button variant="outline" size="sm">
+                                    10
+                                </Button>
+                                <Button variant="outline">{t("listings.next")}</Button>
                             </div>
-                        )}
-                    </section>
-
-                    {/* Pagination */}
-                    <section className="container mx-auto px-4 pb-12 lg:px-6">
-                        <div className="flex items-center justify-center gap-2">
-                            <Button variant="outline" disabled>
-                                {t("listings.previous")}
-                            </Button>
-                            <Button variant="default" size="sm">
-                                1
-                            </Button>
-                            <Button variant="outline" size="sm">
-                                2
-                            </Button>
-                            <Button variant="outline" size="sm">
-                                3
-                            </Button>
-                            <span className="text-muted-foreground px-2">...</span>
-                            <Button variant="outline" size="sm">
-                                10
-                            </Button>
-                            <Button variant="outline">{t("listings.next")}</Button>
-                        </div>
-                    </section>
-                </main>
+                        </section>
+                    </main>
+                )}
             </div>
-
-            {/* Footer */}
             <Footer/>
         </div>
     )
