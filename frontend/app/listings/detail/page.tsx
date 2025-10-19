@@ -138,16 +138,16 @@ export default function DetailPage() {
               <div>
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h1 className="text-3xl font-bold text-foreground mb-2">{pinballMachine.title}</h1>
+                    <h1 className="text-3xl font-bold text-foreground mb-2">{pinballMachine.name}</h1>
                     <div className="flex items-center gap-4 text-muted-foreground">
                       <span>
                         {pinballMachine.manufacturer} • {pinballMachine.year}
                       </span>
-                      <div className="flex items-center gap-1">
-                        <Star className="w-4 h-4 fill-accent text-accent" />
-                        <span>{pinballMachine.rating}</span>
-                        <span>({pinballMachine.reviewCount} reviews)</span>
-                      </div>
+                      {/*<div className="flex items-center gap-1">*/}
+                      {/*  <Star className="w-4 h-4 fill-accent text-accent" />*/}
+                      {/*  <span>{pinballMachine.rating}</span>*/}
+                      {/*  <span>({pinballMachine.reviewCount} reviews)</span>*/}
+                      {/*</div>*/}
                     </div>
                   </div>
                   <Badge variant="secondary" className="text-sm">
@@ -158,7 +158,7 @@ export default function DetailPage() {
                 <div className="flex items-center gap-4 text-muted-foreground mb-6">
                   <div className="flex items-center gap-1">
                     <MapPin className="w-4 h-4" />
-                    {pinballMachine.location?.city?? 'nowhere'}
+                    {pinballMachine.location?.city ?? 'nowhere'}
                   </div>
                   <span>•</span>
                   <span>{pinballMachine.distance} away</span>

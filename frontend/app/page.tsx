@@ -139,7 +139,7 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <h3 className="text-3xl font-bold text-foreground text-center mb-12">{t("home.browseByEra")}</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="group hover:shadow-lg transition-shadow cursor-pointer">
+            <Card className="group hover:shadow-lg transition-shadow cursor-pointer" onClick={() => {window.location.href = '/listings/?years=1970,1980'}} noPadding={true}>
               <div className="aspect-[16/9] overflow-hidden rounded-t-lg">
                 <img
                   src="/images/vintage.jpg"
@@ -153,7 +153,7 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            <Card className="group hover:shadow-lg transition-shadow cursor-pointer">
+            <Card className="group hover:shadow-lg transition-shadow cursor-pointer" onClick={() => {window.location.href = '/listings/?years=1990,2000'}} noPadding={true}>
               <div className="aspect-[16/9] overflow-hidden rounded-t-lg">
                 <img
                   src="/images/modern.jpg"
@@ -161,13 +161,13 @@ export default function HomePage() {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
-              <CardContent className="p-6 text-center" onClick={() => {window.location.href = '/listings/?years=1990,2000'}}>
+              <CardContent className="p-6 text-center">
                 <h4 className="text-xl font-semibold text-foreground mb-2">{t('home.modern')} (1990-2000)</h4>
                 <p className="text-muted-foreground">{t('home.modernText')}</p>
               </CardContent>
             </Card>
 
-            <Card className="group hover:shadow-lg transition-shadow cursor-pointer">
+            <Card className="group hover:shadow-lg transition-shadow cursor-pointer" onClick={() => {window.location.href = '/listings/?years=2010,2020'}} noPadding={true}>
               <div className="aspect-[16/9] overflow-hidden rounded-t-lg">
                 <img
                   src="/images/contemporary.jpg"
@@ -175,7 +175,7 @@ export default function HomePage() {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
-              <CardContent className="p-6 text-center" onClick={() => {window.location.href = '/listings/?years=2010,2020'}}>
+              <CardContent className="p-6 text-center" >
                 <h4 className="text-xl font-semibold text-foreground mb-2">{t('home.contemporary')} (2010+)</h4>
                 <p className="text-muted-foreground">{t('home.contemporaryText')}</p>
               </CardContent>

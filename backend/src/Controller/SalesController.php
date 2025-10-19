@@ -64,9 +64,9 @@ final class SalesController extends AbstractController
 
         if (!empty($requestData->price)) {
             $qb->andWhere('ps.startPrice BETWEEN :minPrice AND :maxPrice')
+                ->andWhere('ps.currency = :currency')
                 ->setParameter('minPrice', $requestData->price->min)
                 ->setParameter('maxPrice', $requestData->price->max)
-                ->andWhere('ps.currency = :currency')
             ->setParameter('currency',  $requestData->price->currency ?? 'EUR');
         }
 
@@ -109,8 +109,6 @@ final class SalesController extends AbstractController
             'count' => count($pinballs),
             'total' => $total,
             'pages' => ceil($total / $limit),
-            'dql' => $qb->getDQL(),
-            'sql' => $qb->getQuery()->getSQL(),
         ]);
     }
 

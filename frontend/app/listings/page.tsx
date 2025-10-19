@@ -90,14 +90,6 @@ function FilterSidebar({
 
 
     useEffect(() => {
-        if (
-            selectedFeatures.length === 0
-            && selectedManufacturers.length === 0
-            && selectedDecades.length === 0
-            && selectedConditions.length === 0
-            && selectedGame === null
-            && selectedOpdbid === null
-        ) return;
         onChange(filterAll());
     }, [selectedFeatures, selectedManufacturers, selectedDecades, selectedConditions, selectedGame]);
 
@@ -339,6 +331,7 @@ function FilterSidebar({
                         {conditions.map((condition) => (
                             <div key={condition.key} className="flex items-center space-x-2">
                                 <Checkbox id={`condition-${condition.key}`}
+                                          className={'cursor-pointer'}
                                           checked={selectedConditions?.includes(condition.key)}
                                           onCheckedChange={(checked) => {
                                               const newSelected = checked
@@ -443,9 +436,9 @@ export default function ListingsPage() {
     }
 
     useEffect(() => {
+        console.log(filters);
         if (!filters) return;
         fetchCollection()
-        console.log('startSearch', filters)
     }, [filters]);
 
 
