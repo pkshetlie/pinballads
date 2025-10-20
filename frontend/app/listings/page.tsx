@@ -72,7 +72,6 @@ function FilterSidebar({
 
         apiGet(`/api/public/search/game/${opdbid}`).then((data) => {
             setSelectedGame(data)
-            console.log(data)
         });
     }, [opdbid]);
 
@@ -397,24 +396,24 @@ export default function ListingsPage() {
     const {t} = useLanguage()
     const [showMobileFilters, setShowMobileFilters] = useState(false)
     const [pinballMachines, setPinballMachines] = useState<PinballDto[] | []>([]); // Afficher les résultats supplémentaires
-    const {token} = useAuth();
     const {apiPost} = useApi();
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
     const [filters, setFilters] = useState<FiltersSidebarProps | null>(null)
     const [isLoadingMachine, setIsLoadingMachine] = useState(true)
 
-    useEffect(() => {
-        if (pinballMachines.length !== 0) {
-            return;
-        }
-
-        fetchCollection();
-    }, [token]);
+    // useEffect(() => {
+    //     if (pinballMachines.length !== 0) {
+    //         return;
+    //     }
+    //
+    //     fetchCollection();
+    // }, [token]);
 
     const fetchCollection = async () => {
         setIsLoadingMachine(true);
         try {
-            const result = await apiPost(`public/sales`, filters ?? {});
+            console.log('start fetch');
+            const result = await apiPost(`/api/public/sales`, filters ?? {});
 
             if (result) {
                 setPinballMachines(result.pinballs)
@@ -436,7 +435,7 @@ export default function ListingsPage() {
     }
 
     useEffect(() => {
-        console.log(filters);
+        console.log(!filters);
         if (!filters) return;
         fetchCollection()
     }, [filters]);
