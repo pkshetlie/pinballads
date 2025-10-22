@@ -6,24 +6,38 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Checkbox } from "@/components/ui/checkbox"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { LanguageToggle } from "@/components/language-toggle"
 import Link from "next/link"
-import { ArrowLeft, Mail, Lock, Eye, EyeOff } from "lucide-react"
+import { Mail, Lock, Eye, EyeOff } from "lucide-react"
 import {useEffect, useState} from "react"
 import { useLanguage } from "@/lib/language-context"
 import { useAuth } from '@/lib/auth-context';
 import {useRouter, useSearchParams} from 'next/navigation';
 import Navbar from "@/components/Navbar";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
+import {useApi} from "@/lib/api";
 
 export default function SignInPage() {
+  const { apiPost } = useApi();
+  const { t } = useLanguage();
+  const { toast } = useToast();
+  const [isForgotPasswordDialogOpen, setIsForgotPasswordDialogOpen] = useState(false);
+  const [resetInput, setResetInput] = useState("");
+  const [sendingReset, setSendingReset] = useState(false);
   const [showPassword, setShowPassword] = useState(false)
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter(); // Initialisation du router
     const searchParams = useSearchParams();
-    const {t} = useLanguage()
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     useEffect(() => {
@@ -43,6 +57,32 @@ export default function SignInPage() {
       router.push('/'); // Redirige vers la page d'accueil
     } catch (error) {
       setErrorMessage(t('auth.invalidCredentials') || 'Invalid email or password'); // Message par défaut si traduction non disponible
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!resetInput.trim()) return;
+
+    try {
+      setSendingReset(true);
+
+      apiPost('/api/public/reset-password', { identifier: resetInput });
+
+      toast({
+        title: t("toasts.success"),
+        description: t("auth.resetPasswordEmailSent"),
+        variant: "success",
+      });
+      setIsForgotPasswordDialogOpen(false);
+      setResetInput("");
+    } catch (error) {
+      toast({
+        title: t("toasts.error"),
+        description: t("toasts.unknownError"),
+        variant: "destructive",
+      });
+    } finally {
+      setSendingReset(false);
     }
   };
 
@@ -105,12 +145,51 @@ export default function SignInPage() {
                   <div className="flex items-center space-x-2">
                     <Checkbox id="remember" />
                     <Label htmlFor="remember" className="text-sm text-muted-foreground">
-                      {t('auth.rememberMe')}
+                      {t("auth.rememberMe")}
                     </Label>
                   </div>
-                  <Link href="#" className="text-sm text-primary hover:text-primary/80">
-                    {t('auth.forgotPassword')}
-                  </Link>
+
+                  <Dialog open={isForgotPasswordDialogOpen} onOpenChange={setIsForgotPasswordDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="link" className="text-sm text-primary hover:text-primary/80 cursor-pointer">
+                        {t("auth.forgotPassword")}
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>{t("auth.forgotPassword")}</DialogTitle>
+                        <DialogDescription>
+                          {t("auth.enterEmailOrUsernameForReset")}
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="reset-input">{t("auth.emailOrUsername")}</Label>
+                          <Input
+                            id="reset-input"
+                            placeholder={t("auth.enterEmailOrUsername")}
+                            value={resetInput}
+                            onChange={(e) => setResetInput(e.target.value)}
+                            className="mt-2"
+                          />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button variant="outline" className={'cursor-pointer'}
+                                onClick={() => setIsForgotPasswordDialogOpen(false)}
+                        >
+                          {t("auth.cancel")}
+                        </Button>
+                        <Button
+                          className="cursor-pointer"
+                          onClick={handleForgotPassword}
+                          disabled={sendingReset || !resetInput}
+                        >
+                          {sendingReset ? t("auth.sending") : t("auth.sendEmail")}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 </div>
 
                 {errorMessage && (
@@ -119,7 +198,7 @@ export default function SignInPage() {
                     </p>
                 )}
 
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="w-full cursor-pointer bg-primary hover:bg-primary/90 text-white">
                   {t('auth.signIn')}
                 </Button>
               </form>
@@ -174,5 +253,5 @@ export default function SignInPage() {
         </div>
       </main>
     </div>
-  )
+  );
 }

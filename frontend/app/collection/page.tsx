@@ -54,7 +54,6 @@ export default function CollectionsPage() {
     useEffect(() => {
         if (!token && !user) return;
         fetchCollections();
-
     }, [token, user])
 
     const fetchCollections = async () => {

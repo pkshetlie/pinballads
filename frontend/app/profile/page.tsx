@@ -360,7 +360,7 @@ export default function ProfilePage() {
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                   <span className="text-primary-foreground font-bold text-lg">P</span>
                 </div>
-                <span className="text-xl font-bold text-foreground">PinballMarket</span>
+                <span className="text-xl font-bold text-foreground">Crazy-Pinball</span>
               </div>
               <p className="text-muted-foreground text-sm">
                 The premier marketplace for pinball enthusiasts worldwide.
@@ -428,7 +428,7 @@ export default function ProfilePage() {
             </div>
           </div>
           <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; 2024 PinballMarket. All rights reserved.</p>
+            <p>&copy; 2025 Crazy-Pinball. All rights reserved.</p>
           </div>
         </div>
       </footer>

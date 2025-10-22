@@ -353,4 +353,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Dtoable
 
         return $this;
     }
+
+    public function setId(int $int): static
+    {
+        $this->id = $int;
+        return $this;
+    }
 }

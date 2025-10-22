@@ -30,63 +30,6 @@ import {PinballImageCarousel} from "@/components/PinballImageCarousel";
 import {defaultFeatures} from "@/components/object/features";
 import {useLanguage} from "@/lib/language-context";
 
-// Mock data for a detailed pinball machine
-// const pinballMachines = [{
-//   id: 12,
-//   title: "Medieval Madness",
-//   manufacturer: "Williams",
-//   year: 1997,
-//   price: 8500,
-//   location: "Los Angeles, CA",
-//   condition: "Excellent",
-//   rating: 4.8,
-//   reviewCount: 24,
-//   distance: "5 miles",
-//   description: `This Medieval Madness is in exceptional condition and has been lovingly maintained by a collector. The playfield is pristine with minimal wear, all original plastics are intact, and the cabinet artwork is vibrant. This machine features the classic medieval theme with castle destruction, catapult action, and the famous "Catapult Multiball."
-//
-// The machine has been kept in a climate-controlled environment and played regularly but carefully. All mechanisms are working perfectly, including the castle gate, drawbridge, catapult, and trolls. The sound system has been upgraded with new speakers for crystal clear audio.
-//
-// Recent maintenance includes new rubber rings, fresh wax on the playfield, and LED upgrades throughout. This is a must-have for any serious collector or someone looking to own one of the greatest pinball machines ever made.`,
-//   features: [
-//     "LED Playfield Lighting Upgrade",
-//     "New Rubber Rings (2024)",
-//     "Fresh Playfield Wax",
-//     "Upgraded Sound System",
-//     "All Original Plastics",
-//     "Climate Controlled Storage",
-//     "Regular Professional Maintenance",
-//   ],
-//   specifications: {
-//     players: "1-4",
-//     flippers: "2",
-//     ramps: "3",
-//     multiball: "Yes",
-//     manufacturer: "Williams",
-//     designer: "Brian Eddy",
-//     artist: "Greg Freres",
-//     sound: "Dan Forden",
-//   },
-//   images: [
-//     "/medieval-madness-pinball-machine.jpg",
-//     "/medieval-madness-playfield.jpg",
-//     "/medieval-madness-backglass.jpg",
-//     "/medieval-madness-cabinet-left.jpg",
-//     "/medieval-madness-cabinet-right.jpg",
-//     "/medieval-madness-details.jpg",
-//   ],
-//   seller: {
-//     name: "Mike Johnson",
-//     avatar: "/seller-avatar.jpg",
-//     rating: 4.9,
-//     reviewCount: 47,
-//     memberSince: "2019",
-//     location: "Los Angeles, CA",
-//     verified: true,
-//     responseTime: "Usually responds within 2 hours",
-//     totalSales: 23,
-//   },
-// }]
-
 export default function DetailPage() {
   const searchParams = useSearchParams()
   const id = searchParams.get("id")
@@ -342,7 +285,7 @@ export default function DetailPage() {
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                   <span className="text-primary-foreground font-bold text-lg">P</span>
                 </div>
-                <span className="text-xl font-bold text-foreground">PinballMarket</span>
+                <span className="text-xl font-bold text-foreground">Crazy-Pinball</span>
               </div>
               <p className="text-muted-foreground text-sm">
                 The premier marketplace for pinball enthusiasts worldwide.
@@ -410,7 +353,7 @@ export default function DetailPage() {
             </div>
           </div>
           <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; 2024 PinballMarket. All rights reserved.</p>
+            <p>&copy; 2025 Crazy-Pinball. All rights reserved.</p>
           </div>
         </div>
       </footer>

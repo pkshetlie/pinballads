@@ -55,7 +55,7 @@ export function useApi() {
       throw new Error('No token available');
     }
 
-    const url = new URL(endpoint, config.API_BASE_URL).href;
+    const url = new URL(endpoint+'?XDEBUG_TRIGGER=1', config.API_BASE_URL).href;
 
     // Configuration initiale
     const options: RequestInit = {
