@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageToggle } from "@/components/language-toggle";
 import {useLanguage} from "@/lib/language-context";
-import {LogOutIcon, Moon, Radar, Sun, User} from "lucide-react"
+import {CogIcon, LogOutIcon, Moon, Radar, Sun, User} from "lucide-react"
 import Link from "next/link";
 
 function LanguageToggleWrapper() {
@@ -90,10 +90,18 @@ export default function Navbar() {
                                 </Button>
 
                                 <span className={`text-foreground flex gap-2 font-medium ${isMobileMenuOpen ? 'text-2xl' : ''}`}>
-                                    <User/><Link href={'/settings'}>
-                                    {user.name}</Link>
+                                    <User/> {user.name}
+
+
                                 </span>
                                 <div className="block md:hidden">
+                                    {/*<Button*/}
+                                    {/*    variant="outline"*/}
+                                    {/*    className="cursor-pointer w-full"*/}
+                                    {/*>*/}
+                                    {/*    <span className="text-lg md:text-2xl">Settings</span>*/}
+                                    {/*    <CogIcon/>*/}
+                                    {/*</Button>*/}
                                     <Button
                                         onClick={() => logout()}
                                         variant="outline"
@@ -102,8 +110,8 @@ export default function Navbar() {
                                         <span className="text-lg md:text-2xl">Logout</span>
                                         <LogOutIcon/>
                                     </Button>
-                                </div>
 
+                                </div>
                             </>) : (
                                 <Button variant="outline" size="sm" asChild>
                                     <a href="/signin" className="text-base">{t('nav.signIn')}</a>
@@ -114,11 +122,17 @@ export default function Navbar() {
                             {/*<LanguageToggleWrapper/>*/}
                             {/*<ThemeToggle/>*/}
                             {user ?
+                                <>
+                                    {/*<Button variant="outline" size="icon"*/}
+                                    {/*        className={'cursor-pointer'}>*/}
+                                    {/*    <CogIcon />*/}
+                                    {/*    <span className="sr-only">Settings</span>*/}
+                                    {/*</Button>*/}
                                 <Button onClick={() => logout()} variant="secondary" size="icon"
                                         className={'cursor-pointer'}>
                                     <LogOutIcon/>
                                     <span className="sr-only">Logout</span>
-                                </Button> : <></>}
+                                </Button></> : <></>}
                         </div>
 
                     </nav>

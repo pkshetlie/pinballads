@@ -205,26 +205,26 @@ export default function SettingsPage() {
         }
     }
 
-    // if (!user) {
-    //     return (
-    //         <AppLayout>
-    //             <div className="container mx-auto px-4 py-8">
-    //                 <Card>
-    //                     <CardContent className="p-6">
-    //                         <p className="text-center text-muted-foreground">Vous devez être connecté pour accéder aux paramètres</p>
-    //                     </CardContent>
-    //                 </Card>
-    //             </div>
-    //         </AppLayout>
-    //     )
-    // }
+    if (!user) {
+        return (
+            <AppLayout>
+                <div className="container mx-auto px-4 py-8">
+                    <Card>
+                        <CardContent className="p-6">
+                            <p className="text-center text-muted-foreground">Vous devez être connecté pour accéder aux paramètres</p>
+                        </CardContent>
+                    </Card>
+                </div>
+            </AppLayout>
+        )
+    }
 
     return (<>
             <Navbar></Navbar>
 
             <div className="container mx-auto px-4 py-8 max-w-4xl">
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-foreground mb-2">Paramètres</h1>
+                    <h1 className="text-3xl font-bold text-foreground mb-2">Paramètres (en cours)</h1>
                     <p className="text-muted-foreground">Gérez vos préférences et informations personnelles</p>
                 </div>
 
