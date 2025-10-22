@@ -206,8 +206,8 @@ export default function SettingsPage() {
     }
 
     if (!user) {
-        return (
-            <AppLayout>
+        return (<>
+            <Navbar></Navbar>
                 <div className="container mx-auto px-4 py-8">
                     <Card>
                         <CardContent className="p-6">
@@ -215,8 +215,7 @@ export default function SettingsPage() {
                         </CardContent>
                     </Card>
                 </div>
-            </AppLayout>
-        )
+        </>)
     }
 
     return (<>
