@@ -7,6 +7,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageToggle } from "@/components/language-toggle";
 import {useLanguage} from "@/lib/language-context";
 import {LogOutIcon, Moon, Radar, Sun, User} from "lucide-react"
+import Link from "next/link";
 
 function LanguageToggleWrapper() {
     const { language, setLanguage } = useLanguage()
@@ -89,8 +90,8 @@ export default function Navbar() {
                                 </Button>
 
                                 <span className={`text-foreground flex gap-2 font-medium ${isMobileMenuOpen ? 'text-2xl' : ''}`}>
-                                    <User/>
-                                    {user.name}
+                                    <User/><Link href={'/settings'}>
+                                    {user.name}</Link>
                                 </span>
                                 <div className="block md:hidden">
                                     <Button
@@ -110,8 +111,8 @@ export default function Navbar() {
                             )}
                         </div>
                         <div className="hidden sm:flex items-center gap-2">
-                            <LanguageToggleWrapper/>
-                            <ThemeToggle/>
+                            {/*<LanguageToggleWrapper/>*/}
+                            {/*<ThemeToggle/>*/}
                             {user ?
                                 <Button onClick={() => logout()} variant="secondary" size="icon"
                                         className={'cursor-pointer'}>
