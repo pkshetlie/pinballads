@@ -13,6 +13,7 @@ type userType = {
     location: string,
     responseRate: number,
     isVerified: boolean,
+    email: string,
 };
 
 interface AuthContextValue {
