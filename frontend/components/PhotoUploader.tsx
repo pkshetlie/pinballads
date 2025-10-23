@@ -32,14 +32,14 @@ export default function PhotoUploader({
 
         Array.from(files).forEach((file, index) => {
             if (file.type.startsWith("image/")) {
-                if (file.size > MAX_FILE_SIZE) {
-                    toast({
-                        variant: "destructive",
-                        title: "Error",
-                        description: `${t('collection.toasts.imageTooLarge')} "${file.name}" ${t('collection.toasts.imageTooLargeDescription')}`,
-                    });
-                    return;
-                }
+                // if (file.size > MAX_FILE_SIZE) {
+                //     toast({
+                //         variant: "destructive",
+                //         title: "Error",
+                //         description: `${t('collection.toasts.imageTooLarge')} "${file.name}" ${t('collection.toasts.imageTooLargeDescription')}`,
+                //     });
+                //     return;
+                // }
 
                 newImages.push({
                     url: URL.createObjectURL(file),

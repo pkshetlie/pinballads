@@ -308,21 +308,6 @@ final class MachineController extends AbstractController
                     $image = $resized;
                 }
 
-                // // Ajouter le filigrane
-                // $black = imagecolorallocatealpha($image, 0, 0, 0, 100);
-                // $fontSize = min($width, $height) * 0.05;
-                // $angle = -45;
-                // imagettftext(
-                //     $image,
-                //     $fontSize,
-                //     $angle,
-                //     $width / 4,
-                //     $height / 2,
-                //     $black,
-                //     __DIR__.'/../../public/fonts/Sweet Toffee.ttf',
-                //     'Crazy-pinball.com'
-                // );
-
                 // Sauvegarder en WebP
                 imagewebp($image, $uploadDir.'/'.$newFilename, 80);
 
