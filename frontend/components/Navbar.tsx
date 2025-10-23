@@ -162,8 +162,8 @@ export default function Navbar() {
                                 )}
                             </div>
                             <div className="hidden sm:flex items-center gap-2">
-                                {/*<LanguageToggleWrapper/>*/}
-                                {/*<ThemeToggle/>*/}
+                                <LanguageToggleWrapper/>
+                                <ThemeToggle/>
                                 {user ?
                                     <>
                                         {/*<Button variant="outline" size="icon"*/}
