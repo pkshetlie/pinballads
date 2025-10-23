@@ -678,27 +678,27 @@ export default function ListingsPage() {
                                 </div>
                             )}
                         </section>
-                        <section className="container mx-auto px-4 pb-12 lg:px-6">
-                            <div className="flex items-center justify-center gap-2">
-                                <Button variant="outline" disabled>
-                                    {t("listings.previous")}
-                                </Button>
-                                <Button variant="default" size="sm">
-                                    1
-                                </Button>
-                                <Button variant="outline" size="sm">
-                                    2
-                                </Button>
-                                <Button variant="outline" size="sm">
-                                    3
-                                </Button>
-                                <span className="text-muted-foreground px-2">...</span>
-                                <Button variant="outline" size="sm">
-                                    10
-                                </Button>
-                                <Button variant="outline">{t("listings.next")}</Button>
-                            </div>
-                        </section>
+                        {/*<section className="container mx-auto px-4 pb-12 lg:px-6">*/}
+                        {/*    <div className="flex items-center justify-center gap-2">*/}
+                        {/*        <Button variant="outline" disabled>*/}
+                        {/*            {t("listings.previous")}*/}
+                        {/*        </Button>*/}
+                        {/*        <Button variant="default" size="sm">*/}
+                        {/*            1*/}
+                        {/*        </Button>*/}
+                        {/*        <Button variant="outline" size="sm">*/}
+                        {/*            2*/}
+                        {/*        </Button>*/}
+                        {/*        <Button variant="outline" size="sm">*/}
+                        {/*            3*/}
+                        {/*        </Button>*/}
+                        {/*        <span className="text-muted-foreground px-2">...</span>*/}
+                        {/*        <Button variant="outline" size="sm">*/}
+                        {/*            10*/}
+                        {/*        </Button>*/}
+                        {/*        <Button variant="outline">{t("listings.next")}</Button>*/}
+                        {/*    </div>*/}
+                        {/*</section>*/}
                     </main>
                 )}
             </div>
