@@ -88,8 +88,9 @@ function FilterSidebar({
 
 
     useEffect(() => {
+        console.log('filters', filterAll());
         onChange(filterAll());
-    }, [selectedFeatures, selectedManufacturers, selectedDecades, selectedConditions, selectedGame, finalPriceRange, distanceRange, currency, filterLoaded]);
+    }, [selectedFeatures, selectedManufacturers, selectedDecades, selectedConditions, selectedGame, finalPriceRange, distanceRange, currency]);
 
     const manufacturerList = Object.values(Manufacturers);
     const filteredManufacturers = manufacturerList.filter((manufacturer) =>
@@ -385,15 +386,13 @@ interface FiltersSidebarProps {
     price: {
         min: number,
         max: number,
+        currency: string
     },
-    distance: {
-        min: number,
-        max: number,
-    },
+    distance: number,
     manufacturers: string[],
     conditions: string[],
     features: string[],
-    decades: string[],
+    decades: string[]
 }
 
 export default function ListingsPage() {
@@ -405,18 +404,9 @@ export default function ListingsPage() {
     const [filters, setFilters] = useState<FiltersSidebarProps | null>(null)
     const [isLoadingMachine, setIsLoadingMachine] = useState(true)
 
-    // useEffect(() => {
-    //     if (pinballMachines.length !== 0) {
-    //         return;
-    //     }
-    //
-    //     fetchCollection();
-    // }, [token]);
-
     const fetchCollection = async () => {
         setIsLoadingMachine(true);
         try {
-            console.log('start fetch');
             const result = await apiPost(`/api/public/sales`, filters ?? {});
 
             if (result) {
