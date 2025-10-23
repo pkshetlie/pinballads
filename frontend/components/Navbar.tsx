@@ -148,8 +148,7 @@ export default function Navbar() {
                                         {/*</Button>*/}
                                         <Button
                                             onClick={() => logout()}
-                                            variant="outline"
-                                            className="cursor-pointer w-full"
+                                            variant="outline" className="cursor-pointer w-full"
                                         >
                                             <span className="text-lg md:text-2xl">Logout</span>
                                             <LogOutIcon/>
