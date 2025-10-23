@@ -21,7 +21,7 @@ export default function PhotoUploader({
     const [draggedItem, setDraggedItem] = useState<number | null>(null);
     const {t} = useLanguage();
     const {toast} = useToast();
-    const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB in bytes
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
 
     const handleFiles = (files: FileList | null) => {
         if (!files) return;
