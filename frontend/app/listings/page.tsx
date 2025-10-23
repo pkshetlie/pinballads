@@ -41,7 +41,6 @@ function FilterSidebar({
                        },
 ) {
     const searchParams = useSearchParams();
-
     const opdbid = searchParams.get('opdbid') ?? null;
     const features = searchParams.get('features') ? searchParams.get('features')?.split(',') : [];
     const years = searchParams.get('years') ? searchParams.get('years')?.split(',').map(Number) : [];
@@ -63,10 +62,8 @@ function FilterSidebar({
     const [selectedDecades, setSelectedDecades] = useState<string[]>([]);
     const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
     const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
-    const [selectedOpdbid, setSelectedOpdbId] = useState<string | null>(null);
+    const [selectedOpdbId, setSelectedOpdbId] = useState<string | null>(null);
     const [selectedGame, setSelectedGame] = useState<GameDto | null>(null);
-    const [selectedCity, setSelectedCity] = useState<string | null>(null);
-    const [selectedLocation, setSelectedLocation] = useState<{ lat: null, long: null } | null>(null);
 
     useEffect(() => {
         if (!opdbid) return;
@@ -82,16 +79,17 @@ function FilterSidebar({
         const selectedDecadesFromYears = decades
             .filter(decade => years?.some(year => year >= decade.min && year <= decade.max))
             .map(decade => decade.key);
+
         setSelectedDecades(selectedDecadesFromYears);
         setSelectedOpdbId(opdbid);
-
         setfilterLoaded(true);
+
     }, [filterLoaded]);
 
 
     useEffect(() => {
         onChange(filterAll());
-    }, [selectedFeatures, selectedManufacturers, selectedDecades, selectedConditions, selectedGame, finalPriceRange, distanceRange, currency]);
+    }, [selectedFeatures, selectedManufacturers, selectedDecades, selectedConditions, selectedGame, finalPriceRange, distanceRange, currency, filterLoaded]);
 
     const manufacturerList = Object.values(Manufacturers);
     const filteredManufacturers = manufacturerList.filter((manufacturer) =>
@@ -131,7 +129,7 @@ function FilterSidebar({
     }
     const filterAll = () => {
         return {
-            opdbId: selectedOpdbid,
+            opdbId: selectedOpdbId,
             game: selectedGame,
             location: {
                 lon: null,
