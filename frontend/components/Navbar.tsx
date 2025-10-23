@@ -15,6 +15,7 @@ import {
     DialogHeader,
     DialogTitle
 } from "@/components/ui/dialog";
+import {ThemeToggle} from "@/components/theme-toggle";
 
 function LanguageToggleWrapper() {
     const {language, setLanguage} = useLanguage();
