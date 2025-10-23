@@ -155,7 +155,7 @@ export default function PhotoUploader({
                                                     const newUrl = URL.createObjectURL(blob);
                                                     setUploadedImages(prev =>
                                                         prev.map((img, i) =>
-                                                            i === index ? {...img, url: newUrl} : img
+                                                            i === index ? {...img, url: newUrl, uid: ''} : img
                                                         )
                                                     );
                                                 }
