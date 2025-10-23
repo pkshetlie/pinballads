@@ -29,6 +29,7 @@ import {PinballDto} from "@/components/object/pinballDto";
 import {PinballImageCarousel} from "@/components/PinballImageCarousel";
 import {defaultFeatures} from "@/components/object/features";
 import {useLanguage} from "@/lib/language-context";
+import {currencies} from "@/components/object/currencies";
 
 export default function DetailPage() {
   const searchParams = useSearchParams()
@@ -107,7 +108,7 @@ export default function DetailPage() {
                   <span>{pinballMachine.distance} away</span>
                 </div>
 
-                <div className="text-4xl font-bold text-primary mb-6">${pinballMachine.price.toLocaleString()}</div>
+                <div className="text-4xl font-bold text-primary mb-6">{currencies[pinballMachine.currency]}{pinballMachine.price.toLocaleString()}</div>
               </div>
 
               {/* Description */}
@@ -146,25 +147,6 @@ export default function DetailPage() {
                   ))}
                 </div>
               </div>
-
-              {/* Specifications */}
-              <div>
-                <h3 className="text-xl font-semibold text-foreground mb-4">Specifications</h3>
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                      <div className="text-center">
-                        <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-2">
-                          <Gauge className="w-6 h-6 text-primary" />
-                        </div>
-                        {/*<div className="text-sm text-muted-foreground">Players</div>*/}
-                        {/*<div className="font-semibold">{pinballMachine.specifications.players}</div>*/}
-                      </div>
-                    </div>
-                    <Separator className="my-6" />
-                  </CardContent>
-                </Card>
-              </div>
             </div>
           </div>
 
@@ -177,7 +159,7 @@ export default function DetailPage() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-2">${pinballMachine.price.toLocaleString()}</div>
+                  <div className="text-3xl font-bold text-primary mb-2">{currencies[pinballMachine.currency]}{pinballMachine.price.toLocaleString()}</div>
                   <div className="text-sm text-muted-foreground">
                     {pinballMachine.location?.city?? 'nowhere'} • {pinballMachine.distance ?? 0} away
                   </div>
