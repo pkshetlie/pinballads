@@ -3,6 +3,7 @@
 import {ChevronDown, ChevronUp, Filter, Grid, List, MapPin, Search, Star, User} from "lucide-react"
 import {Button} from "@/components/ui/button"
 import {Input} from "@/components/ui/input"
+import debounce from "lodash/debounce"
 import {Card, CardContent, CardFooter} from "@/components/ui/card"
 import {Badge} from "@/components/ui/badge"
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
@@ -88,8 +89,16 @@ function FilterSidebar({
 
 
     useEffect(() => {
-        console.log('filters', filterAll());
-        onChange(filterAll());
+        const debouncedOnChange = debounce((filters) => {
+            console.log('filters', filters);
+            onChange(filters);
+        }, 500);
+
+        debouncedOnChange(filterAll());
+
+        return () => {
+            debouncedOnChange.cancel();
+        };
     }, [selectedFeatures, selectedManufacturers, selectedDecades, selectedConditions, selectedGame, finalPriceRange, distanceRange, currency]);
 
     const manufacturerList = Object.values(Manufacturers);
