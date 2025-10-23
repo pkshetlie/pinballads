@@ -38,7 +38,6 @@ export default function DetailPage() {
   const { apiGet } = useApi();
   const {t} = useLanguage()
   useEffect(() => {
-    console.log(pinballMachine)
     if (pinballMachine !== null) {
       return;
     }
@@ -111,7 +110,6 @@ export default function DetailPage() {
                 <div className="text-4xl font-bold text-primary mb-6">{currencies[pinballMachine?.currency as keyof typeof currencies]}{pinballMachine.price.toLocaleString()}</div>
               </div>
 
-              {/* Description */}
               <div>
                 <h3 className="text-xl font-semibold text-foreground mb-4">Description</h3>
                 <div className="prose prose-gray max-w-none">
@@ -123,9 +121,8 @@ export default function DetailPage() {
                 </div>
               </div>
 
-              {/* Features */}
               <div>
-                <h3 className="text-xl font-semibold text-foreground mb-4">Features & Upgrades</h3>
+                <h3 className="text-xl font-semibold text-foreground mb-4">{t('sell.featuresUpgrades')}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {Object.entries(defaultFeatures).map(([category, features]) => (
                       <div key={category} className="mb-4">

@@ -97,6 +97,9 @@ export const sell = {
       homeUse: "Home Use Only",
       saveDraft: "Save as Draft",
       publishListing: "Publish Listing",
+      goodies: 'Goodies',
+      spareParts: 'Spare Parts',
+      featuresUpgrades: 'Features & Upgrades',
     },
   },
   fr: {
@@ -197,6 +200,10 @@ export const sell = {
       homeUse: "Uniquement Utilisé à Domicile",
       saveDraft: "Enregistrer comme Brouillon",
       publishListing: "Publier l'Annonce",
+      goodies: 'Goodies',
+      spareParts: 'Pieces de rechange',
+      noFeature: 'rien',
+      featuresUpgrades: 'Élements & Modifications',
     },
   },
 }

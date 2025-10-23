@@ -29,6 +29,9 @@ import {toast} from "@/components/ui/use-toast";
 import SearchDropdown from "@/components/SearchDropdown";
 import {useSearchParams} from 'next/navigation';
 import {GameDto} from "@/components/object/GameDto";
+import InputCity from "@/components/InputCity";
+import {QueryLocationResult} from "@/components/object/QueryLocationType";
+import {SliderMax} from "@/components/ui/sliderMax";
 
 // Mock data for pinball machine listings
 
@@ -65,6 +68,8 @@ function FilterSidebar({
     const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
     const [selectedOpdbId, setSelectedOpdbId] = useState<string | null>(null);
     const [selectedGame, setSelectedGame] = useState<GameDto | null>(null);
+    const [distanceRangeArray, setDistanceRangeArray] = useState([0,65]);
+    const [selectedLocation, setSelectedLocation] = useState<QueryLocationResult | null>(null)
 
     useEffect(() => {
         if (!opdbid) return;
@@ -90,7 +95,6 @@ function FilterSidebar({
 
     useEffect(() => {
         const debouncedOnChange = debounce((filters) => {
-            console.log('filters', filters);
             onChange(filters);
         }, 500);
 
@@ -137,13 +141,14 @@ function FilterSidebar({
         setSelectedFeatures([]);
         setSelectedDecades([]);
     }
+
     const filterAll = () => {
         return {
             opdbId: selectedOpdbId,
             game: selectedGame,
             location: {
-                lon: null,
-                lat: null
+                lon: selectedLocation?.lon ?? null,
+                lat: selectedLocation?.lat ?? null,
             },
             price: {
                 min: priceRange[0],
@@ -207,29 +212,22 @@ function FilterSidebar({
                 </div>
 
                 {/* Distance Filter */}
-                {/*<div className="space-y-4">*/}
-                {/*    <h4 className="font-medium text-foreground">{t("listings.distance")}</h4>*/}
-                {/*    <div className="space-y-3 relative">*/}
-                {/*        <MapPin*/}
-                {/*            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5"/>*/}
-                {/*        <Input placeholder={t("listings.locationPlaceholder")} className="pl-10 h-11"*/}
-                {/*               onChange={(e)=> setSelectedCity(e.target.value)}*/}
-                {/*               defaultValue=""/>*/}
-                {/*    </div>*/}
-                {/*    <div className={`space-y-3 ${selectedLocation ? '' : 'hidden'}`}>*/}
-                {/*        <Slider*/}
-                {/*            value={distanceRange}*/}
-                {/*            onValueChange={setDistanceRange}*/}
-                {/*            max={100}*/}
-                {/*            min={5}*/}
-                {/*            step={5}*/}
-                {/*            className="w-full"*/}
-                {/*        />*/}
-                {/*        <div className="text-sm text-muted-foreground">*/}
-                {/*            {t("listings.within")} {distanceRange[0]} {t("listings.miles")}*/}
-                {/*        </div>*/}
-                {/*    </div>*/}
-                {/*</div>*/}
+                <div className="space-y-4">
+                    <h4 className="font-medium text-foreground">{t("listings.distance")}</h4>
+                    <InputCity onSelected={(location:QueryLocationResult|null)=> setSelectedLocation(location)}></InputCity>
+                    <div className={`space-y-3 ${selectedLocation ? '' : 'hidden'}`}>
+                                <SliderMax
+                                    value={distanceRange}
+                                    onValueChange={setDistanceRange}
+                                    max={250}
+                                    step={5}
+                                    className="w-full"
+                                />
+                                <div className="text-sm text-muted-foreground">
+                                    {t("listings.within")} {distanceRange} {t("listings.miles")}
+                                </div>
+                            </div>
+                </div>
 
                 {/* Manufacturer Filter */}
                 <Collapsible open={manufacturerOpen} onOpenChange={setManufacturerOpen}>
@@ -415,6 +413,7 @@ export default function ListingsPage() {
 
     const fetchCollection = async () => {
         setIsLoadingMachine(true);
+
         try {
             const result = await apiPost(`/api/public/sales`, filters ?? {});
 
@@ -438,11 +437,9 @@ export default function ListingsPage() {
     }
 
     useEffect(() => {
-        console.log(!filters);
         if (!filters) return;
         fetchCollection()
     }, [filters]);
-
 
     return (
         <div className="min-h-screen bg-background">

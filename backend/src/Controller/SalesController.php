@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use function Doctrine\ORM\QueryBuilder;
 
 final class SalesController extends AbstractController
 {
@@ -45,10 +46,7 @@ final class SalesController extends AbstractController
          *  max: number,
          * currency: string,
          * },
-         * distance: {
-         *      min: number,
-         *      max: number,
-         * },
+         * distance: number,
          * manufacturers: string[],
          * conditions: string[],
          * features: string[],
@@ -56,6 +54,13 @@ final class SalesController extends AbstractController
          * }
          *
          * */
+
+        if (!empty($requestData->location) && !empty($requestData->location->lon) && !empty($requestData->location->lat) && !empty($requestData->distance)) {
+            $qb->andWhere('ST_DWithin(ps.geography, ST_SetSRID(ST_MakePoint(:lon, :lat), 4326), :distance) = true')
+                ->setParameter('lon', $requestData->location->lon)
+                ->setParameter('lat', $requestData->location->lat)
+                ->setParameter('distance', $requestData->distance*1000);
+        }
 
         if (!empty($requestData->opdbid)) {
             $qb->andWhere('p.opdbId = :opdbid')
@@ -67,7 +72,7 @@ final class SalesController extends AbstractController
                 ->andWhere('ps.currency = :currency')
                 ->setParameter('minPrice', (int)$requestData->price->min)
                 ->setParameter('maxPrice', (int)$requestData->price->max)
-            ->setParameter('currency',  $requestData->price->currency ?? 'EUR');
+                ->setParameter('currency', $requestData->price->currency ?? 'EUR');
         }
 
         if (!empty($requestData->conditions)) {
@@ -99,7 +104,6 @@ final class SalesController extends AbstractController
 
 
         $total = (clone $qb)->select('COUNT(p.id)')->getQuery()->getSingleScalarResult();
-
         $pinballs = $qb->setMaxResults($limit)
             ->setFirstResult($page * $limit)->getQuery()->getResult();
 
@@ -118,14 +122,14 @@ final class SalesController extends AbstractController
         DtoService $dtoService,
     ): Response {
         if ($pinball->getPinballSales()->filter(
-                fn(PinballSale $ps) => $ps->getFinalPrice() === null && $ps->getStartPrice() !== null && $ps->getSoldAt() == null
+                fn(PinballSale $ps) => $ps->getFinalPrice() === null && $ps->getStartPrice() !== null && $ps->getSoldAt(
+                    ) == null
             )->count() === 0) {
             return $this->json([], Response::HTTP_NOT_FOUND);
         }
 
         return $this->json($dtoService->toDto($pinball));
     }
-
 
 
     #[Route('/api/public/featured', name: 'app_featured', methods: ['GET'])]

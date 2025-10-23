@@ -31,6 +31,7 @@ const schema = {
         HomeUseOnly: false,
         manual: false,
         goodies: false,
+        spareParts: false,
     }
 };
 

@@ -75,8 +75,6 @@ export default function EditMachinePage() {
 
                 for (const image of images || []) {
                     let file = image.file;
-                    console.log(file)
-
                     if (file.size > maxSize) {
                         // Paramètres de compression
                         const options = {
