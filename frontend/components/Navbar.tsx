@@ -118,6 +118,11 @@ export default function Navbar() {
                                    className={`text-muted-foreground hover:text-foreground transition-colors ${isMobileMenuOpen ? 'text-2xl' : ''}`}>
                                     {t("nav.home")}
                                 </a>
+
+                                <a href="/sell"
+                                   className={`text-muted-foreground hover:text-foreground transition-colors ${isMobileMenuOpen ? 'text-2xl' : ''}`}>
+                                    {t("nav.sell")}
+                                </a>
                                 <a href="/pricing"
                                    className={`text-muted-foreground hover:text-foreground transition-colors ${isMobileMenuOpen ? 'text-2xl' : ''}`}>
                                     {t("nav.pricing")}

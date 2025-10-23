@@ -1,8 +1,19 @@
 export const sell = {
   en: {
     sell: {
-      additionalOptions: "Equipement de votre flipper",
-      additionalOptionsDescription: "Ajoutez toutes les options ou fonctionnalités supplémentaires qui peuvent être pertinentes pour votre machine, telles que : ",
+      howToSell: "How to Sell ?",
+      howToSellDescription: "Selling your pinball is easy! Follow these steps to list your pinball on our platform:",
+      step1: "1. Register an account",
+      step1Description: "Create an account on our website to sell your pinball. It's free and takes less than a minute.",
+      step2: "2. Create a collection",
+      step2Description: "Create a collection to organize your pinballs. You can add it to your default collection or create a new one.",
+      step3: "3. Add your pinball to the collection",
+      step3Description: "Add your pinball to the collection you created in step 2. You can also add it to a different collection if you prefer.",
+      step4: "4. put your pinball on sale",
+      step4Description: "Once your pinball is in the collection, you can put it on sale. You can choose the price and location of your pinball.",
+
+      additionalOptions: "Your pinball equipment",
+      additionalOptionsDescription: "Add any additional options or features that may be relevant to your pinball machine, such as:",
       pinsound: "Materiel PinSound",
       cabinet: "Cabinet",
       artBlade: "Art Blade",
@@ -90,6 +101,17 @@ export const sell = {
   },
   fr: {
     sell: {
+      howToSell: "Comment vendre ?",
+      howToSellDescription: "Vendre votre flipper est simple ! Suivez ces étapes pour le mettre en ligne sur notre plateforme :",
+      step1: "1. Créez un compte",
+      step1Description: "Créez un compte sur notre site pour vendre votre flipper. C’est gratuit et cela prend moins d’une minute.",
+      step2: "2. Créez une collection",
+      step2Description: "Créez une collection pour organiser vos flippers. Vous pouvez l’ajouter à votre collection par défaut ou en créer une nouvelle.",
+      step3: "3. Ajoutez votre flipper à la collection",
+      step3Description: "Ajoutez votre flipper à la collection créée à l’étape 2. Vous pouvez aussi l’ajouter à une autre collection si vous préférez.",
+      step4: "4. Mettez votre flipper en vente",
+      step4Description: "Une fois votre flipper dans la collection, vous pouvez le mettre en vente. Choisissez le prix et le lieu où il se trouve.",
+
       additionalOptions: "Equipement de votre flipper",
       additionalOptionsDescription: "Ajoutez toutes les options ou fonctionnalités supplémentaires qui peuvent être pertinentes pour votre machine, telles que : ",
       pinsound: "Materiel PinSound",

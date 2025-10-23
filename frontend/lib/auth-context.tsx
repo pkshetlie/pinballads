@@ -21,7 +21,7 @@ interface AuthContextValue {
     user: userType | null; // Information utilisateur
     login: (email: string, password: string) => Promise<void>;
     logout: () => void;
-    refreshUser: () => void;
+    refreshUser: (userType: userType) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -95,7 +95,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     return (
-        <AuthContext.Provider value={{ token, user, login, logout, refreshUser: refreshUser}}>
+        <AuthContext.Provider value={{ token, user, login, logout, refreshUser}}>
             {children}
         </AuthContext.Provider>
     );

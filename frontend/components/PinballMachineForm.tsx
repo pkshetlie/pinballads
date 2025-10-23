@@ -78,11 +78,11 @@ function migrateLegacyFeatures(features: AnyObj): featuresType {
         acc[category as keyof featuresType] = Object.keys(categoryDefaults).reduce((subAcc, key) => {
             const value = features[key];
             // Gestion spéciale pour numberOfPlayers qui est un number
-            if (key === 'numberOfPlayers') {
-                subAcc[key] = typeof value === 'number' ? value : 4;
-            } else {
-                subAcc[key] = !!value;
-            }
+            // if (key === 'numberOfPlayers') {
+            //     subAcc[key] = typeof value === 'number' ? value : 4;
+            // } else {
+                subAcc[key as keyof featuresType.] = !!value;
+            // }
             return subAcc;
         }, {...categoryDefaults});
         return acc;
