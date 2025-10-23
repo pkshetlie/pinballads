@@ -1,36 +1,35 @@
 import {featuresType} from "@/components/object/features";
+import {PublicUserDto} from "@/components/object/PublicUserDto";
 
 export type PinballDto = {
+    rating: number;
+    distance: number;
     devise: string;
     price: number;
-    views: number | null;
+    views: number;
     isForSale: boolean;
     id: number;
     name: string;
-    opdbId: string | null;
+    opdbId: string;
     features: featuresType;
     description: string | null;
     condition: string;
     images: { title: string, url: string, uid: string }[];
-    year: string | null;
-    manufacturer: string | null;
+    year: string;
+    manufacturer: string;
     working: boolean;
     originalParts: boolean;
     manual: boolean;
     keys: boolean;
     coinDoor: boolean;
     homeUse: boolean;
-    owningDate?: string | null;
-    currency: string;
-    currentOwner?: {
-        id: number;
-        username: string;
-        email?: string;
-    } | null;
-    location?: {
+    owningDate: string;
+    currency: any;
+    currentOwner?: PublicUserDto | null;
+    location: {
         city: string;
         lat: number;
         lon: number;
         country: string;
-    }| null;
+    } | null;
 };

@@ -182,8 +182,8 @@ function FilterSidebar({
                             className="w-full cursor-ew-resize"
                         />
                         <div className="flex items-center justify-between text-sm text-muted-foreground">
-                            <span>{currencies[currency]}{priceRange[0].toLocaleString()}</span>
-                            <span>{currencies[currency]}{priceRange[1].toLocaleString()}</span>
+                            <span>{currencies[currency as keyof typeof currencies]}{priceRange[0].toLocaleString()}</span>
+                            <span>{currencies[currency as keyof typeof currencies]}{priceRange[1].toLocaleString()}</span>
                         </div>
                         <div className="flex gap-2">
                             <Input placeholder="Min" value={priceRange[0]} className="h-8 text-sm" readOnly/>
@@ -592,7 +592,7 @@ export default function ListingsPage() {
                                                 <div
                                                     className="flex flex-wrap items-center gap-1 text-sm text-muted-foreground mb-4">
                                                     <User className="w-4 h-4"/>
-                                                    <div>{machine.currentOwner.username}</div>
+                                                    <div>{machine.currentOwner?.username}</div>
                                                 </div>
                                                 <div
                                                     className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
@@ -603,7 +603,7 @@ export default function ListingsPage() {
                                             <CardFooter className="p-4 pt-0">
                                                 <div className="flex items-center justify-between w-full">
                                             <span
-                                                className="text-xl font-bold text-primary">{currencies[machine.currency]}{machine.price.toLocaleString()}</span>
+                                                className="text-xl font-bold text-primary">{currencies[machine.currency as keyof typeof currencies]}{machine.price.toLocaleString()}</span>
                                                     <Link href={`/listings/detail?id=${machine.id}`}>
 
                                                         <Button size="sm" className={'cursor-pointer'}
@@ -667,7 +667,7 @@ export default function ListingsPage() {
                                                         </div>
                                                         <div className="flex flex-col items-end gap-3 sm:min-w-[180px]">
                                                         <span
-                                                            className="text-2xl font-bold text-primary">{currencies[machine.currency]}{machine.price.toLocaleString()}</span>
+                                                            className="text-2xl font-bold text-primary">{currencies[machine.currency as keyof typeof currencies]}{machine.price.toLocaleString()}</span>
                                                             <Button className="w-full sm:w-auto">{t('details')}</Button>
                                                         </div>
                                                     </div>

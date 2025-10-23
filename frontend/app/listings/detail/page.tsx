@@ -27,7 +27,7 @@ import {useAuth} from "@/lib/auth-context";
 import {useApi} from "@/lib/api";
 import {PinballDto} from "@/components/object/pinballDto";
 import {PinballImageCarousel} from "@/components/PinballImageCarousel";
-import {defaultFeatures} from "@/components/object/features";
+import {defaultFeatures, featuresType} from "@/components/object/features";
 import {useLanguage} from "@/lib/language-context";
 import {currencies} from "@/components/object/currencies";
 
@@ -108,14 +108,14 @@ export default function DetailPage() {
                   <span>{pinballMachine.distance} away</span>
                 </div>
 
-                <div className="text-4xl font-bold text-primary mb-6">{currencies[pinballMachine.currency]}{pinballMachine.price.toLocaleString()}</div>
+                <div className="text-4xl font-bold text-primary mb-6">{currencies[pinballMachine?.currency as keyof typeof currencies]}{pinballMachine.price.toLocaleString()}</div>
               </div>
 
               {/* Description */}
               <div>
                 <h3 className="text-xl font-semibold text-foreground mb-4">Description</h3>
                 <div className="prose prose-gray max-w-none">
-                  {pinballMachine.description.split("\n\n").map((paragraph, index) => (
+                  {pinballMachine?.description?.split("\n\n").map((paragraph, index) => (
                     <p key={index} className="text-muted-foreground leading-relaxed mb-4">
                       {paragraph}
                     </p>
@@ -130,10 +130,10 @@ export default function DetailPage() {
                   {Object.entries(defaultFeatures).map(([category, features]) => (
                       <div key={category} className="mb-4">
                         <h4 className="font-semibold mb-2 capitalize">{t(`sell.${category}`)}</h4>
-                        {Object.entries(features).length > 0 && !Object.entries(features).some(([feature]) => pinballMachine.features[feature]) ? (
+                        {Object.entries(features).length > 0 && !Object.entries(features).some(([feature]) => pinballMachine.features[feature as keyof featuresType]) ? (
                             <div className="text-muted-foreground">{t('sell.noFeature')}</div>
                         ) : (
-                            Object.entries(features).map(([feature]) => pinballMachine.features[feature] ? (
+                            Object.entries(features).map(([feature]) => pinballMachine.features[feature as keyof featuresType] ? (
                                     <div key={feature} className="flex items-center gap-2">
                                       <div className="w-2 h-2 bg-primary rounded-full"/>
                                       <span className="text-muted-foreground">
@@ -159,7 +159,7 @@ export default function DetailPage() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-2">{currencies[pinballMachine.currency]}{pinballMachine.price.toLocaleString()}</div>
+                  <div className="text-3xl font-bold text-primary mb-2">{currencies[pinballMachine.currency as keyof typeof currencies]}{pinballMachine.price.toLocaleString()}</div>
                   <div className="text-sm text-muted-foreground">
                     {pinballMachine.location?.city?? 'nowhere'} • {pinballMachine.distance ?? 0} away
                   </div>
@@ -188,7 +188,7 @@ export default function DetailPage() {
                     <Avatar className="w-12 h-12">
                       <AvatarImage src={pinballMachine.currentOwner?.avatar || "/placeholder.svg"} />
                       <AvatarFallback>
-                        {pinballMachine.currentOwner?.username?
+                        {pinballMachine.currentOwner?.username
                           .split(" ")
                           .map((n) => n[0])
                           .join("")}

@@ -38,10 +38,14 @@ interface LocationResult {
     county: string
     name: string
     address: {
+        state_district: any;
         city?: string
         town?: string
         village?: string
-        country?: string
+        country?: string,
+        county?: string,
+        state?: string,
+        postcode?: string
     }
 }
 
@@ -65,10 +69,10 @@ export default function MyCollectionPage() {
     const [locationQuery, setLocationQuery] = useState("")
     const [locationResults, setLocationResults] = useState<LocationResult[]>([])
     const [selectedLocation, setSelectedLocation] = useState<{
-        city: string|null,
-        display_name :string|null,
-        lat: number|null,
-        lon: number|null
+        city: string|undefined,
+        display_name :string|undefined,
+        lat: number|undefined,
+        lon: number|undefined
     } | null>(null)
     const [searchingLocation, setSearchingLocation] = useState(false)
 
@@ -335,7 +339,7 @@ export default function MyCollectionPage() {
                                                         <>
                                                             <div
                                                                 className="font-bold text-primary">
-                                                                {currencies[machine.currency ?? 'EUR']}
+                                                                {currencies[machine.currency as keyof typeof currencies]}
                                                                 {machine.price?.toLocaleString()}
                                                             </div>
 
@@ -452,9 +456,10 @@ export default function MyCollectionPage() {
                                                                                             key={index}
                                                                                             type="button"
                                                                                             onClick={() => {
-                                                                                                const city = (result.address.city || result.name) + (result.address.postcode ? ' (' + result.address.postcode + ')': '')
+                                                                                                const city = (result.address.city || result.name) + (result.address?.postcode ? ' (' + result.address?.postcode + ')': '')
                                                                                                 setSelectedLocation({
                                                                                                     city,
+                                                                                                    display_name: result.display_name,
                                                                                                     lat: Number.parseFloat(result.lat),
                                                                                                     lon: Number.parseFloat(result.lon),
                                                                                                 })
@@ -464,11 +469,11 @@ export default function MyCollectionPage() {
                                                                                             className="w-full text-left p-3 hover:bg-muted transition-colors text-sm"
                                                                                         >
                                                                                             <div className="font-medium">
-                                                                                                {result.address.city || result.name} {result.address.postcode && (<span>({result.address.postcode})</span>)}
+                                                                                                {result.address.city || result.name} {result.address?.postcode && (<span>({result.address?.postcode})</span>)}
                                                                                             </div>
                                                                                             <div
                                                                                                 className="text-xs text-muted-foreground truncate">
-                                                                                                {result.address.county || result.address.state_district || result.address.state}, {result.address.country}
+                                                                                                {result.address?.county || result.address?.state_district || result.address?.state}, {result?.address.country}
                                                                                             </div>
                                                                                         </button>
                                                                                     }
@@ -487,9 +492,9 @@ export default function MyCollectionPage() {
                                                                                     className="font-medium text-sm">{selectedLocation.city}</div>
                                                                                 <div
                                                                                     className="text-xs text-muted-foreground">
-                                                                                    Lat: {selectedLocation.lat.toFixed(6)},
+                                                                                    Lat: {selectedLocation.lat?.toFixed(6)},
                                                                                     Lon:{" "}
-                                                                                    {selectedLocation.lon.toFixed(6)}
+                                                                                    {selectedLocation.lon?.toFixed(6)}
                                                                                 </div>
                                                                             </div>
                                                                             <Button

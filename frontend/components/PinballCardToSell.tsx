@@ -52,7 +52,7 @@ export function PinballCardToSell({machine}: PinballCardProps) {
         <CardFooter className="p-4 pt-0">
             <div className="flex items-center justify-between w-full">
                                             <span
-                                                className="text-xl font-bold text-primary">{currencies[machine.currency]}{machine.price.toLocaleString()}</span>
+                                                className="text-xl font-bold text-primary">{currencies[machine.currency] as keyof typeof currencies}{machine.price.toLocaleString()}</span>
                 <Link href={`/listings/detail?id=${machine.id}`}>
 
                     <Button size="sm" className={'cursor-pointer'} variant="outline">

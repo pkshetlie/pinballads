@@ -31,7 +31,7 @@ export default function ResetPasswordPage() {
     const {t} = useLanguage()
 
     useEffect(() => {
-        setToken(params.id)
+        setToken(params.id.toString)
     }, [params.id]);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

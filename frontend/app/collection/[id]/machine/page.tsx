@@ -2,11 +2,10 @@
 
 import { useState } from "react";
 import {useParams, useRouter} from "next/navigation";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import Navbar from "@/components/Navbar";
 import MachineForm, {MachineFormData} from "@/components/PinballMachineForm";
 import {useApi} from "@/lib/api";
-import {toast} from "@/components/ui/use-toast";
 import {useLanguage} from "@/lib/language-context";
 import {Button} from "@/components/ui/button";
 import {ArrowLeft} from "lucide-react";
@@ -16,7 +15,7 @@ export default function MachineCollectionPage() {
     const router = useRouter();
     const [progressOpen, setProgressOpen] = useState(false);
     const [progress, setProgress] = useState<'data' | 'images' | 'success' | 'error'>('data');
-    const { apiGet, apiPost } = useApi();
+    const { apiPost } = useApi();
     const { id } = useParams()
     const { t } = useLanguage()
     const { toast } = useToast()
@@ -34,7 +33,7 @@ export default function MachineCollectionPage() {
             setProgressOpen(true);
             setProgress('data');
 
-            const data = await apiPost(`/api/collection/${id}/machine`, formData).then((data) => {
+            await apiPost(`/api/collection/${id}/machine`, formData).then((data) => {
                 const machineId = data.id;
                 if(formData.images.length === 0) {
                     setTimeout(function () {
@@ -51,7 +50,7 @@ export default function MachineCollectionPage() {
                     formDataImage.append("uids[]", image.uid)
                 });
                 setProgress('images');
-                apiPost(`/api/machine/${machineId}/images`, formDataImage).then(data => {
+                apiPost(`/api/machine/${machineId}/images`, formDataImage).then(() => {
                     setProgress('success');
                     setTimeout(function () {
                         window.location.href = `/collection/${id}`;
