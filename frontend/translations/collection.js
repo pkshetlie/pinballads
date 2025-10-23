@@ -16,7 +16,7 @@ export const collection = {
                 machineUpdated: "Pinball upated",
                 chooseAMachineInList: "Choose a pinball in the list",
                 machineCreated: "Pinball created, you are going to be redirected to your collection",
-                imageTooLargeDescription: 'The max size is 2Mb. Please resize your image and try again.',
+                imageTooLargeDescription: 'The max size is 10Mb. Please resize your image and try again.',
                 imageTooLarge: 'Image too large',
             },
             createEditDialog: {
@@ -141,7 +141,7 @@ export const collection = {
                 machineUpdated: "Flipper mis à jour",
                 machineCreated: "Flipper ajouté, vous allez etre redirigé vers votre collection",
                 chooseAMachineInList: "Choisissez un flipper dans la liste",
-                imageTooLargeDescription: 'la taille maximum des images est de 2Mb. Redimensionnez la et recommencez.',
+                imageTooLargeDescription: 'la taille maximum des images est de 10Mb. Redimensionnez la et recommencez.',
                 imageTooLarge: 'Image trop grosse',
             },
             createEditDialog: {
