@@ -40,7 +40,7 @@ export default function EditMachinePage() {
     const handleUpdate = async (formData: MachineFormData) => {
         const formDataImage = new FormData();
         const images = formData.images;
-        const maxSize = 2 * 1024 * 1024; // 2MB in bytes
+        const maxSize = 10 * 1024 * 1024; // 2MB in bytes
 
         if(!formData.opdbId){
             toast({
