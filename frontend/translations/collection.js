@@ -18,6 +18,7 @@ export const collection = {
                 machineCreated: "Pinball created, you are going to be redirected to your collection",
                 imageTooLargeDescription: 'The max size is 10Mb. Please resize your image and try again.',
                 imageTooLarge: 'Image too large',
+                imageCompressedTitle: 'Image resized'
             },
             createEditDialog: {
                 newCollection : 'New Collection',
@@ -143,6 +144,7 @@ export const collection = {
                 chooseAMachineInList: "Choisissez un flipper dans la liste",
                 imageTooLargeDescription: 'la taille maximum des images est de 10Mb. Redimensionnez la et recommencez.',
                 imageTooLarge: 'Image trop grosse',
+                imageCompressedTitle: 'Image resized'
             },
             createEditDialog: {
                 newCollection : "Nouvelle collection",

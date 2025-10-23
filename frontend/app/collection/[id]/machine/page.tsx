@@ -35,6 +35,7 @@ export default function MachineCollectionPage() {
 
             await apiPost(`/api/collection/${id}/machine`, formData).then((data) => {
                 const machineId = data.id;
+
                 if(formData.images.length === 0) {
                     setTimeout(function () {
                         window.location.href = `/collection/${id}`;
@@ -44,11 +45,13 @@ export default function MachineCollectionPage() {
                 const images = formData.images;
 
                 const formDataImage = new FormData();
+
                 images?.forEach((image) => {
                     formDataImage.append("images[]", image.file)
                     formDataImage.append("titles[]", image.title)
                     formDataImage.append("uids[]", image.uid)
                 });
+
                 setProgress('images');
                 apiPost(`/api/machine/${machineId}/images`, formDataImage).then(() => {
                     setProgress('success');
@@ -56,9 +59,6 @@ export default function MachineCollectionPage() {
                         window.location.href = `/collection/${id}`;
                     }, 2000)
                 });
-
-
-
             });
 
 

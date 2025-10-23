@@ -1,18 +1,19 @@
 "use client"
 
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import {useEffect, useState} from "react";
+import {useParams, useRouter} from "next/navigation";
 import {ArrowLeft} from "lucide-react";
 
-import { useApi } from "@/lib/api";
+import {useApi} from "@/lib/api";
 import Navbar from "@/components/Navbar";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@/components/ui/dialog";
+import {Button} from "@/components/ui/button";
 import {PinballDto} from "@/components/object/pinballDto";
 import MachineForm, {MachineFormData} from "@/components/PinballMachineForm";
 import {useLanguage} from "@/lib/language-context";
 import {useAuth} from "@/lib/auth-context";
 import {useToast} from "@/hooks/use-toast"
+import imageCompression from "browser-image-compression";
 
 export default function EditMachinePage() {
     const params = useParams();
@@ -40,7 +41,7 @@ export default function EditMachinePage() {
     const handleUpdate = async (formData: MachineFormData) => {
         const formDataImage = new FormData();
         const images = formData.images;
-        const maxSize = 10 * 1024 * 1024; // 2MB in bytes
+        const maxSize = 2 * 1024 * 1024; // 2MB in bytes
 
         if(!formData.opdbId){
             toast({
@@ -54,26 +55,7 @@ export default function EditMachinePage() {
         setProgressOpen(true);
         setProgress('data');
 
-        // Check image sizes first
-        for (const image of images || []) {
-            if (image.file.size > maxSize) {
-                toast({
-                    title: t('toasts.error'),
-                    description: `${t('collection.toasts.imageTooLarge')} "${image.title}" (${(image.file.size / (1024 * 1024)).toFixed(2)}MB), ${t('collection.toasts.imageTooLargeDescription')}.`,
-                    variant: 'destructive',
-                });
-                setProgress('error');
-                setProgressOpen(false);
-                return; // Stop the process if any image is too large
-            }
-        }
-
-        // If all images are valid, proceed with appending them
-        images?.forEach((image) => {
-            formDataImage.append("images[]", image.file)
-            formDataImage.append("titles[]", image.title)
-            formDataImage.append("uids[]", image.uid)
-        });
+        // If all images are valid, proceed with appending the
         try {
             await apiPut(`/api/machine/${machineId}`, formData).then(data => {
 
@@ -88,7 +70,36 @@ export default function EditMachinePage() {
             });
         }
             try{
+
                 setProgress('images');
+
+                for (const image of images || []) {
+                    let file = image.file;
+                    console.log(file)
+
+                    if (file.size > maxSize) {
+                        // Paramètres de compression
+                        const options = {
+                            maxSizeMB: 2, // force <2 Mo
+                            maxWidthOrHeight: 1920, // redimensionne si besoin
+                            useWebWorker: true,
+                        };
+
+                        file = await imageCompression(file, options);
+
+                        toast({
+                            title: t('collection.toasts.imageCompressedTitle'),
+                            description: t('collection.toasts.resizeBeforeSending', {title:image.title}),
+                            variant: 'success',
+                        });
+                    }
+
+                    formDataImage.append("images[]", file);
+                    formDataImage.append("titles[]", image.title);
+                    formDataImage.append("uids[]", image.uid);
+                }
+
+
                 await apiPost(`/api/machine/${machineId}/images`, formDataImage).then(data => {
                     setProgress('success');
                     setTimeout(function () {

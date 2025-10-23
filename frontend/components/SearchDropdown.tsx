@@ -52,16 +52,12 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
             setResults([]);
             return;
         }
-        console.log("Recherche en cours...");
 
         const timer = setTimeout(async () => {
-            console.log("Data call en cours...");
-
             try {
                 const data = await apiGet(`/api/public/search/game?query=${encodeURIComponent(query)}`);
                 setResults(data || []);
             } catch(error) {
-                console.log("echec de la recherche...", error);
 
                 setResults([]);
             }

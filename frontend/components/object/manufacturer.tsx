@@ -52,6 +52,7 @@ export const Manufacturers: { [key: string]: string } = {
     "giorgio-massiniero": "Giorgio Massiniero",
     "giuliano-lodola": "Giuliano Lodola",
     "gottlieb": "Gottlieb",
+    "d-gottlieb-co": "Gottlieb",
     "grand-products": "Grand Products",
     "haggis-pinball": "Haggis Pinball",
     "hanilamatic": "Hanilamatic",
