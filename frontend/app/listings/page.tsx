@@ -51,7 +51,8 @@ function FilterSidebar({
     const [filterLoaded, setfilterLoaded] = useState(false)
     const [currency, setCurrency] = useState('EUR')
     const [priceRange, setPriceRange] = useState([200, 50000])
-    const [distanceRange, setDistanceRange] = useState([50])
+    const [finalPriceRange, setFinalPriceRange] = useState([200, 50000])
+    const [distanceRange, setDistanceRange] = useState(50)
     const [manufacturerOpen, setManufacturerOpen] = useState(true)
     const [yearOpen, setYearOpen] = useState(true)
     const [featuresOpen, setFeaturesOpen] = useState(true)
@@ -62,7 +63,7 @@ function FilterSidebar({
     const [selectedDecades, setSelectedDecades] = useState<string[]>([]);
     const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
     const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
-    const [selectedOpdbid, setSelectedopdbId] = useState<string | null>(null);
+    const [selectedOpdbid, setSelectedOpdbId] = useState<string | null>(null);
     const [selectedGame, setSelectedGame] = useState<GameDto | null>(null);
     const [selectedCity, setSelectedCity] = useState<string | null>(null);
     const [selectedLocation, setSelectedLocation] = useState<{ lat: null, long: null } | null>(null);
@@ -82,7 +83,7 @@ function FilterSidebar({
             .filter(decade => years?.some(year => year >= decade.min && year <= decade.max))
             .map(decade => decade.key);
         setSelectedDecades(selectedDecadesFromYears);
-        setSelectedopdbId(opdbid);
+        setSelectedOpdbId(opdbid);
 
         setfilterLoaded(true);
     }, [filterLoaded]);
@@ -90,7 +91,7 @@ function FilterSidebar({
 
     useEffect(() => {
         onChange(filterAll());
-    }, [selectedFeatures, selectedManufacturers, selectedDecades, selectedConditions, selectedGame]);
+    }, [selectedFeatures, selectedManufacturers, selectedDecades, selectedConditions, selectedGame, finalPriceRange, distanceRange, currency]);
 
     const manufacturerList = Object.values(Manufacturers);
     const filteredManufacturers = manufacturerList.filter((manufacturer) =>
@@ -119,6 +120,15 @@ function FilterSidebar({
         {key: '1970', name: "1970s", count: 'x', min: 1970, max: 1979},
     ]
 
+    const resetFilters = () => {
+        setSelectedOpdbId(null);
+        setSelectedGame(null);
+        setPriceRange([200, 50000]);
+        setDistanceRange(50);
+        setSelectedManufacturers([]);
+        setSelectedFeatures([]);
+        setSelectedDecades([]);
+    }
     const filterAll = () => {
         return {
             opdbId: selectedOpdbid,
@@ -130,11 +140,9 @@ function FilterSidebar({
             price: {
                 min: priceRange[0],
                 max: priceRange[1],
+                currency: currency,
             },
-            distance: {
-                min: distanceRange[0],
-                max: distanceRange[1],
-            },
+            distance: distanceRange,
             manufacturers: selectedManufacturers.map(m => m.toLowerCase()),
             conditions: selectedConditions.map(c => c.toLowerCase()),
             features: selectedFeatures,
@@ -146,26 +154,24 @@ function FilterSidebar({
         <div className={`bg-card border-r h-full ${className}`}>
             <div className="p-6 border-b">
                 <h3 className="text-lg font-semibold text-foreground">{t("listings.filters")}</h3>
-                <Button variant="ghost" size="sm" className="mt-2 text-muted-foreground hover:text-foreground">
+                <Button variant="ghost" onClick={()=>resetFilters()} size="sm" className="mt-2 text-muted-foreground hover:text-foreground cursor-pointer">
                     {t("listings.clearAll")}
                 </Button>
             </div>
 
             <div className="p-6 space-y-6 overflow-y-auto">
-                <Button variant="default" size="lg" onClick={filterAll} className="cursor-pointer">
-                    {t("filter")}
-                </Button>
                 {/* Price Range Filter */}
                 <div className="space-y-4">
                     <h4 className="font-medium text-foreground">{t("listings.priceRange")}</h4>
                     <div className="space-y-3">
                         <Slider
                             value={priceRange}
-                            onValueChange={setPriceRange}
+                            onValueChange={(value) => setPriceRange(value)}
+                            onValueCommit={(value) => setFinalPriceRange(value)}
                             max={50000}
                             min={200}
                             step={100}
-                            className="w-full"
+                            className="w-full cursor-ew-resize"
                         />
                         <div className="flex items-center justify-between text-sm text-muted-foreground">
                             <span>{currencies[currency]}{priceRange[0].toLocaleString()}</span>

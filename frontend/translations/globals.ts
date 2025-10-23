@@ -12,6 +12,12 @@ import {privacyPolicy} from "@/translations/privacy_policy";
 
 export const translations = {
     'en': {
+        beta: {
+            welcome: 'Welcome to the beta version of Crazy Pinball!',
+            description1: 'Thank you for trying out our beta version. We appreciate your help in making this platform better.',
+            description2: 'If you encounter any bugs or issues, please report them through:',
+            gotIt: 'Got it',
+        },
         ...nav.en,
         ...footer.en,
         ...toasts.en,
@@ -39,6 +45,13 @@ export const translations = {
     },
 
     'fr': {
+        beta: {
+            welcome: 'Bienvenue dans la version bêta de Crazy Pinball !',
+            description1: 'Merci d\'essayer notre version bêta. Nous apprécions votre aide pour améliorer cette plateforme.' ,
+                description2:'Si vous rencontrez des bugs ou des problèmes, veuillez les signaler via:',
+
+            gotIt: 'Compris',
+        },
         ...nav.fr,
         ...footer.fr,
         ...toasts.en,
@@ -67,4 +80,4 @@ export const translations = {
 }
 
 export type Language = keyof typeof translations
-export type TranslationKey = keyof typeof translations.en
+export type TranslationKey = keyof typeof translations.fr
