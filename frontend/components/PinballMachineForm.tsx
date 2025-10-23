@@ -81,7 +81,7 @@ function migrateLegacyFeatures(features: AnyObj): featuresType {
             // if (key === 'numberOfPlayers') {
             //     subAcc[key] = typeof value === 'number' ? value : 4;
             // } else {
-                subAcc[key as keyof featuresType.] = !!value;
+                subAcc[key as keyof featuresType] = !!value;
             // }
             return subAcc;
         }, {...categoryDefaults});
