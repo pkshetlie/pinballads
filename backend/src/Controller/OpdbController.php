@@ -77,7 +77,6 @@ return $this->render('reset_password/email.html.twig',[
     #[Route('/api/public/search/game/{opdbid}', methods: ['GET'])]
     public function index(string $opdbid, OpdbService $opdbService): JsonResponse
     {
-        var_dump('plop');
         $machines = $opdbService->searchMachine($opdbid);
         return $this->json($machines);
     }
@@ -85,8 +84,6 @@ return $this->render('reset_password/email.html.twig',[
     #[Route('/api/public/search/game', methods: ['GET'])]
     public function test2(Request $request, OpdbService $opdbService): JsonResponse
     {
-        var_dump('ploup');
-
         $machines = $opdbService->searchMachineGroups($request->query->get('query'));
         return $this->json(array_values($machines));
     }
