@@ -1,8 +1,7 @@
 api_platform:
-    title: Pinball Platform
-    version: 1.0.0
+    title: Crazy-Pinball.com API
+    version: 1.0.1
     show_webby: false
-
     formats:
         json: ['application/json']
         jsonld: ['application/ld+json']
