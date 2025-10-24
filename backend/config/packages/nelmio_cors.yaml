@@ -7,7 +7,8 @@ nelmio_cors:
         expose_headers: ['Link', 'Authorization']
         max_age: 3600
     paths:
-        '^/': null
+        '^/':
+            allow_origin: ['http://localhost:3000']
         '^/api/': # CORS s'applique uniquement aux routes commençant par /api/
             allow_origin: ['http://localhost:3000']
 

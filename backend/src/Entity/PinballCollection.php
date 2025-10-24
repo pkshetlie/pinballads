@@ -12,7 +12,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: PinballCollectionRepository::class)]
-#[ApiResource]
 class PinballCollection implements DtoableInterface
 {
     use TimestampableEntity;
