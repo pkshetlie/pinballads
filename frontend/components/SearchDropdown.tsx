@@ -42,7 +42,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
     };
 
     useEffect(() => {
-        if (query.length < 3 || !showDropdown) {
+        if (query?.length < 3 || !showDropdown) {
             setResults([]);
             return;
         }
@@ -67,7 +67,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
                     id={id}
                     className={className}
                     placeholder={placeholder}
-                    value={query}
+                    value={query ?? ''}
                     onKeyDown={handleKeyDown}
                     onChange={(e) => handleInputChange(e.target.value)}
                     required
@@ -77,10 +77,16 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
                         type="button"
                         className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 text-muted-foreground hover:text-foreground cursor-pointer"
                         onClick={() => {
+                            const url = new URL(window.location.href);
+                            url.searchParams.delete('opdbId');
+                            const relative = url.pathname + url.search + url.hash;
+                            // replaceState évite d'ajouter une entrée dans l'historique du navigateur
+                            window.history.replaceState({}, '', relative);
+
                             setQuery('');
                             setShowDropdown(false);
-                            onGameSelect(null);
                             setResults([]);
+                            onGameSelect(null);
                         }}
                     >
                         ×
