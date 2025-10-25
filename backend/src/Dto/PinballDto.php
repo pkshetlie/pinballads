@@ -3,7 +3,6 @@ namespace App\Dto;
 
     use App\Entity\Pinball;
     use App\Entity\PinballOwner;
-    use App\Entity\PinballSale;
     use App\Interface\DtoInterface;
 
 class PinballDto implements DtoInterface

@@ -104,7 +104,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
                             className="p-1 hover:bg-card/80 cursor-pointer"
                             onClick={() => handleSelectGame(game)}
                         >
-                            {game.name} ({game.manufacturer?.full_name || "Unknown"}{" "}
+                            {game.name} ({game.manufacturer?.name || "Unknown"}{" "}
                             {game.manufacture_date || "Unknown"})
                         </li>
                     ))}

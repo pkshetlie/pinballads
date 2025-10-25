@@ -88,9 +88,27 @@ function migrateLegacyFeatures(features: AnyObj): featuresType {
         return acc;
     }, {...defaultFeatures});
 }
-/**
- * Calcule une distance de similarité entre deux chaînes (Levenshtein)
- */
+function normalize(str: string): string {
+        return str
+            .toLowerCase()
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // supprime les accents
+            .replace(/&/g, "and")
+            .replace(/[^a-z0-9]+/g, "-")                      // tout ce qui n’est pas alphanum → tiret
+            // .replace(/\b(inc|co|ltd|sa|games?|pinball|electronics|manufacturing|company|corp|mfg|s\.a\.?)\b/g, "")
+            .replace(/-+/g, "-")                              // remplace multiples tirets par un seul
+            .replace(/^-|-$/g, "");                           // supprime tiret au début/fin
+
+    // return str
+    //     .toLowerCase()
+    //     .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // supprime les accents
+    //     .replace(/[-_]/g, " ")                             // ✅ remplace tirets ET underscores
+    //     .replace(/&/g, "and")
+    //     .replace(/[^a-z0-9 ]/g, " ")                      // supprime la ponctuation
+    //     .replace(/\b(inc|co|ltd|sa|games?|pinball|electronics|manufacturing|company|corp|mfg|s\.a\.?)\b/g, "")
+    //     .replace(/\s+/g, " ")                             // espaces multiples → un seul
+    //     .trim();
+}
+
 function levenshteinDistance(a: string, b: string): number {
     const matrix: number[][] = Array.from({ length: a.length + 1 }, (_, i) =>
         Array.from({ length: b.length + 1 }, (_, j) => (i === 0 ? j : j === 0 ? i : 0))
@@ -106,41 +124,40 @@ function levenshteinDistance(a: string, b: string): number {
             );
         }
     }
-
     return matrix[a.length][b.length];
 }
 
-/**
- * Trouver le fabricant le plus proche d'après une chaîne donnée.
- */
 export function findClosestManufacturer(selectedManufacturer: string): string {
     const manufacturersList = Object.keys(Manufacturers);
-    const input = selectedManufacturer.toLowerCase().trim();
+    const input = normalize(selectedManufacturer);
 
     let bestMatch = "";
     let bestScore = Infinity;
 
-    // 1️⃣ Vérifie si le nom contient directement un des fabricants
+    // ✅ test d'inclusion + score bonus
     for (const key of manufacturersList) {
-        const normalized = key.toLowerCase();
-        if (input.includes(normalized) || normalized.includes(input)) {
-            return Manufacturers[key];
+        const normalized = normalize(key);
+
+        if (
+            input === normalized ||
+            input.includes(normalized) ||
+            normalized.includes(input) ||
+            normalized.replace(/\s/g, "").includes(input.replace(/\s/g, "")) // bonus sans espace
+        ) {
+            return key;
         }
-    }
 
-    // 2️⃣ Sinon, utilise Levenshtein pour trouver le plus proche
-    for (const key of manufacturersList) {
-        const normalized = key.toLowerCase();
+        // Calculer une "similarité" pondérée
         const distance = levenshteinDistance(input, normalized);
+        const score = distance / Math.max(input.length, normalized.length); // normalise sur la longueur
 
-        if (distance < bestScore) {
-            bestScore = distance;
+        if (score < bestScore) {
+            bestScore = score;
             bestMatch = key;
         }
     }
 
-    // 3️⃣ Si rien de pertinent, renvoie "Unknown"
-    return Manufacturers[bestMatch] || Manufacturers["unknown"];
+    return bestMatch || 'unknown';
 }
 
 export default function MachineForm({initialData, onSubmit, buttonText}: MachineFormProps) {
@@ -223,9 +240,10 @@ export default function MachineForm({initialData, onSubmit, buttonText}: Machine
         setOpdbId(game.opdb_id);
 
         // Lorsque le fabricant du jeu est défini
-        const selectedManufacturer = game.manufacturer?.full_name?.toLowerCase() || "";
+        const selectedManufacturer = game.manufacturer?.name?.toLowerCase() || "";
         const closestManufacturer = findClosestManufacturer(selectedManufacturer);
         // Mise à jour avec le fabricant le plus proche trouvé
+        console.log(closestManufacturer);
         setManufacturer(closestManufacturer.toLowerCase() || "");
 
         setYear(game.manufacture_date ? new Date(game.manufacture_date).getFullYear().toString() : "");

@@ -57,7 +57,6 @@ export const Manufacturers: { [key: string]: string } = {
     "hanilamatic": "Hanilamatic",
     "hankin": "Hankin",
     "heighway-pinball": "Heighway Pinball",
-
     "hispamatic": "Hispamatic",
     "homepin": "Homepin",
     "idi": "I.D.I.",
@@ -127,7 +126,6 @@ export const Manufacturers: { [key: string]: string } = {
     "spinball": "Spinball",
     "sportmatic": "Sportmatic",
     "staal": "Staal",
-    "stern-electronics": "Stern Electronics",
     "suncoast": "Suncoast Pinball",
     "th-bergmann": "T.H. Bergmann",
     "taito": "Taito",
