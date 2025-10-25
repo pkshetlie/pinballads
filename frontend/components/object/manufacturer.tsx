@@ -7,7 +7,6 @@ export const Manufacturers: { [key: string]: string } = {
     "bally": "Bally",
     "american-pinball": "American Pinball",
     "midway": "Midway",
-
     "aa-amusements": "A.A. Amusements",
     "ami": "A.M.I.",
     "achille-chalvignac": "Achille and Chalvignac",
@@ -147,5 +146,5 @@ export const Manufacturers: { [key: string]: string } = {
     "whizbang": "WhizBang Pinball",
     "wico": "Wico",
     "zaccaria": "Zaccaria",
-    "zidware": "Zidware"
+    "zidware": "Zidware",
 };

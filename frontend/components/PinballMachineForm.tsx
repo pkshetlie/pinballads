@@ -89,7 +89,7 @@ function migrateLegacyFeatures(features: AnyObj): featuresType {
     }, {...defaultFeatures});
 }
 /**
- * Distance de Levenshtein : compare deux chaînes pour calculer leur similarité.
+ * Calcule une distance de similarité entre deux chaînes (Levenshtein)
  */
 function levenshteinDistance(a: string, b: string): number {
     const matrix: number[][] = Array.from({ length: a.length + 1 }, (_, i) =>
@@ -111,23 +111,36 @@ function levenshteinDistance(a: string, b: string): number {
 }
 
 /**
- * Trouver le fabricant le plus proche de celui sélectionné
+ * Trouver le fabricant le plus proche d'après une chaîne donnée.
  */
 export function findClosestManufacturer(selectedManufacturer: string): string {
     const manufacturersList = Object.keys(Manufacturers);
+    const input = selectedManufacturer.toLowerCase().trim();
 
-    let closestManufacturer = "";
-    let minDistance = Infinity;
+    let bestMatch = "";
+    let bestScore = Infinity;
 
-    manufacturersList.forEach((manufacturer) => {
-        const distance = levenshteinDistance(selectedManufacturer.toLowerCase(), manufacturer.toLowerCase());
-        if (distance < minDistance) {
-            minDistance = distance;
-            closestManufacturer = manufacturer;
+    // 1️⃣ Vérifie si le nom contient directement un des fabricants
+    for (const key of manufacturersList) {
+        const normalized = key.toLowerCase();
+        if (input.includes(normalized) || normalized.includes(input)) {
+            return Manufacturers[key];
         }
-    });
+    }
 
-    return Manufacturers[closestManufacturer];
+    // 2️⃣ Sinon, utilise Levenshtein pour trouver le plus proche
+    for (const key of manufacturersList) {
+        const normalized = key.toLowerCase();
+        const distance = levenshteinDistance(input, normalized);
+
+        if (distance < bestScore) {
+            bestScore = distance;
+            bestMatch = key;
+        }
+    }
+
+    // 3️⃣ Si rien de pertinent, renvoie "Unknown"
+    return Manufacturers[bestMatch] || Manufacturers["unknown"];
 }
 
 export default function MachineForm({initialData, onSubmit, buttonText}: MachineFormProps) {
