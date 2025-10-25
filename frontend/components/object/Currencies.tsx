@@ -4,4 +4,4 @@ const schema = {
     'GBP' : "£"
 };
 
-export const currencies = schema;
+export const Currencies = schema;

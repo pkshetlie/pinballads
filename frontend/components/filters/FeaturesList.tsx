@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {defaultFeatures, featuresType} from "@/components/object/features";
+import {DefaultFeatures, FeaturesType} from "@/components/object/Features";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {useLanguage} from "@/lib/language-context";
@@ -11,7 +11,7 @@ export default function FeaturesList({handleFeatureSelection, preselectedFeature
     const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
     const {t} = useLanguage();
 
-    const features: featuresType = defaultFeatures;
+    const features: FeaturesType = DefaultFeatures;
 
     // Gestion de la logique de recherche
     const filteredFeatures = Object.entries(features).reduce((acc, [category, features]) => {

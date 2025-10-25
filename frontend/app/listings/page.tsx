@@ -19,8 +19,8 @@ import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import Footer from "@/components/Footer";
 import {PinballImageCarousel} from "@/components/PinballImageCarousel";
-import {Manufacturers} from "@/components/object/manufacturer";
-import {currencies} from "@/components/object/currencies";
+import {Manufacturers} from "@/components/object/Manufacturer";
+import {Currencies} from "@/components/object/Currencies";
 import FeaturesList from "@/components/filters/FeaturesList";
 import {useApi} from "@/lib/api";
 import {PinballDto} from "@/components/object/pinballDto";
@@ -171,8 +171,8 @@ function FilterSidebar({
                             className="w-full cursor-ew-resize"
                         />
                         <div className="flex items-center justify-between text-sm text-muted-foreground">
-                            <span>{currencies[currency as keyof typeof currencies]}{priceRange[0].toLocaleString()}</span>
-                            <span>{currencies[currency as keyof typeof currencies]}{priceRange[1].toLocaleString()}</span>
+                            <span>{Currencies[currency as keyof typeof Currencies]}{priceRange[0].toLocaleString()}</span>
+                            <span>{Currencies[currency as keyof typeof Currencies]}{priceRange[1].toLocaleString()}</span>
                         </div>
                         <div className="flex gap-2">
                             <Input placeholder="Min" value={priceRange[0]} className="h-8 text-sm" readOnly/>
@@ -186,7 +186,7 @@ function FilterSidebar({
                                     <SelectValue placeholder="Currency"/>
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {Object.entries(currencies).map(([value, label]) => (
+                                    {Object.entries(Currencies).map(([value, label]) => (
                                         <SelectItem key={value} value={value}>{label}</SelectItem>
                                     ))}
                                 </SelectContent>
@@ -601,7 +601,7 @@ export default function ListingsPage() {
                                             <CardFooter className="p-4 pt-0">
                                                 <div className="flex items-center justify-between w-full">
                                             <span
-                                                className="text-xl font-bold text-primary">{currencies[machine.currency as keyof typeof currencies]}{machine.price.toLocaleString()}</span>
+                                                className="text-xl font-bold text-primary">{Currencies[machine.currency as keyof typeof Currencies]}{machine.price.toLocaleString()}</span>
                                                     <Link href={`/listings/detail?id=${machine.id}`}>
 
                                                         <Button size="sm" className={'cursor-pointer'}
@@ -666,7 +666,7 @@ export default function ListingsPage() {
                                                         </div>
                                                         <div className="flex flex-col items-end gap-3 sm:min-w-[180px]">
                                                         <span
-                                                            className="text-2xl font-bold text-primary">{currencies[machine.currency as keyof typeof currencies]}{machine.price.toLocaleString()}</span>
+                                                            className="text-2xl font-bold text-primary">{Currencies[machine.currency as keyof typeof Currencies]}{machine.price.toLocaleString()}</span>
                                                             <Button className="w-full sm:w-auto">{t('details')}</Button>
                                                         </div>
                                                     </div>

@@ -25,11 +25,11 @@ import { useSearchParams } from "next/navigation"
 import {useEffect, useState} from "react";
 import {useAuth} from "@/lib/auth-context";
 import {useApi} from "@/lib/api";
-import {PinballDto} from "@/components/object/pinballDto";
+import {PinballDto} from "@/components/object/PinballDto";
 import {PinballImageCarousel} from "@/components/PinballImageCarousel";
-import {defaultFeatures, featuresType} from "@/components/object/features";
+import {DefaultFeatures, FeaturesType} from "@/components/object/Features";
 import {useLanguage} from "@/lib/language-context";
-import {currencies} from "@/components/object/currencies";
+import {Currencies} from "@/components/object/Currencies";
 
 export default function DetailPage() {
   const searchParams = useSearchParams()
@@ -107,7 +107,7 @@ export default function DetailPage() {
                   <span>{pinballMachine.distance} away</span>
                 </div>
 
-                <div className="text-4xl font-bold text-primary mb-6">{currencies[pinballMachine?.currency as keyof typeof currencies]}{pinballMachine.price.toLocaleString()}</div>
+                <div className="text-4xl font-bold text-primary mb-6">{Currencies[pinballMachine?.currency as keyof typeof Currencies]}{pinballMachine.price.toLocaleString()}</div>
               </div>
 
               <div>
@@ -124,13 +124,13 @@ export default function DetailPage() {
               <div>
                 <h3 className="text-xl font-semibold text-foreground mb-4">{t('sell.featuresUpgrades')}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {Object.entries(defaultFeatures).map(([category, features]) => (
+                  {Object.entries(DefaultFeatures).map(([category, features]) => (
                       <div key={category} className="mb-4">
                         <h4 className="font-semibold mb-2 capitalize">{t(`sell.${category}`)}</h4>
-                        {Object.entries(features).length > 0 && !Object.entries(features).some(([feature]) => pinballMachine.features[feature as keyof featuresType]) ? (
+                        {Object.entries(features).length > 0 && !Object.entries(features).some(([feature]) => pinballMachine.features[feature as keyof FeaturesType]) ? (
                             <div className="text-muted-foreground">{t('sell.noFeature')}</div>
                         ) : (
-                            Object.entries(features).map(([feature]) => pinballMachine.features[feature as keyof featuresType] ? (
+                            Object.entries(features).map(([feature]) => pinballMachine.features[feature as keyof FeaturesType] ? (
                                     <div key={feature} className="flex items-center gap-2">
                                       <div className="w-2 h-2 bg-primary rounded-full"/>
                                       <span className="text-muted-foreground">
@@ -156,7 +156,7 @@ export default function DetailPage() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-2">{currencies[pinballMachine.currency as keyof typeof currencies]}{pinballMachine.price.toLocaleString()}</div>
+                  <div className="text-3xl font-bold text-primary mb-2">{Currencies[pinballMachine.currency as keyof typeof Currencies]}{pinballMachine.price.toLocaleString()}</div>
                   <div className="text-sm text-muted-foreground">
                     {pinballMachine.location?.city?? 'nowhere'} • {pinballMachine.distance ?? 0} away
                   </div>
@@ -185,7 +185,7 @@ export default function DetailPage() {
                     <Avatar className="w-12 h-12">
                       <AvatarImage src={pinballMachine.currentOwner?.avatar || "/placeholder.svg"} />
                       <AvatarFallback>
-                        {pinballMachine.currentOwner?.username
+                        {pinballMachine.currentOwner?.name
                           .split(" ")
                           .map((n) => n[0])
                           .join("")}
@@ -193,7 +193,7 @@ export default function DetailPage() {
                     </Avatar>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <h4 className="font-semibold text-foreground">{pinballMachine.currentOwner?.username}</h4>
+                        <h4 className="font-semibold text-foreground">{pinballMachine.currentOwner?.name}</h4>
                         {pinballMachine.currentOwner?.verified && <Shield className="w-4 h-4 text-primary" />}
                       </div>
                       <div className="flex items-center gap-1 text-sm text-muted-foreground">
@@ -207,19 +207,19 @@ export default function DetailPage() {
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Member since:</span>
-                      <span className="font-medium">{pinballMachine.currentOwner?.memberSince}</span>
+                      <span className="font-medium">{pinballMachine.currentOwner?.createdAt}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Total sales:</span>
-                      <span className="font-medium">{pinballMachine.currentOwner?.totalSales}</span>
-                    </div>
+                    {/*<div className="flex justify-between">*/}
+                    {/*  <span className="text-muted-foreground">Total sales:</span>*/}
+                    {/*  <span className="font-medium">{pinballMachine.currentOwner?.}</span>*/}
+                    {/*</div>*/}
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Response time:</span>
                       <span className="font-medium text-primary">Fast</span>
                     </div>
                   </div>
 
-                  <div className="text-xs text-muted-foreground text-center">{pinballMachine.currentOwner?.responseTime}</div>
+                  <div className="text-xs text-muted-foreground text-center">{pinballMachine.currentOwner?.responseRate}</div>
                 </div>
               </CardContent>
             </Card>

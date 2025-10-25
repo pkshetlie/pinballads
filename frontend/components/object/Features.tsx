@@ -35,5 +35,5 @@ const schema = {
     }
 };
 
-export type featuresType = typeof schema;
-export const defaultFeatures: featuresType = schema;
+export type FeaturesType = typeof schema;
+export const DefaultFeatures: FeaturesType = schema;

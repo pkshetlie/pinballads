@@ -12,8 +12,8 @@ import {Settings, Upload} from "lucide-react"
 import PhotoUploader from "@/components/PhotoUploader"
 import {useLanguage} from "@/lib/language-context"
 import {PinballDto} from "@/components/object/pinballDto";
-import {Manufacturers} from "@/components/object/manufacturer";
-import {defaultFeatures, featuresType} from '@/components/object/features';
+import {Manufacturers} from "@/components/object/Manufacturer";
+import {DefaultFeatures, FeaturesType} from '@/components/object/features';
 import SearchDropdown from "@/components/SearchDropdown";
 import {UploadedImageResult} from "@/components/object/UploadedImageResult";
 import {GameDto} from "@/components/object/GameDto";
@@ -30,7 +30,7 @@ export type MachineFormData = {
     manufacturer: string;
     year: string;
     description: string;
-    features: featuresType;
+    features: FeaturesType;
     condition: string;
     startDate?: string;
     images: UploadedImageResult[];
@@ -70,23 +70,23 @@ function deepMerge<T extends AnyObj>(target: T, source: Partial<T>): T {
  * Déplace les anciennes clés qui étaient dans `other` (ou au root)
  * vers `cabinet` si `cabinet` n'a pas déjà la valeur.
  */
-function migrateLegacyFeatures(features: AnyObj): featuresType {
-    if (!isPlainObject(features)) return defaultFeatures;
+function migrateLegacyFeatures(features: AnyObj): FeaturesType {
+    if (!isPlainObject(features)) return DefaultFeatures;
 
     // Mapper les valeurs existantes sur l'objet par défaut
-    return Object.entries(defaultFeatures).reduce((acc, [category, categoryDefaults]) => {
-        acc[category as keyof featuresType] = Object.keys(categoryDefaults).reduce((subAcc, key) => {
+    return Object.entries(DefaultFeatures).reduce((acc, [category, categoryDefaults]) => {
+        acc[category as keyof FeaturesType] = Object.keys(categoryDefaults).reduce((subAcc, key) => {
             const value = features[key];
             // Gestion spéciale pour numberOfPlayers qui est un number
             // if (key === 'numberOfPlayers') {
             //     subAcc[key] = typeof value === 'number' ? value : 4;
             // } else {
-                subAcc[key as keyof featuresType] = !!value;
+                subAcc[key as keyof FeaturesType] = !!value;
             // }
             return subAcc;
         }, {...categoryDefaults});
         return acc;
-    }, {...defaultFeatures});
+    }, {...DefaultFeatures});
 }
 function normalize(str: string): string {
         return str
@@ -171,9 +171,9 @@ export default function MachineForm({initialData, onSubmit, buttonText}: Machine
     const [startDate, setStartDate] = useState(initialData?.owningDate || "");
     const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>(initialData?.images||[]);
 
-    const additionalOptionsData = defaultFeatures;
+    const additionalOptionsData = DefaultFeatures;
 
-    const [additionalOptions, setAdditionalOptions] = useState<featuresType>(() => {
+    const [additionalOptions, setAdditionalOptions] = useState<FeaturesType>(() => {
         if (initialData?.features) {
             const normalized = migrateLegacyFeatures(initialData.features);
             return deepMerge(additionalOptionsData, normalized);

@@ -1,4 +1,4 @@
-import {featuresType} from "@/components/object/features";
+import {FeaturesType} from "@/components/object/features";
 import {PublicUserDto} from "@/components/object/PublicUserDto";
 
 export type PinballDto = {
@@ -11,7 +11,7 @@ export type PinballDto = {
     id: number;
     name: string;
     opdbId: string;
-    features: featuresType;
+    features: FeaturesType;
     description: string | null;
     condition: string;
     images: { title: string, url: string, uid: string }[];

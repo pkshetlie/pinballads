@@ -5,8 +5,8 @@ import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components
 import { Badge } from "@/components/ui/badge"
 import {PinballDto} from "@/components/object/pinballDto";
 import {PinballImageCarousel} from "@/components/PinballImageCarousel";
-import {Manufacturers} from "@/components/object/manufacturer";
-import {currencies} from "@/components/object/currencies";
+import {Manufacturers} from "@/components/object/Manufacturer";
+import {Currencies} from "@/components/object/Currencies";
 import Link from "next/link";
 import {useLanguage} from "@/lib/language-context";
 
@@ -42,7 +42,7 @@ export function PinballCardToSell({machine}: PinballCardProps) {
             </p>
             <div className="flex flex-wrap items-center gap-1 text-sm text-muted-foreground mb-4">
                 <User className="w-4 h-4"/>
-                <div>{machine.currentOwner?.username}</div>
+                <div>{machine.currentOwner?.name}</div>
             </div>
             <div className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
                 <MapPin className="w-4 h-4"/>
@@ -52,7 +52,7 @@ export function PinballCardToSell({machine}: PinballCardProps) {
         <CardFooter className="p-4 pt-0">
             <div className="flex items-center justify-between w-full">
                                             <span
-                                                className="text-xl font-bold text-primary">{currencies[machine.currency as keyof typeof currencies]}{machine.price.toLocaleString()}</span>
+                                                className="text-xl font-bold text-primary">{Currencies[machine.currency as keyof typeof Currencies]}{machine.price.toLocaleString()}</span>
                 <Link href={`/listings/detail?id=${machine.id}`}>
 
                     <Button size="sm" className={'cursor-pointer'} variant="outline">

@@ -16,9 +16,8 @@ class PinballDto implements DtoInterface
     public ?array $images = null;
     public ?int $year = null;
     public ?string $manufacturer = null;
-    public ?int $currentOwnerId = null;
     public ?string $collection = null;
-    public ?array $currentOwner;
+    public PublicUserDto $currentOwner;
     public bool $isForSale = false;
     public float $price = 0;
     public array $priceHistory = [];
@@ -54,11 +53,7 @@ class PinballDto implements DtoInterface
         // Gestion du propriétaire actuel
         $currentOwner = $pinball->getCurrentOwner();
         if ($currentOwner) {
-            $this->currentOwnerId = $currentOwner->getId();
-            $this->currentOwner = [
-                'id' => $currentOwner->getId(),
-                'username' => $currentOwner->getDisplayName(),
-            ];
+            $this->currentOwner = new PublicUserDto($pinball->getCurrentOwner());
         }
 
         // Gestion des ventes

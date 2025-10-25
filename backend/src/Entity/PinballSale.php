@@ -40,7 +40,7 @@ class PinballSale
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $sold_at = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: 'text')]
     private string $city;
 
     #[ORM\Column(

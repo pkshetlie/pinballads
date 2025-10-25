@@ -1,11 +1,17 @@
+import {SettingsDto} from "@/components/object/SettingsDto";
+
 export type PublicUserDto = {
-    responseTime: string;
-    totalSales: number;
+    id: number;
+    name: string;
+    avatar: string;
+    numberOfMachines: number;
+    city: string;
+    location: string;
+    responseRate: number;
     reviewCount: number;
     rating: number;
     verified: boolean;
-    avatar: string;
-    id: number;
-    username: string;
-    memberSince?: string;
+    isVerified: boolean;
+    createdAt?: string;
+    settings: SettingsDto
 }

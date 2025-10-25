@@ -27,8 +27,8 @@ import {useAuth} from "@/lib/auth-context";
 import {PinballImageCarousel} from "@/components/PinballImageCarousel";
 import {useLanguage} from "@/lib/language-context";
 import {useParams} from "next/navigation"
-import {currencies} from "@/components/object/currencies";
-import {Manufacturers} from "@/components/object/manufacturer";
+import {Currencies} from "@/components/object/Currencies";
+import {Manufacturers} from "@/components/object/Manufacturer";
 import {LocationResult} from "@/components/object/LocationResult";
 import InputCity from "@/components/InputCity";
 import {QueryLocationResult} from "@/components/object/QueryLocationType";
@@ -280,7 +280,7 @@ export default function MyCollectionPage() {
                                                         <>
                                                             <div
                                                                 className="font-bold text-primary">
-                                                                {currencies[machine.currency as keyof typeof currencies]}
+                                                                {Currencies[machine.currency as keyof typeof Currencies]}
                                                                 {machine.price?.toLocaleString()}
                                                             </div>
 
@@ -353,7 +353,7 @@ export default function MyCollectionPage() {
                                                                                 <SelectValue placeholder="Currency"/>
                                                                             </SelectTrigger>
                                                                             <SelectContent>
-                                                                                {Object.entries(currencies).map(([value, label]) => (
+                                                                                {Object.entries(Currencies).map(([value, label]) => (
                                                                                     <SelectItem key={value}
                                                                                                 value={value}>{label}</SelectItem>
                                                                                 ))}

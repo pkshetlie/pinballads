@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Jsor\Doctrine\PostGIS\Types\PostGISType;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -78,6 +79,34 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Dtoable
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $avatar = null;
 
+    /**
+     * @var Collection<int, Message>
+     */
+    #[ORM\OneToMany(targetEntity: Message::class, mappedBy: 'sender')]
+    private Collection $messagesAsSender;
+
+    /**
+     * @var Collection<int, Message>
+     */
+    #[ORM\OneToMany(targetEntity: Message::class, mappedBy: 'recipient')]
+    private Collection $messagesAsRecipient;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $isVerified = false;
+
+    #[ORM\Column(
+        type: PostGISType::GEOGRAPHY,
+        nullable: true,
+        options: ['geometry_type' => 'POINT', 'srid' => 4326],
+    )]
+    private ?string $geography = null;
+
+    #[ORM\Column(type: 'jsonb', nullable: true)]
+    private ?array $settings = [];
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $city = null;
+
     public function __construct()
     {
         $this->pinballOwners = new ArrayCollection();
@@ -85,6 +114,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Dtoable
         $this->pinballsSold = new ArrayCollection();
         $this->pinballsPurchased = new ArrayCollection();
         $this->pinballCollections = new ArrayCollection();
+        $this->messagesAsSender = new ArrayCollection();
+        $this->messagesAsRecipient = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -357,6 +388,114 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Dtoable
     public function setId(int $int): static
     {
         $this->id = $int;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Message>
+     */
+    public function getMessagesAsSender(): Collection
+    {
+        return $this->messagesAsSender;
+    }
+
+    public function addMessageAsSender(Message $message): static
+    {
+        if (!$this->messagesAsSender->contains($message)) {
+            $this->messagesAsSender->add($message);
+            $message->setSender($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMessageAsSender(Message $message): static
+    {
+        if ($this->messagesAsSender->removeElement($message)) {
+            // set the owning side to null (unless already changed)
+            if ($message->getSender() === $this) {
+                $message->setSender(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Message>
+     */
+    public function getMessagesAsRecipient(): Collection
+    {
+        return $this->messagesAsRecipient;
+    }
+
+    public function addMessagesAsRecipient(Message $messagesAsRecipient): static
+    {
+        if (!$this->messagesAsRecipient->contains($messagesAsRecipient)) {
+            $this->messagesAsRecipient->add($messagesAsRecipient);
+            $messagesAsRecipient->setRecipient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMessagesAsRecipient(Message $messagesAsRecipient): static
+    {
+        if ($this->messagesAsRecipient->removeElement($messagesAsRecipient)) {
+            // set the owning side to null (unless already changed)
+            if ($messagesAsRecipient->getRecipient() === $this) {
+                $messagesAsRecipient->setRecipient(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): static
+    {
+        $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    public function getGeography()
+    {
+        return $this->geography;
+    }
+
+    public function setGeography($geography): static
+    {
+        $this->geography = $geography;
+
+        return $this;
+    }
+
+    public function getSettings()
+    {
+        return $this->settings;
+    }
+
+    public function setSettings($settings): static
+    {
+        $this->settings = $settings;
+
+        return $this;
+    }
+
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    public function setCity(?string $city): static
+    {
+        $this->city = $city;
+
         return $this;
     }
 }
