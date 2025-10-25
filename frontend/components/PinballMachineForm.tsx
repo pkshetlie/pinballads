@@ -13,7 +13,7 @@ import PhotoUploader from "@/components/PhotoUploader"
 import {useLanguage} from "@/lib/language-context"
 import {PinballDto} from "@/components/object/pinballDto";
 import {Manufacturers} from "@/components/object/Manufacturer";
-import {DefaultFeatures, FeaturesType} from '@/components/object/features';
+import {DefaultFeatures, FeaturesType} from '@/components/object/Features';
 import SearchDropdown from "@/components/SearchDropdown";
 import {UploadedImageResult} from "@/components/object/UploadedImageResult";
 import {GameDto} from "@/components/object/GameDto";

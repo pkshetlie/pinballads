@@ -1,4 +1,4 @@
-import {FeaturesType} from "@/components/object/features";
+import {FeaturesType} from "@/components/object/Features";
 import {PublicUserDto} from "@/components/object/PublicUserDto";
 
 export type PinballDto = {
