@@ -46,7 +46,7 @@ final class CollectionController extends AbstractController
         $entityManager->persist($pinballCollection);
         $entityManager->flush();
 
-        return $this->json(PinballCollectionDto::fromEntity($pinballCollection));
+        return $this->json(new PinballCollectionDto($pinballCollection));
     }
 
     #[Route('/api/collections', name: 'api_collection_list', methods: ['GET'])]
@@ -118,7 +118,7 @@ final class CollectionController extends AbstractController
         $entityManager->persist($pinballCollection);
         $entityManager->flush();
 
-        return $this->json(PinballCollectionDto::fromEntity($pinballCollection));
+        return $this->json(new PinballCollectionDto($pinballCollection));
     }
 
     #[Route('/api/collection/{id}', name: 'api_collection_list_pinballs', methods: ['GET'])]

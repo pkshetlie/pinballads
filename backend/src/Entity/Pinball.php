@@ -65,6 +65,8 @@ class Pinball implements DtoableInterface
     #[ORM\ManyToMany(targetEntity: PinballCollection::class, mappedBy: 'pinballs')]
     private Collection $pinballCollections;
 
+    private float $distance = 0.0;
+
     public function __construct()
     {
         $this->pinballOwners = new ArrayCollection();
@@ -270,5 +272,25 @@ class Pinball implements DtoableInterface
         }
 
         return $this;
+    }
+
+    public function getDistance(): float
+    {
+        return $this->distance;
+    }
+
+    public function setDistance(float $distance): static
+    {
+        $this->distance = $distance;
+
+        return $this;
+    }
+
+    public function getPinballCurrentSales(): ?PinballSale
+    {
+        return $this->getPinballSales()->filter(function(PinballSale $sale) {
+            return $sale->getSeller() === $sale->getPinball()->getCurrentOwner()
+                && $sale->getFinalPrice() === null;
+        })->first() ?? null;
     }
 }

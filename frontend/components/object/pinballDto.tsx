@@ -17,12 +17,6 @@ export type PinballDto = {
     images: { title: string, url: string, uid: string }[];
     year: string;
     manufacturer: string;
-    working: boolean;
-    originalParts: boolean;
-    manual: boolean;
-    keys: boolean;
-    coinDoor: boolean;
-    homeUse: boolean;
     owningDate: string;
     currency: any;
     currentOwner?: PublicUserDto | null;

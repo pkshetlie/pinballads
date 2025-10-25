@@ -16,32 +16,14 @@ class PublicUserDto implements DtoInterface
     public ?string $location;
     public int $responseRate;
 
-    public function __construct(array $data = [])
+    public function __construct(User $entity)
     {
-        $this->id = $data['id'] ?? null;
-        $this->name = $data['name'] ?? null;
-        $this->numberOfMachine = $data['numberOfMachine'];
-        $this->avatar = $data['avatar'] ?? null;
-        $this->createdAt = $data['createdAt']->format('Y-m-d') ?? null;
-        $this->responseRate = $data['responseRate'] ?? 0;
-        $this->location = $data['location'] ?? null;
-    }
-
-    /**
-     * @param User $entity
-     *
-     * @return self
-     */
-    public static function fromEntity(DtoableInterface $entity): self
-    {
-        return new self([
-            'id' => $entity->getId(),
-            'name' => $entity->getDisplayName(),
-            'createdAt' => $entity->getCreatedAt(),
-            'numberOfMachine' => $entity->getPinballs()->count(),
-            'avatar' => $entity->getAvatar(),
-            'location' => 'Middle of NoWhere',
-            'responseRate' => 100,
-        ]);
+        $this->id = $entity->getId();
+        $this->name = $entity->getDisplayName();;
+        $this->numberOfMachine = $entity->getPinballs()->count();
+        $this->avatar = $entity->getAvatar();;
+        $this->createdAt = $entity->getCreatedAt()->format('Y-m-d');
+        $this->responseRate = 100;
+        $this->location = 'Middle of NoWhere';
     }
 }

@@ -221,7 +221,7 @@ function FilterSidebar({
                                     onValueChange={setDistanceRange}
                                     max={250}
                                     step={5}
-                                    className="w-full"
+                                    className="w-full cursor-ew-resize"
                                 />
                                 <div className="text-sm text-muted-foreground">
                                     {t("listings.within")} {distanceRange} {t("listings.miles")}

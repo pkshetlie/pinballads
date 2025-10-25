@@ -6,6 +6,7 @@ use App\Entity\Pinball;
 use App\Entity\PinballSale;
 use App\Repository\PinballRepository;
 use App\Service\DtoService;
+use App\Service\PinballDistanceService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,6 +20,7 @@ final class SalesController extends AbstractController
         Request $request,
         DtoService $dtoService,
         PinballRepository $pinballRepository,
+        PinballDistanceService $pinballDistanceService,
     ): Response {
         $limit = $request->query->get('limit', 20);
         $page = $request->query->get('page', 1);
@@ -107,6 +109,9 @@ final class SalesController extends AbstractController
         $pinballs = $qb->setMaxResults($limit)
             ->setFirstResult($page * $limit)->getQuery()->getResult();
 
+        if (!empty($requestData->location) && !empty($requestData->location->lon) && !empty($requestData->location->lat) && !empty($requestData->distance)) {
+            $pinballDistanceService->setDistances($pinballs, $requestData->location->lat, $requestData->location->lon);
+        }
 
         return $this->json([
             'pinballs' => $dtoService->toDtos($pinballs),
@@ -154,6 +159,9 @@ final class SalesController extends AbstractController
         $pinballs = $qb->setMaxResults($limit)
             ->setFirstResult($page * $limit)->getQuery()->getResult();
 
+        // if (!empty($requestData->location) && !empty($requestData->location->lon) && !empty($requestData->location->lat) && !empty($requestData->distance)) {
+        //     $pinballDistanceService->setDistances($pinballs, $requestData->location->lat, $requestData->location->lon);
+        // }
         return $this->json([
             'pinballs' => $dtoService->toDtos($pinballs),
             'count' => count($pinballs),

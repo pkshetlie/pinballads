@@ -21,33 +21,14 @@ class PinballCollectionDto implements DtoInterface
     public ?bool $isDefault;
     public string $createdAt;
 
-    public function __construct(array $data = [])
+    public function __construct(PinballCollection $entity)
     {
-        $this->id = $data['id'] ?? null;
-        $this->name = $data['name'] ?? null;
-        $this->description = $data['description'] ?? null;
-        $this->isDefault = $data['isDefault'] ?? false;
-        $this->isPublic = $data['isPublic'] ?? false;
-        $this->machineCount = $data['machineCount'] ?? null;
-        $this->createdAt = $data['createdAt'];
+        $this->id = $entity->getId();
+        $this->name = $entity->getName();
+        $this->description =$entity->getDescription();
+        $this->isDefault = $entity->isPublic();
+        $this->isPublic = $entity->isDefault();
+        $this->machineCount = $entity->getPinballs()?->count() ?? 0;
+        $this->createdAt = $entity->getCreatedAt()->format('Y-m-d');
     }
-
-    /**
-     * @param PinballCollection $entity
-     *
-     * @return self
-     */
-    public static function fromEntity(DtoableInterface $entity): self
-    {
-        return new self([
-            'id' => $entity->getId(),
-            'name' => $entity->getName(),
-            'description' => $entity->getDescription(),
-            'isPublic' => $entity->isPublic(),
-            'isDefault' => $entity->isDefault(),
-            'machineCount' => $entity->getPinballs()?->count() ?? 0,
-            'createdAt' => $entity->getCreatedAt()->format('Y-m-d'),
-        ]);
-    }
-
 }

@@ -1,12 +1,10 @@
 <?php
-
 namespace App\Dto;
 
-use App\Entity\Pinball;
-use App\Entity\PinballOwner;
-use App\Entity\PinballSale;
-use App\Interface\DtoableInterface;
-use App\Interface\DtoInterface;
+    use App\Entity\Pinball;
+    use App\Entity\PinballOwner;
+    use App\Entity\PinballSale;
+    use App\Interface\DtoInterface;
 
 class PinballDto implements DtoInterface
 {
@@ -21,94 +19,70 @@ class PinballDto implements DtoInterface
     public ?string $manufacturer = null;
     public ?int $currentOwnerId = null;
     public ?string $collection = null;
-    public ?array $currentOwner; // { id, username, email } ou null
+    public ?array $currentOwner;
     public bool $isForSale = false;
     public float $price = 0;
     public array $priceHistory = [];
-    public array $location = [];
-    public string $currency = '€';
     public ?string $owningDate;
+    public int $views = 0;
+    public ?array $location = [];
+    public ?string $distance = null;
+    public ?string $currency = 'EUR';
+    public ?int $rating = 5;
 
-    public function __construct(array $data = [])
+    public function __construct(Pinball $pinball)
     {
-        $this->id = $data['id'] ?? null;
-        $this->name = $data['name'] ?? null;
-        $this->opdbId = $data['opdbId'] ?? null;
-        $this->features = $data['features'] ?? [];
-        $this->description = $data['description'] ?? null;
-        $this->condition = $data['condition'] ?? null;
-        $baseUrl = $_SERVER['HTTP_HOST']; // Récupération de l'URL de la requête
-        $images = array_map(function (array $imagePath) use ($baseUrl) {
+        $this->id = $pinball->getId();
+        $this->name = $pinball->getName();
+        $this->opdbId = $pinball->getOpdbId();
+        $this->features = $pinball->getFeatures();
+        $this->description = $pinball->getDescription();
+        $this->condition = $pinball->getCondition();
+
+        // Gestion des images
+        $baseUrl = $_SERVER['HTTP_HOST'];
+        $this->images = array_map(function(array $imagePath) use ($baseUrl) {
             return [
                 'url' => "https://{$baseUrl}{$imagePath['url']}",
                 'title' => $imagePath['title'] ?? '',
                 'uid' => $imagePath['uid'] ?? uniqid(),
             ];
-        }, $data['images']);
-        $this->images = $images;
+        }, $pinball->getImages());
 
-        $this->year = $data['year'] ?? null;
-        $this->manufacturer = $data['manufacturer'] ?? null;
-        $this->currentOwnerId = $data['currentOwnerId'] ?? null;
-        $this->currentOwner = $data['currentOwner'] ?? null;
-        $this->isForSale = $data['isForSale'];
-        $this->price = $data['price'];
-        $this->priceHistory = $data['priceHistory'];
-        $this->currency = $data['currency'];
-        $this->owningDate = $data['owningDate']?->format('Y-m-d') ?? null;
-        $this->location = $data['location'];
-    }
+        $this->year = $pinball->getYear();
+        $this->manufacturer = $pinball->getManufacturer();
 
-    /**
-     * @param Pinball $entity
-     *
-     * @return self
-     */
-    public static function fromEntity(DtoableInterface $entity): self
-    {
-        $sales = $entity->getPinballSales()->filter(function (PinballSale $sale) {
-            return $sale->getSeller() === $sale->getPinball()->getCurrentOwner() && $sale->getFinalPrice() === null;
-        });
+        // Gestion du propriétaire actuel
+        $currentOwner = $pinball->getCurrentOwner();
+        if ($currentOwner) {
+            $this->currentOwnerId = $currentOwner->getId();
+            $this->currentOwner = [
+                'id' => $currentOwner->getId(),
+                'username' => $currentOwner->getDisplayName(),
+            ];
+        }
 
-        $sale = $sales->first();
-        $owner = $entity->getPinballOwners()->filter(function (PinballOwner $po) {
+        // Gestion des ventes
+        $sales = $pinball->getPinballCurrentSales();
+
+        $currentSale = $sales;
+        $this->isForSale = !empty($sales);
+        $this->price = $this->isForSale ? $sales->getStartPrice() : 0;
+        $this->currency = $this->isForSale ? $sales->getCurrency() ?? '€' : '€';
+
+        // Historique des prix
+        $this->priceHistory = [];
+
+        // Date de possession
+        $currentOwnership = $pinball->getPinballOwners()->filter(function(PinballOwner $po) {
             return $po->getEndAt() === null;
         })->first();
 
-        $history = [];
-        foreach ($sales as $sale) {
-            $history[] = [
-                'price' => $sale->getStartPrice(),
-                'date' => $sale->getCreatedAt()?->format('Y-m-d'),
-            ];
-        }
-        if ($sale) {
-            $location = $sale?->getLocation() ?? [];
-        } else {
-            $location = [];
-        }
+        $this->owningDate = $currentOwnership ?
+            $currentOwnership->getStartAt()?->format('Y-m-d') : null;
 
-        return new self([
-            'id' => $entity->getId(),
-            'name' => $entity->getName(),
-            'opdbId' => $entity->getOpdbId(),
-            'features' => $entity->getFeatures(),
-            'description' => $entity->getDescription(),
-            'condition' => $entity->getCondition(),
-            'images' => $entity->getImages(),
-            'isForSale' => $sales->count() > 0,
-            'price' => $sale ? $sales->first()->getStartPrice() : 0,
-            'priceHistory' => $history,
-            'currency' => $sale ? $sales->first()?->getCurrency() : "€",
-            'year' => $entity->getYear(),
-            'manufacturer' => $entity->getManufacturer(),
-            'currentOwnerId' => $entity->getCurrentOwner()?->getId(),
-            'owningDate' => $owner ? $owner->getStartAt() : null,
-            'location' => $location,
-            'currentOwner' => [
-                'id' => $entity->getCurrentOwner()?->getId(),
-                'username' => $entity->getCurrentOwner()?->getDisplayName(),
-            ],
-        ]);
+        // Localisation
+        $this->location = $currentSale?->getLocation() ?? [];
+        $this->distance = $pinball?->getDistance(); // À implémenter si nécessaire
     }
 }

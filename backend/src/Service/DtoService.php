@@ -32,18 +32,18 @@ class DtoService
         $firstObject = $array[0];
 
         return match ($firstObject::class) {
-            User::class => array_map(fn($object) => PublicUserDto::fromEntity($object), $array),
-            Pinball::class => array_map(fn($object) => PinballDto::fromEntity($object), $array),
-            PinballCollection::class => array_map(fn($object) => PinballCollectionDto::fromEntity($object), $array),
+            User::class => array_map(fn(User $object) => new PublicUserDto($object), $array),
+            Pinball::class => array_map(fn(Pinball $object) => new PinballDto($object), $array),
+            PinballCollection::class => array_map(fn(PinballCollection $object) => new PinballCollectionDto($object), $array),
         };
     }
 
     public function toDto(DtoableInterface $entity): DtoInterface
     {
         return match ($entity::class) {
-            User::class => PublicUserDto::fromEntity($entity),
-            Pinball::class => PinballDto::fromEntity($entity),
-            PinballCollection::class => PinballCollectionDto::fromEntity($entity),
+            User::class => new PublicUserDto($entity),
+            Pinball::class => new PinballDto($entity),
+            PinballCollection::class => new PinballCollectionDto($entity),
         };
     }
 }
