@@ -6,6 +6,7 @@ import {auth} from "./auth";
 import {footer} from "./footer";
 import {sell} from "./sell";
 import {profile} from "./profile";
+import {details} from "./details";
 import {collection} from "./collection";
 import {toasts} from "./toasts";
 import {privacyPolicy} from "@/translations/privacy_policy";
@@ -29,6 +30,7 @@ export const translations = {
         ...profile.en,
         ...collection.en,
         ...privacyPolicy.en,
+        ...details.en,
 
         // Machine details
         viewDetails: "View Details",
@@ -64,6 +66,7 @@ export const translations = {
         ...profile.fr,
         ...collection.fr,
         ...privacyPolicy.fr,
+        ...details.fr,
         // Machine details
         viewDetails: "Voir Détails",
         contactSeller: "Contacter Vendeur",

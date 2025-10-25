@@ -18,18 +18,28 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
-import Link from "next/link"
 import Navbar from "@/components/Navbar";
 import { useSearchParams } from "next/navigation"
 import {useEffect, useState} from "react";
-import {useAuth} from "@/lib/auth-context";
 import {useApi} from "@/lib/api";
 import {PinballDto} from "@/components/object/PinballDto";
 import {PinballImageCarousel} from "@/components/PinballImageCarousel";
 import {DefaultFeatures, FeaturesType} from "@/components/object/Features";
 import {useLanguage} from "@/lib/language-context";
 import {Currencies} from "@/components/object/Currencies";
+import Footer from "@/components/Footer";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 
 export default function DetailPage() {
   const searchParams = useSearchParams()
@@ -37,6 +47,30 @@ export default function DetailPage() {
   const [pinballMachine, setPinballMachine] = useState<PinballDto | null>(null)
   const { apiGet } = useApi();
   const {t} = useLanguage()
+  const [isContactDialogOpen, setIsContactDialogOpen] = useState(false)
+  const [message, setMessage] = useState("")
+  const [offerAmount, setOfferAmount] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleSendMessage = async () => {
+    alert("coming soon")
+    setIsSubmitting(true)
+
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+
+    console.log("[v0] Sending message:", { message, offerAmount })
+
+    // Reset form and close dialog
+    setMessage("")
+    setOfferAmount("")
+    setIsContactDialogOpen(false)
+    setIsSubmitting(false)
+
+    // Show success message (you can add a toast here)
+  }
+
+
   useEffect(() => {
     if (pinballMachine !== null) {
       return;
@@ -58,22 +92,9 @@ export default function DetailPage() {
 
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Images and Details */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Image Carousel */}
             <div className="relative">
                   <PinballImageCarousel machine={pinballMachine} />
-                  {/*{pinballMachine.images.map((image, index) => (*/}
-                  {/*  <CarouselItem key={index}>*/}
-                  {/*    <div className="aspect-[4/3] overflow-hidden rounded-lg">*/}
-                  {/*      <img*/}
-                  {/*        src={image || "/placeholder.svg"}*/}
-                  {/*        alt={`${pinballMachine.name} - Image ${index + 1}`}*/}
-                  {/*        className="w-full h-full object-cover"*/}
-                  {/*      />*/}
-                  {/*    </div>*/}
-                  {/*  </CarouselItem>*/}
-                  {/*))}*/}
             </div>
 
             {/* Machine Details */}
@@ -152,7 +173,7 @@ export default function DetailPage() {
             {/* Contact Card */}
             <Card className="sticky top-24">
               <CardHeader>
-                <CardTitle className="text-xl">Contact Seller</CardTitle>
+                <CardTitle className="text-xl">{t('details.contactSeller')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="text-center">
@@ -163,10 +184,68 @@ export default function DetailPage() {
                 </div>
 
                 <div className="space-y-3">
-                  <Button className="w-full gap-2" size="lg">
-                    <MessageCircle className="w-5 h-5" />
-                    Send Message
-                  </Button>
+                  <Dialog open={isContactDialogOpen} onOpenChange={setIsContactDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button className="w-full gap-2 cursor-pointer" size="lg">
+                        <MessageCircle className="w-5 h-5" />
+                        {t('details.sendMessage')}
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[500px]">
+                      <DialogHeader>
+                        <DialogTitle>Contact Seller</DialogTitle>
+                        <DialogDescription>
+                          {t('details.sendAMessageToSellerAboutThisPinballMachineYouCanAlsoMakeAnOptionalOffer',{name: pinballMachine.name})}
+
+                        </DialogDescription>
+                      </DialogHeader>
+
+                      <div className="space-y-4 py-4">
+                        {/* Message field */}
+                        <div className="space-y-2">
+                          <Label htmlFor="message">
+                            {t('details.message')} <span className="text-destructive">*</span>
+                          </Label>
+                          <Textarea
+                              id="message"
+                              placeholder={t('details.hiImInterestedInYourPinballMachine')}
+                              value={message}
+                              onChange={(e) => setMessage(e.target.value)}
+                              rows={5}
+                              className="resize-none"
+                          />
+                        </div>
+
+                        {/* Optional offer field */}
+                        <div className="space-y-2">
+                          <Label htmlFor="offer">{t('details.makeAnOffer')}</Label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+                            <Input
+                                id="offer"
+                                type="number"
+                                placeholder={t('details.enterAmount')}
+                                value={offerAmount}
+                                onChange={(e) => setOfferAmount(e.target.value)}
+                                className="pl-7"
+                            />
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            {t('details.listedPrice',{currency:Currencies[pinballMachine.currency as keyof typeof Currencies], 'price':pinballMachine.price.toLocaleString() })}
+                          </p>
+                        </div>
+                      </div>
+
+                      <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsContactDialogOpen(false)} disabled={isSubmitting}>
+                          Cancel
+                        </Button>
+                        <Button className={'cursor-pointer'} onClick={handleSendMessage} disabled={!message.trim() || isSubmitting}>
+                          {isSubmitting ? t('details.sending') : t('details.sendMessage')}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                   {/*<Button variant="outline" className="w-full gap-2 bg-transparent" size="lg">*/}
                   {/*  <Phone className="w-5 h-5" />*/}
                   {/*  Call Seller*/}
@@ -229,25 +308,21 @@ export default function DetailPage() {
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Shield className="w-5 h-5 text-primary" />
-                  Safety Tips
+                  {t('details.safetyTips')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm text-muted-foreground">
                 <div className="flex gap-2">
                   <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                  <span>Meet in a public place for inspection</span>
+                  <span>{t('details.testAllFunctionBeforePurchase')}</span>
                 </div>
                 <div className="flex gap-2">
                   <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                  <span>Test all functions before purchase</span>
+                  <span>{t('details.useSecurePaymentMethods')}</span>
                 </div>
                 <div className="flex gap-2">
                   <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                  <span>Use secure payment methods</span>
-                </div>
-                <div className="flex gap-2">
-                  <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                  <span>Verify seller identity</span>
+                  <span>{t('details.verifySellerIdentity')}</span>
                 </div>
               </CardContent>
             </Card>
@@ -255,87 +330,7 @@ export default function DetailPage() {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="bg-card border-t py-12 mt-16">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                  <span className="text-primary-foreground font-bold text-lg">P</span>
-                </div>
-                <span className="text-xl font-bold text-foreground">Crazy-Pinball</span>
-              </div>
-              <p className="text-muted-foreground text-sm">
-                The premier marketplace for pinball enthusiasts worldwide.
-              </p>
-            </div>
-            <div>
-              <h5 className="font-semibold text-foreground mb-3">Marketplace</h5>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Browse Machines
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Sell Your Machine
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Price Guide
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h5 className="font-semibold text-foreground mb-3">Support</h5>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Help Center
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Safety Tips
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Contact Us
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h5 className="font-semibold text-foreground mb-3">Community</h5>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Forums
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Events
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Newsletter
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; 2025 Crazy-Pinball. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer></Footer>
     </div>
   )
 }
