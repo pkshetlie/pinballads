@@ -309,7 +309,7 @@ final class MachineController extends AbstractController
                 }
 
                 // Sauvegarder en WebP
-                imagewebp($image, $uploadDir.'/'.$newFilename, 80);
+                imagewebp($image, $uploadDir.'/'.$newFilename, 100);
 
                 imagedestroy($image);
                 // Ajouter le chemin du fichier sauvegardé à la liste
