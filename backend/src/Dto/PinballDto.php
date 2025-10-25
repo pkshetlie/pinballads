@@ -83,6 +83,6 @@ class PinballDto implements DtoInterface
 
         // Localisation
         $this->location = $currentSale?->getLocation() ?? [];
-        $this->distance = $pinball?->getDistance(); // À implémenter si nécessaire
+        $this->distance = $pinball?->getDistance();
     }
 }

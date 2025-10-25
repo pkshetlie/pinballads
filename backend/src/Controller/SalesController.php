@@ -64,9 +64,12 @@ final class SalesController extends AbstractController
                 ->setParameter('distance', $requestData->distance*1000);
         }
 
-        if (!empty($requestData->opdbid)) {
+        if (!empty($requestData->game) && !empty($requestData->game->opdb_id)) {
             $qb->andWhere('p.opdbId = :opdbid')
-                ->setParameter('opdbid', $requestData->opdbid);
+                ->setParameter('opdbid', $requestData->game->opdb_id);
+        } else if(!empty($requestData->opdbId)){
+            $qb->andWhere('p.opdbId = :opdbid')
+                ->setParameter('opdbid', $requestData->opdbId);
         }
 
         if (!empty($requestData->price)) {

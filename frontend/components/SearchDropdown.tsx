@@ -1,16 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Input } from "@/components/ui/input";
-import { useApi } from "@/lib/api"; // Importation du hook personnalisé pour l'API
+import { useApi } from "@/lib/api";
+import {GameDto} from "@/components/object/GameDto"; // Importation du hook personnalisé pour l'API
 
 // Types de données des jeux
-export type Game = {
-    opdb_id: string;
-    name: string;
-    manufacture_date?: string | null;
-    manufacturer?: {
-        full_name: string;
-    } | null;
-};
+
 
 type SearchDropdownProps = {
     id: string;
@@ -18,7 +12,7 @@ type SearchDropdownProps = {
     className: string;
     query: string;
     setQuery: (query: string) => void;
-    onGameSelect: (game: Game) => void;
+    onGameSelect: (game: GameDto|null) => void;
 };
 
 const SearchDropdown: React.FC<SearchDropdownProps> = ({
@@ -30,7 +24,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
                                                            onGameSelect,
                                                        }) => {
     const { apiGet } = useApi(); // Hook pour effectuer des requêtes API
-    const [results, setResults] = useState<Game[]>([]);
+    const [results, setResults] = useState<GameDto[]>([]);
     const [showDropdown, setShowDropdown] = useState(false);
 
     const handleKeyDown = () => {
@@ -42,7 +36,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
         setShowDropdown(true);
     };
 
-    const handleSelectGame = (game: Game) => {
+    const handleSelectGame = (game: GameDto) => {
         onGameSelect(game);
         setShowDropdown(false);
     };
@@ -68,19 +62,35 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
 
     return (
         <div className="relative">
-            <Input
-                id={id}
-                className={className}
-                placeholder={placeholder}
-                value={query}
-                onKeyDown={handleKeyDown}
-                onChange={(e) => handleInputChange(e.target.value)}
-                required
-            />
+            <div className="relative">
+                <Input
+                    id={id}
+                    className={className}
+                    placeholder={placeholder}
+                    value={query}
+                    onKeyDown={handleKeyDown}
+                    onChange={(e) => handleInputChange(e.target.value)}
+                    required
+                />
+                {query && (
+                    <button
+                        type="button"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 text-muted-foreground hover:text-foreground cursor-pointer"
+                        onClick={() => {
+                            setQuery('');
+                            setShowDropdown(false);
+                            onGameSelect(null);
+                            setResults([]);
+                        }}
+                    >
+                        ×
+                    </button>
+                )}
+            </div>
             {showDropdown && results.length > 0 && (
                 <ul
                     className="mt-2 border rounded-lg p-2 bg-card shadow"
-                    style={{ position: "absolute", zIndex: 200 }}
+                    style={{position: "absolute", zIndex: 200}}
                 >
                     {results.map((game) => (
                         <li

@@ -72,7 +72,16 @@ export default function HomePage() {
     window.location.href = `/listings/?opdbid=${opdbId}`;
   }
 
-  const handleSelectGame = (game: GameDto) => {
+  const handleSelectGame = (game: GameDto|null) => {
+    if(null === game){
+      setQuery(null);
+      setOpdbId(null);
+      setManufacturer(null);
+      setYear(null);
+      setDescription(null);
+      return;
+    }
+
     setQuery(game.name);
     setOpdbId(game.opdb_id);
     setManufacturer(game.manufacturer?.full_name?.toLowerCase() || "");
@@ -102,10 +111,6 @@ export default function HomePage() {
                     onGameSelect={handleSelectGame}
                 ></SearchDropdown>
               </div>
-              {/*<div className="flex-1 relative">*/}
-              {/*  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />*/}
-              {/*  <Input placeholder={t("home.locationPlaceholder")} className="pl-10 h-12 text-lg" />*/}
-              {/*</div>*/}
               <Button size="lg" className="h-12 px-8 cursor-pointer" onClick={(e)=>searchPinball()}>
                 <Search className="w-5 h-5 mr-2" />
                 {t("home.searchButton")}
@@ -120,9 +125,12 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between mb-8">
             <h3 className="text-3xl font-bold text-foreground">{t("home.featuredMachines")}</h3>
-            <Button variant="outline" className="gap-2 bg-transparent">
+            <Button
+                onClick={() => {window.location.href = '/listings'}}
+                variant="outline"
+                    className="gap-2 bg-transparent cursor-pointer">
               <Filter className="w-4 h-4" />
-              View All
+              {t('viewAll')}
             </Button>
           </div>
 

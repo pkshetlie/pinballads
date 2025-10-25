@@ -22,7 +22,6 @@ import {PinballImageCarousel} from "@/components/PinballImageCarousel";
 import {Manufacturers} from "@/components/object/manufacturer";
 import {currencies} from "@/components/object/currencies";
 import FeaturesList from "@/components/filters/FeaturesList";
-import {useAuth} from "@/lib/auth-context";
 import {useApi} from "@/lib/api";
 import {PinballDto} from "@/components/object/pinballDto";
 import {toast} from "@/components/ui/use-toast";
@@ -37,19 +36,19 @@ import {SliderMax} from "@/components/ui/sliderMax";
 
 function FilterSidebar({
                            className = "",
-                           onChange
+                           onChange,
+                           selectedGame
                        }:
                        {
                            className?: string,
-                           onChange: (arg0: FiltersSidebarProps) => void
+                           onChange: (arg0: FiltersSidebarProps) => void,
+                           selectedGame?: GameDto | null
                        },
 ) {
     const searchParams = useSearchParams();
-    const opdbid = searchParams.get('opdbid') ?? null;
     const features = searchParams.get('features') ? searchParams.get('features')?.split(',') : [];
     const years = searchParams.get('years') ? searchParams.get('years')?.split(',').map(Number) : [];
 
-    const {apiGet} = useApi()
     const {t} = useLanguage()
     const [filterLoaded, setfilterLoaded] = useState(false)
     const [currency, setCurrency] = useState('EUR')
@@ -66,18 +65,7 @@ function FilterSidebar({
     const [selectedDecades, setSelectedDecades] = useState<string[]>([]);
     const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
     const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
-    const [selectedOpdbId, setSelectedOpdbId] = useState<string | null>(null);
-    const [selectedGame, setSelectedGame] = useState<GameDto | null>(null);
-    const [distanceRangeArray, setDistanceRangeArray] = useState([0,65]);
     const [selectedLocation, setSelectedLocation] = useState<QueryLocationResult | null>(null)
-
-    useEffect(() => {
-        if (!opdbid) return;
-
-        apiGet(`/api/public/search/game/${opdbid}`).then((data) => {
-            setSelectedGame(data)
-        });
-    }, [opdbid]);
 
     useEffect(() => {
         if (filterLoaded) return;
@@ -87,7 +75,6 @@ function FilterSidebar({
             .map(decade => decade.key);
 
         setSelectedDecades(selectedDecadesFromYears);
-        setSelectedOpdbId(opdbid);
         setfilterLoaded(true);
 
     }, [filterLoaded]);
@@ -103,7 +90,7 @@ function FilterSidebar({
         return () => {
             debouncedOnChange.cancel();
         };
-    }, [selectedFeatures, selectedManufacturers, selectedDecades, selectedConditions, selectedGame, finalPriceRange, distanceRange, currency]);
+    }, [selectedFeatures, selectedManufacturers, selectedDecades, selectedConditions, finalPriceRange, distanceRange, currency, selectedGame]);
 
     const manufacturerList = Object.values(Manufacturers);
     const filteredManufacturers = manufacturerList.filter((manufacturer) =>
@@ -133,8 +120,6 @@ function FilterSidebar({
     ]
 
     const resetFilters = () => {
-        setSelectedOpdbId(null);
-        setSelectedGame(null);
         setPriceRange([200, 50000]);
         setDistanceRange(50);
         setSelectedManufacturers([]);
@@ -144,7 +129,6 @@ function FilterSidebar({
 
     const filterAll = () => {
         return {
-            opdbId: selectedOpdbId,
             game: selectedGame,
             location: {
                 lon: selectedLocation?.lon ?? null,
@@ -404,12 +388,26 @@ interface FiltersSidebarProps {
 
 export default function ListingsPage() {
     const {t} = useLanguage()
+    const {apiGet} = useApi()
+    const searchParams = useSearchParams();
+    const [opdbid, setOpdbid] = useState(searchParams.get('opdbId') ?? null);
     const [showMobileFilters, setShowMobileFilters] = useState(false)
     const [pinballMachines, setPinballMachines] = useState<PinballDto[] | []>([]); // Afficher les résultats supplémentaires
     const {apiPost} = useApi();
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
     const [filters, setFilters] = useState<FiltersSidebarProps | null>(null)
     const [isLoadingMachine, setIsLoadingMachine] = useState(true)
+    const [query, setQuery] = useState<string>("");
+    const [selectedGame, setSelectedGame] = useState<GameDto | null>(null);
+
+   useEffect(() => {
+        if (!opdbid) return;
+
+        apiGet(`/api/public/search/game/${opdbid}`).then((data) => {
+            setSelectedGame(data);
+            setQuery(data.name);
+        });
+    }, [opdbid]);
 
     const fetchCollection = async () => {
         setIsLoadingMachine(true);
@@ -436,8 +434,15 @@ export default function ListingsPage() {
         }
     }
 
+    const handleSelectGame = (game: GameDto) => {
+        setSelectedGame(game);
+        setOpdbid(game?.opdb_id);
+        setQuery(game?.name);
+    }
+
     useEffect(() => {
-        if (!filters) return;
+        if (!filters ) return;
+        console.log('filters',filters);
         fetchCollection()
     }, [filters]);
 
@@ -451,17 +456,14 @@ export default function ListingsPage() {
                         {/* Search Inputs */}
                         <div className="flex flex-col sm:flex-row gap-4 flex-1">
                             <div className="flex-1 relative">
-                                <Search
-                                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5"/>
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
                                 <SearchDropdown
-                                    id={'search-title'}
-                                    placeholder={t("listings.searchPlaceholder")}
-                                    className={'pl-10 h-11'}
-                                    query={filters?.game?.name || ''}
-                                    setQuery={() => {
-                                    }}
-                                    onGameSelect={() => {
-                                    }}
+                                    id="title"
+                                    placeholder={t("collection.searchForGame")}
+                                    className={'pl-10 h-12 text-lg"'}
+                                    query={query}
+                                    setQuery={setQuery}
+                                    onGameSelect={handleSelectGame}
                                 ></SearchDropdown>
                             </div>
                         </div>
@@ -527,9 +529,8 @@ export default function ListingsPage() {
             </section>
 
             <div className="flex">
-                {/* Desktop Sidebar */}
                 <aside className="hidden lg:block w-80 min-h-screen">
-                    <FilterSidebar onChange={(filters) => setFilters(filters)}/>
+                    <FilterSidebar onChange={(filters) => setFilters(filters)} selectedGame={selectedGame}/>
                 </aside>
                 {isLoadingMachine ? (
                     <main className="flex-1">
@@ -594,7 +595,7 @@ export default function ListingsPage() {
                                                 <div
                                                     className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
                                                     <MapPin className="w-4 h-4"/>
-                                                    {machine.location?.city} - {machine.distance ?? 0} km away
+                                                    {machine.location?.city} {machine.distance && (<>- {machine.distance ?? 0} km away</>)}
                                                 </div>
                                             </CardContent>
                                             <CardFooter className="p-4 pt-0">
@@ -617,6 +618,7 @@ export default function ListingsPage() {
                                 <div className="space-y-4">
                                     {pinballMachines.map((machine) => (
                                         <Card key={machine.id}
+                                              noPadding={true}
                                               className="group hover:shadow-lg transition-all duration-300 cursor-pointer">
                                             <div className="flex flex-col sm:flex-row">
                                                 <div
@@ -629,7 +631,7 @@ export default function ListingsPage() {
                                                         </Badge>
                                                     </div>
                                                 </div>
-                                                <div className="flex-1 p-6">
+                                                <div className="flex-1 pt-6 pl-6 pr-6">
                                                     <div
                                                         className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                                                         <div className="flex-1">
@@ -650,7 +652,7 @@ export default function ListingsPage() {
                                                                     <MapPin className="w-4 h-4"/>
                                                                     {machine.location?.city ?? ''}
                                                                 </div>
-                                                                <div>{machine.distance ?? 0} km away</div>
+                                                                {machine.distance && (<div>{machine.distance ?? 0} km away</div>)}
                                                             </div>
                                                             <div
                                                                 className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-4">
