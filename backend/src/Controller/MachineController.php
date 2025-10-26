@@ -183,6 +183,36 @@ final class MachineController extends AbstractController
         return $this->json($pinballService->toDto($pinball));
     }
 
+    #[Route('/api/machine/{id}/sell', name: 'api_collection_machine_sell_delete', methods: ['DELETE'])]
+    public function deleteSale(
+        Pinball $pinball,
+        DtoService $dtoService,
+        EntityManagerInterface $entityManager,
+        TranslatorInterface $translator,
+    ): Response {
+        if ($pinball->getCurrentOwner() !== $this->getUser()) {
+            return $this->json(['error' => $translator->trans('You are not the owner of this machine')],
+                Response::HTTP_FORBIDDEN);
+        }
+
+        $activeSales = $pinball->getPinballSales()->filter(
+            fn(PinballSale $ps) => $ps->getFinalPrice() === null && $ps->getStartPrice() !== null && $ps->getSoldAt(
+                ) == null
+        );
+
+        if ($activeSales->count() === 0) {
+            return $this->json([], Response::HTTP_NOT_FOUND);
+        }
+
+        foreach($activeSales AS $activeSale) {
+            $activeSale->setFinalPrice($activeSale->getStartPrice());
+        }
+
+        $entityManager->flush();
+
+        return $this->json($dtoService->toDto($pinball));
+    }
+
     #[Route('/api/machine/{id}/sell', name: 'api_collection_machine_update_sell', methods: ['PUT'])]
     public function editForSales(
         Request $request,
@@ -376,5 +406,4 @@ final class MachineController extends AbstractController
 
         return $this->json([]);
     }
-
 }

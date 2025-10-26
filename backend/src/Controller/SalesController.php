@@ -7,6 +7,7 @@ use App\Entity\PinballSale;
 use App\Repository\PinballRepository;
 use App\Service\DtoService;
 use App\Service\PinballDistanceService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -138,7 +139,6 @@ final class SalesController extends AbstractController
 
         return $this->json($dtoService->toDto($pinball));
     }
-
 
     #[Route('/api/public/featured', name: 'app_featured', methods: ['GET'])]
     public function featured(

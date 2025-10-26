@@ -39,6 +39,7 @@ class OpdbController extends AbstractController
         TransportInterface $mailer,
         UserRepository $userRepository,
     ): Response {
+        throw new \Exception('test');
         // $email = (new TemplatedEmail())
         //     ->from('contact@crazy-pinball.com')
         //     ->to('test-f85179@test.mailgenius.com')

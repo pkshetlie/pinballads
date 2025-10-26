@@ -5,12 +5,13 @@ import { GeistMono } from "geist/font/mono"
 import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "@/components/theme-provider"
 import { LanguageProvider } from "@/lib/language-context"
-import {Suspense, useState, useEffect} from "react"
-import {Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog"
-import {Button} from "@/components/ui/button"
+import {Suspense} from "react"
+import * as Sentry from "@sentry/react";
+
 import "./globals.css"
 import { AuthProvider } from '@/lib/auth-context';
 import {Toaster} from "@/components/ui/toaster"; // Importez votre AuthProvider
+
 
 export const metadata: Metadata = {
   title: "Crazy Pinball",
@@ -22,6 +23,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+    Sentry.init({
+        dsn: "https://b6c01400b8bfc7764f2929b6f084cf87@o139094.ingest.us.sentry.io/4510255670493184",
+        // Setting this option to true will send default PII data to Sentry.
+        // For example, automatic IP address collection on events
+        sendDefaultPii: true
+    });
 
     return (
       <html lang="en" suppressHydrationWarning>
@@ -29,6 +36,7 @@ export default function RootLayout({
           <link rel="icon" href="/images/logo.ico"/>
       </head>
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
+
       <AuthProvider>
 
           <Toaster/>
