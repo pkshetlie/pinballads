@@ -4,33 +4,19 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Dto\Opdb\GameDto;
-use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\OpdbService;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Transport\TransportInterface;
-use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\VarDumper\VarDumper;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
-use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
 
 class OpdbController extends AbstractController
 {
-    public function __construct(        private ResetPasswordHelperInterface $resetPasswordHelper,
-    )
-    {
 
-    }
     #[Route('/test', methods: ['GET'])]
     public function test(
         Request $request,
@@ -61,16 +47,17 @@ class OpdbController extends AbstractController
         //     ]);
         //
         //
-        $user= $userRepository->find(2);
+        $user = $userRepository->find(2);
 
 
         $resetToken = $this->resetPasswordHelper->generateResetToken($user);
 
         // VarDumper::dump($mailer->send($email));die;
-return $this->render('reset_password/email.html.twig',[
-        'title' => 'Your password reset request',
-        'resetToken' => $resetToken,
-    ]);
+        return $this->render('reset_password/email.html.twig', [
+            'title' => 'Your password reset request',
+            'resetToken' => $resetToken,
+        ]);
+
         return $this->json(['status' => 'Email sent']);
     }
 
@@ -79,6 +66,7 @@ return $this->render('reset_password/email.html.twig',[
     public function index(string $opdbid, OpdbService $opdbService): JsonResponse
     {
         $machines = $opdbService->searchMachine($opdbid);
+
         return $this->json($machines);
     }
 
@@ -86,6 +74,7 @@ return $this->render('reset_password/email.html.twig',[
     public function test2(Request $request, OpdbService $opdbService): JsonResponse
     {
         $machines = $opdbService->searchMachineGroups($request->query->get('query'));
+
         return $this->json(array_values($machines));
     }
 }

@@ -590,7 +590,7 @@ export default function ListingsPage() {
                                                 <div
                                                     className="flex flex-wrap items-center gap-1 text-sm text-muted-foreground mb-4">
                                                     <User className="w-4 h-4"/>
-                                                    <div>{machine.currentOwner?.username}</div>
+                                                    <div>{machine.currentOwner?.name}</div>
                                                 </div>
                                                 <div
                                                     className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
@@ -657,7 +657,7 @@ export default function ListingsPage() {
                                                             <div
                                                                 className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-4">
                                                                 <User className="w-4 h-4"/>
-                                                                <div>{machine.currentOwner?.username}</div>
+                                                                <div>{machine.currentOwner?.name}</div>
                                                             </div>
 
                                                             <p className="text-sm text-muted-foreground line-clamp-2">
@@ -667,7 +667,7 @@ export default function ListingsPage() {
                                                         <div className="flex flex-col items-end gap-3 sm:min-w-[180px]">
                                                         <span
                                                             className="text-2xl font-bold text-primary">{Currencies[machine.currency as keyof typeof Currencies]}{machine.price.toLocaleString()}</span>
-                                                            <Button className="w-full sm:w-auto">{t('details')}</Button>
+                                                            <Button className="w-full sm:w-auto cursor-pointer">{t('viewDetails')}</Button>
                                                         </div>
                                                     </div>
                                                 </div>
