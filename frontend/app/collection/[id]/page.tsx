@@ -127,9 +127,10 @@ export default function MyCollectionPage() {
 
                 toast({
                     title: t("success"),
-                    description: t('collection.machineOnSales'),
+                    description: t('sell.machineOnSales'),
                     variant: "success",
                 })
+                setSellDialogOpen(null)
             })
         }
     }
@@ -183,7 +184,7 @@ export default function MyCollectionPage() {
                             <CardContent className="p-6">
                                 <div className="text-center mb-6">
                                     <Avatar className="w-24 h-24 mx-auto mb-4">
-                                        <AvatarImage src={user?.avatar || "/placeholder.svg"}/>
+                                        <AvatarImage src={user?.avatar}/>
                                         <AvatarFallback className="text-2xl">
                                             {user?.name
                                                 .split(" ")

@@ -6,7 +6,6 @@ import {useEffect, useState} from "react";
 import {LocationResult} from "@/components/object/LocationResult";
 import {useToast} from "@/hooks/use-toast";
 import {QueryLocationResult} from "@/components/object/QueryLocationType";
-import {key} from "@firebase/firestore/dist/firestore/test/util/helpers";
 
 interface InputCityProps {
     onSelected?: (location: QueryLocationResult|null) => void
@@ -62,7 +61,6 @@ export default function InputCity({onSelected, presetLocation}: InputCityProps) 
             setSearchingLocation(false)
         }
     }
-
 
     useEffect(() => {
         const timer = setTimeout(() => {

@@ -291,7 +291,7 @@ export default function SettingsPage() {
                         <CardContent>
                             <div className="flex items-center gap-6">
                                 <Avatar className="w-24 h-24">
-                                    <AvatarImage src={avatarUrl || "/placeholder.svg"} />
+                                    <AvatarImage src={avatarUrl} />
                                     <AvatarFallback className="text-2xl">
                                         {user.name?.charAt(0)?.toUpperCase() || user.email?.charAt(0)?.toUpperCase() || "U"}
                                     </AvatarFallback>

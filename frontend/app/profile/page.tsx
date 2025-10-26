@@ -136,7 +136,7 @@ export default function ProfilePage() {
               <CardContent className="p-6">
                 <div className="text-center mb-6">
                   <Avatar className="w-24 h-24 mx-auto mb-4">
-                    <AvatarImage src={user.avatar || "/placeholder.svg"} />
+                    <AvatarImage src={user.avatar} />
                     <AvatarFallback className="text-2xl">
                       {user.name
                         .split(" ")
@@ -237,7 +237,7 @@ export default function ProfilePage() {
                       <div className="relative">
                         <div className="aspect-[4/3] overflow-hidden rounded-t-lg">
                           <img
-                            src={machine.image || "/placeholder.svg"}
+                            src={machine.image || "/images/placeholder.png"}
                             alt={machine.title}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                           />
@@ -308,7 +308,7 @@ export default function ProfilePage() {
                       <div className="relative">
                         <div className="aspect-[4/3] overflow-hidden rounded-t-lg">
                           <img
-                            src={machine.image || "/placeholder.svg"}
+                            src={machine.image || "/images/placeholder.png"}
                             alt={machine.title}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                           />

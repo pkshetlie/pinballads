@@ -127,7 +127,7 @@ export default function PhotoUploader({
                             
                             <div className="relative">
                                 <img
-                                    src={image.url || "/placeholder.svg"}
+                                    src={image.url || "/images/placeholder.png"}
                                     alt={`Upload ${index + 1}`}
                                     className="w-full h-32 object-cover rounded-lg border"
                                 />

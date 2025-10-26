@@ -77,12 +77,7 @@ function migrateLegacyFeatures(features: AnyObj): FeaturesType {
     return Object.entries(DefaultFeatures).reduce((acc, [category, categoryDefaults]) => {
         acc[category as keyof FeaturesType] = Object.keys(categoryDefaults).reduce((subAcc, key) => {
             const value = features[key];
-            // Gestion spéciale pour numberOfPlayers qui est un number
-            // if (key === 'numberOfPlayers') {
-            //     subAcc[key] = typeof value === 'number' ? value : 4;
-            // } else {
-                subAcc[key as keyof FeaturesType] = !!value;
-            // }
+            subAcc[key as keyof FeaturesType] = !!value;
             return subAcc;
         }, {...categoryDefaults});
         return acc;
@@ -97,16 +92,6 @@ function normalize(str: string): string {
             // .replace(/\b(inc|co|ltd|sa|games?|pinball|electronics|manufacturing|company|corp|mfg|s\.a\.?)\b/g, "")
             .replace(/-+/g, "-")                              // remplace multiples tirets par un seul
             .replace(/^-|-$/g, "");                           // supprime tiret au début/fin
-
-    // return str
-    //     .toLowerCase()
-    //     .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // supprime les accents
-    //     .replace(/[-_]/g, " ")                             // ✅ remplace tirets ET underscores
-    //     .replace(/&/g, "and")
-    //     .replace(/[^a-z0-9 ]/g, " ")                      // supprime la ponctuation
-    //     .replace(/\b(inc|co|ltd|sa|games?|pinball|electronics|manufacturing|company|corp|mfg|s\.a\.?)\b/g, "")
-    //     .replace(/\s+/g, " ")                             // espaces multiples → un seul
-    //     .trim();
 }
 
 function levenshteinDistance(a: string, b: string): number {

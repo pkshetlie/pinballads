@@ -40,6 +40,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import {useAuth} from "@/lib/auth-context";
 
 export default function DetailPage() {
   const searchParams = useSearchParams()
@@ -47,6 +48,7 @@ export default function DetailPage() {
   const [pinballMachine, setPinballMachine] = useState<PinballDto | null>(null)
   const { apiGet } = useApi();
   const {t} = useLanguage()
+  const {user} = useAuth()
   const [isContactDialogOpen, setIsContactDialogOpen] = useState(false)
   const [message, setMessage] = useState("")
   const [offerAmount, setOfferAmount] = useState("")
@@ -186,10 +188,13 @@ export default function DetailPage() {
                 <div className="space-y-3">
                   <Dialog open={isContactDialogOpen} onOpenChange={setIsContactDialogOpen}>
                     <DialogTrigger asChild>
-                      <Button className="w-full gap-2 cursor-pointer" size="lg">
-                        <MessageCircle className="w-5 h-5" />
-                        {t('details.sendMessage')}
-                      </Button>
+                      { pinballMachine.currentOwner?.id !== user?.id && (
+                          <Button className="w-full gap-2 cursor-pointer" size="lg">
+                            <MessageCircle className="w-5 h-5" />
+                            {t('details.sendMessage')}
+                          </Button>
+                      )}
+
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[500px]">
                       <DialogHeader>
@@ -262,7 +267,7 @@ export default function DetailPage() {
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <Avatar className="w-12 h-12">
-                      <AvatarImage src={pinballMachine.currentOwner?.avatar || "/placeholder.svg"} />
+                      <AvatarImage src={pinballMachine.currentOwner?.avatar} />
                       <AvatarFallback>
                         {pinballMachine.currentOwner?.name
                           .split(" ")
