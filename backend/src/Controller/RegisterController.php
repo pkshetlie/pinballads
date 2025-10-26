@@ -35,7 +35,7 @@ class RegisterController extends AbstractController
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        $translator->setLocale($content['locale'] ?? 'en');
+        $translator->setLocale($content['language'] ?? 'en');
         $existingUser = $userRepository->findOneBy(['email' => $content['email']]);
 
         if ($existingUser) {
@@ -47,7 +47,7 @@ class RegisterController extends AbstractController
         $user = new User();
         $user->setEmail($content['email']);
         $user->setDisplayName($content['username']);
-        $user->setLanguage($content['locale'] ?? 'en');
+        $user->setLanguage($content['language'] ?? 'en');
 
         $hashedPassword = password_hash($content['password'], PASSWORD_BCRYPT);
         $user->setPassword($hashedPassword);

@@ -21,7 +21,6 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     // Chargement de la langue enregistrée (si elle existe)
     useEffect(() => {
         if (typeof window === "undefined") return
-        console.log("user", user)
         if(user) {
             localStorage.setItem("language", user.language)
         }

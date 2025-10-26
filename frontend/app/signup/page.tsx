@@ -25,7 +25,7 @@ export default function SignUpPage() {
   })
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const {t, currentLanguage, setLanguage} = useLanguage()
+  const {t, language, setLanguage} = useLanguage()
   const availableLanguages = [{code : "fr", name: 'Français'},{code: "en", name: 'English'}];
 
   // Handle form field changes
@@ -76,6 +76,12 @@ export default function SignUpPage() {
     }
 
     try {
+      console.log({
+        email: formData.get('email'),
+        password: formData.get('password'),
+        username: formData.get('name'),
+        language: language,
+      })
         const response = await fetch(`${config.API_BASE_URL}register`, {
             method: "POST",
             headers: {
@@ -85,19 +91,20 @@ export default function SignUpPage() {
                 email: formData.get('email'),
                 password: formData.get('password'),
                 username: formData.get('name'),
-                language: currentLanguage,
+                language: language,
             }),
         })
         if (!response.ok) {
-            const errorData = await response.json()
-            setError(errorData.message || t("common.error"))
+          const errorData = await response.json()
+            setError(errorData.error || t("common.error"))
         } else {
             // Redirect to signin page with email parameter
             const email = formData.get('email')
             window.location.href = `/signin?email=${encodeURIComponent(email as string)}`
         }
     } catch (error) {
-      setError(t("common.error"))
+      console.log(error)
+      setError(error instanceof Error ? error.message : t("common.error"))
     } finally {
       setIsLoading(false)
     }
@@ -199,7 +206,7 @@ export default function SignUpPage() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="language">{t('auth.language')}</Label>
-                    <Select  defaultValue={currentLanguage} onValueChange={(value) => {setLanguage(value)}}>
+                    <Select defaultValue={language} onValueChange={(value) => {setLanguage(value)}}>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder={t('auth.selectLanguage')}/>
                       </SelectTrigger>
@@ -214,7 +221,7 @@ export default function SignUpPage() {
                   </div>
 
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="terms" name="terms" value="accepted" />
+                    <Checkbox id="terms" name="terms" value="accepted" className={'cursor-pointer'} />
                     <Label noFlex={true} htmlFor="terms" className="text-sm text-muted-foreground">
                       {t('auth.agreeToTerms')}{" "}
                       <Link href="/terms-of-service" target={'_blank'} className="text-primary hover:text-primary/80">
@@ -233,7 +240,7 @@ export default function SignUpPage() {
                       </div>
                   )}
 
-                  <Button type="submit" className="w-full" disabled={isLoading}>
+                  <Button type="submit" className="w-full cursor-pointer" disabled={isLoading}>
                     {isLoading ? t('auth.creatingAccount'): t('auth.createAccount')}
                   </Button>
                 </form>
