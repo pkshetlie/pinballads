@@ -3,7 +3,7 @@ import {ChevronDown, ChevronUp, Filter, Grid, List, MapPin, Search, Star, User} 
 import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import {PinballDto} from "@/components/object/pinballDto";
+import {PinballDto} from "@/components/object/PinballDto";
 import {PinballImageCarousel} from "@/components/PinballImageCarousel";
 import {Manufacturers} from "@/components/object/Manufacturer";
 import {Currencies} from "@/components/object/Currencies";

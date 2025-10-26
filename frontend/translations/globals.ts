@@ -45,6 +45,7 @@ export const translations = {
         cancel: "Cancel",
         submit: "Submit",
         back: "Back",
+        success: 'Success',
     },
 
     'fr': {
@@ -80,7 +81,8 @@ export const translations = {
         cancel: "Annuler",
         submit: "Soumettre",
         back: "Retour",
-        update: 'Mettre à jour'
+        update: 'Mettre à jour',
+        success: 'Réussi !'
     }
 }
 

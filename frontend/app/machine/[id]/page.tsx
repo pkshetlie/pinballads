@@ -8,7 +8,7 @@ import {useApi} from "@/lib/api";
 import Navbar from "@/components/Navbar";
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
-import {PinballDto} from "@/components/object/pinballDto";
+import {PinballDto} from "@/components/object/PinballDto";
 import MachineForm, {MachineFormData} from "@/components/PinballMachineForm";
 import {useLanguage} from "@/lib/language-context";
 import {useAuth} from "@/lib/auth-context";

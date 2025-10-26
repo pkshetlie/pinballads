@@ -88,7 +88,7 @@ export default function Navbar() {
                                 <img src="/images/logo.svg" alt="Logo"/>
                             </span>
                             </div>
-                            <h1 className="text-xl font-bold text-foreground">Crazy Pinball</h1>
+                            <h1 className="text-xl font-bold text-foreground">Crazy Pinball (bêta) </h1>
                         </div>
                         <nav className="flex items-center gap-4">
                             <button

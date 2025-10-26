@@ -12,7 +12,7 @@ import {useEffect, useState} from "react";
 import {useApi} from "@/lib/api";
 import SearchDropdown from "@/components/SearchDropdown";
 import Footer from "@/components/Footer";
-import {PinballDto} from "@/components/object/pinballDto";
+import {PinballDto} from "@/components/object/PinballDto";
 import {toast} from "@/components/ui/use-toast";
 import {PinballCardToSell} from "@/components/PinballCardToSell";
 import {GameDto} from "@/components/object/GameDto";

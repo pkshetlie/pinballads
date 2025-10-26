@@ -23,7 +23,7 @@ import {Manufacturers} from "@/components/object/Manufacturer";
 import {Currencies} from "@/components/object/Currencies";
 import FeaturesList from "@/components/filters/FeaturesList";
 import {useApi} from "@/lib/api";
-import {PinballDto} from "@/components/object/pinballDto";
+import {PinballDto} from "@/components/object/PinballDto";
 import {toast} from "@/components/ui/use-toast";
 import SearchDropdown from "@/components/SearchDropdown";
 import {useSearchParams} from 'next/navigation';

@@ -11,7 +11,7 @@ import {Checkbox} from "@/components/ui/checkbox"
 import {Settings, Upload} from "lucide-react"
 import PhotoUploader from "@/components/PhotoUploader"
 import {useLanguage} from "@/lib/language-context"
-import {PinballDto} from "@/components/object/pinballDto";
+import {PinballDto} from "@/components/object/PinballDto";
 import {Manufacturers} from "@/components/object/Manufacturer";
 import {DefaultFeatures, FeaturesType} from '@/components/object/Features';
 import SearchDropdown from "@/components/SearchDropdown";

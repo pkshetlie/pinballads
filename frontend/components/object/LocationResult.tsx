@@ -3,7 +3,8 @@ export type LocationResult = {
     lat: string
     lon: string
     postcode: string
-    county: string
+    county: string,
+    addresstype: string,
     name: string
     address: {
         state_district: any;

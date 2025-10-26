@@ -100,6 +100,7 @@ export const sell = {
       goodies: 'Goodies',
       spareParts: 'Spare Parts',
       featuresUpgrades: 'Features & Upgrades',
+      machineOnSalesUpdated: 'Pinball on sale updated',
     },
   },
   fr: {
@@ -204,6 +205,7 @@ export const sell = {
       spareParts: 'Pieces de rechange',
       noFeature: 'rien',
       featuresUpgrades: 'Élements & Modifications',
+      machineOnSalesUpdated: 'Flipper en vente mis à jour'
     },
   },
 }

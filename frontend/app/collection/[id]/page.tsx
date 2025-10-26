@@ -19,7 +19,7 @@ import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
 import {useApi} from "@/lib/api";
-import {PinballDto} from "@/components/object/pinballDto";
+import {PinballDto} from "@/components/object/PinballDto";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {useToast} from "@/hooks/use-toast"
@@ -93,9 +93,10 @@ export default function MyCollectionPage() {
 
                 toast({
                     title: t("success"),
-                    description: t('collection.machineOnSalesUpdated'),
+                    description: t('sell.machineOnSalesUpdated'),
                     variant: "success",
                 })
+                setSellDialogOpen(null)
             })
         }
     }
@@ -373,8 +374,14 @@ export default function MyCollectionPage() {
                                                                 <div className="space-y-2">
                                                                     <Label
                                                                         htmlFor="location-search">{t('collection.machine.locationCity')} *</Label>
-                                                                    <InputCity onSelected={(location:QueryLocationResult|null)=> setSelectedLocation(location)}></InputCity>
-
+                                                                    <InputCity onSelected={(location:QueryLocationResult|null)=> setSelectedLocation(location)} presetLocation={
+                                                                        {
+                                                                        lat : machine.location?.lat,
+                                                                        lon : machine.location?.lon,
+                                                                        city: machine.location?.city,
+                                                                        display_name : machine.location?.city
+                                                                    }
+                                                                    }></InputCity>
                                                                 </div>
                                                             </div>
                                                             <DialogFooter>
