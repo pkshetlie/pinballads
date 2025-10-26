@@ -8,11 +8,12 @@ import { Checkbox } from "@/components/ui/checkbox"
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
 import Link from "next/link"
 import {ArrowLeft, Mail, Lock, Eye, EyeOff, User} from "lucide-react"
-import { useState } from "react"
+import React, { useState } from "react"
 import { useLanguage } from "@/lib/language-context"
 import Navbar from "@/components/Navbar";
 import {Separator} from "@radix-ui/react-menu";
 import config from "@/config";
+import Footer from "@/components/Footer";
 export default function SignUpPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -286,6 +287,8 @@ export default function SignUpPage() {
             </Card>
           </div>
         </main>
+        <Footer></Footer>
+
       </div>
   )
 }

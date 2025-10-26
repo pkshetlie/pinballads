@@ -1,7 +1,7 @@
 "use client"
 
 import {useEffect, useState} from "react"
-import {Calendar, Edit, Eye, Loader2, MapPin, Plus, Shield, Trash2} from "lucide-react"
+import {Calendar, Edit, Eye, Loader2, MapPin, PauseIcon, Plus, Shield, Trash2} from "lucide-react"
 import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardFooter} from "@/components/ui/card"
 import {Badge} from "@/components/ui/badge"
@@ -35,9 +35,7 @@ import {QueryLocationResult} from "@/components/object/QueryLocationType";
 
 export default function MyCollectionPage() {
     const [collection, setCollection] = useState<PinballDto[]>([])
-    const [editingMachine, setEditingMachine] = useState<any>(null)
     const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null)
-    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
     const [sellDialogOpen, setSellDialogOpen] = useState<number | null>(null)
     const [sellPrice, setSellPrice] = useState("")
     const [currency, setCurrency] = useState("EUR")
@@ -49,7 +47,7 @@ export default function MyCollectionPage() {
     const {id} = useParams()
     const {apiDelete, apiPost, apiPut} = useApi();
     const {user} = useAuth();
-
+    const [confirmDelete, setConfirmDelete] = useState<number | null>(null)
     const [locationQuery, setLocationQuery] = useState("")
     const [locationResults, setLocationResults] = useState<LocationResult[]>([])
     const [selectedLocation, setSelectedLocation] = useState<QueryLocationResult | null>(null)
@@ -71,7 +69,16 @@ export default function MyCollectionPage() {
     }
 
     const handleDeleteSell = (machineId:number) => {
-
+        apiDelete(`/api/machine/${machineId}/sell`).then((data: PinballDto) => {
+            toast({
+                title: t("success"),
+                description: t('sell.removedFromSales'),
+                variant: "success",
+            })
+            setSellDialogOpen(null)
+            setConfirmDelete(null)
+            setCollection((prev) => prev.map((machine) => (machine.id === machineId ? data : machine)))
+        })
     }
 
     const handleUpdateSale = (machineId:number) => {
@@ -375,12 +382,12 @@ export default function MyCollectionPage() {
                                                                     <Label
                                                                         htmlFor="location-search">{t('collection.machine.locationCity')} *</Label>
                                                                     <InputCity onSelected={(location:QueryLocationResult|null)=> setSelectedLocation(location)} presetLocation={
-                                                                        {
+                                                                        machine.location?.lat != null && machine.location?.lon != null ?  {
                                                                         lat : machine.location?.lat,
                                                                         lon : machine.location?.lon,
                                                                         city: machine.location?.city,
                                                                         display_name : machine.location?.city
-                                                                    }
+                                                                    } : null
                                                                     }></InputCity>
                                                                 </div>
                                                             </div>
@@ -390,6 +397,7 @@ export default function MyCollectionPage() {
                                                                     variant="outline"
                                                                     onClick={() => {
                                                                         setSellDialogOpen(null)
+                                                                        setConfirmDelete(null)
                                                                     }}
                                                                 >
                                                                     {t('cancel')}
@@ -414,11 +422,14 @@ export default function MyCollectionPage() {
                                                                         <Button variant="destructive"
                                                                                 className="cursor-pointer"
                                                                                 onClick={() => {
-                                                                                    if (confirm(t('collection.confirmDeleteSell'))) {
-                                                                                        handleDeleteSell(machine.id);
+                                                                                    if (!confirmDelete) {
+                                                                                        setConfirmDelete(machine.id)
+                                                                                        return;
                                                                                     }
+
+                                                                                    handleDeleteSell(machine.id);
                                                                                 }}>
-                                                                            <Trash2 className="w-5 h-5"/>
+                                                                            <PauseIcon className="w-5 h-5"/> {confirmDelete == machine.id && (<>Confirm ?</>)}
                                                                         </Button>
                                                                     </>
                                                                 )}
@@ -469,8 +480,6 @@ export default function MyCollectionPage() {
                     </div>
                 </div>
             </div>
-
-            {/* Footer */}
             <Footer/>
         </div>
     )

@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import Link from "next/link"
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 interface LocationResult {
     display_name: string
@@ -562,6 +563,7 @@ export default function SettingsPage() {
                     </div>
                 </div>
             </div>
+            <Footer></Footer>
         </>
     )
 }

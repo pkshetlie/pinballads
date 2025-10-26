@@ -101,6 +101,7 @@ export const sell = {
       spareParts: 'Spare Parts',
       featuresUpgrades: 'Features & Upgrades',
       machineOnSalesUpdated: 'Pinball on sale updated',
+      removedFromSales: 'Removed from sales',
     },
   },
   fr: {
@@ -205,7 +206,8 @@ export const sell = {
       spareParts: 'Pieces de rechange',
       noFeature: 'rien',
       featuresUpgrades: 'Élements & Modifications',
-      machineOnSalesUpdated: 'Flipper en vente mis à jour'
+      machineOnSalesUpdated: 'Flipper en vente mis à jour',
+      removedFromSales: 'Retiré de la vente',
     },
   },
 }

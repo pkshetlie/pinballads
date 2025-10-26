@@ -47,11 +47,11 @@ export default function Footer() {
                         {/*        {t("footer.helpCenter")}*/}
                         {/*    </a>*/}
                         {/*</li>*/}
-                        {/*<li>*/}
-                        {/*    <a href="#" className="hover:text-foreground transition-colors">*/}
-                        {/*        {t("footer.safetyTips")}*/}
-                        {/*    </a>*/}
-                        {/*</li>*/}
+                        <li>
+                            <a href="/terms-of-service" className="hover:text-foreground transition-colors">
+                                {t("auth.termsAndConditions")}
+                            </a>
+                        </li>
                         <li>
                             <a href="mailto:contact@crazy-pinball.com" className="hover:text-foreground transition-colors">
                                 {t("footer.contactUs")}

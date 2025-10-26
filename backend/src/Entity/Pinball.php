@@ -286,11 +286,11 @@ class Pinball implements DtoableInterface
         return $this;
     }
 
-    public function getPinballCurrentSales(): ?PinballSale
+    public function getPinballCurrentSales(): false|PinballSale
     {
         return $this->getPinballSales()->filter(function(PinballSale $sale) {
             return $sale->getSeller() === $sale->getPinball()->getCurrentOwner()
                 && $sale->getFinalPrice() === null;
-        })->first() ?? null;
+        })->first() ?? false;
     }
 }

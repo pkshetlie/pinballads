@@ -14,6 +14,7 @@ import {useLanguage} from "@/lib/language-context";
 import {useAuth} from "@/lib/auth-context";
 import {useToast} from "@/hooks/use-toast"
 import imageCompression from "browser-image-compression";
+import Footer from "@/components/Footer";
 
 export default function EditMachinePage() {
     const params = useParams();
@@ -157,6 +158,7 @@ export default function EditMachinePage() {
                     </DialogContent>
                 </Dialog>
             </main>
+            <Footer></Footer>
         </div>
     );
 }

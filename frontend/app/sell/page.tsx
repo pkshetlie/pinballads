@@ -3,42 +3,14 @@
 import type React from "react"
 
 import {
-    Camera,
-    MapPin,
-    Bell,
-    Globe,
-    Palette,
     User,
-    Save,
-    Loader2,
-    Lock,
-    Trash2,
-    Shield,
     ListCheck,
     Gamepad2, DollarSign
 } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import Link from "next/link"
 import Navbar from "@/components/Navbar";
 import {useLanguage} from "@/lib/language-context";
+import Footer from "@/components/Footer";
 
 
 
@@ -103,6 +75,7 @@ export default function SettingsPage() {
                     </Card>
                 </div>
             </div>
+            <Footer></Footer>
         </>
     )
 }

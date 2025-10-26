@@ -10,6 +10,7 @@ import {useLanguage} from "@/lib/language-context";
 import {Button} from "@/components/ui/button";
 import {ArrowLeft} from "lucide-react";
 import {useToast} from "@/hooks/use-toast"
+import {Footer} from "react-day-picker";
 
 export default function MachineCollectionPage() {
     const router = useRouter();
@@ -102,6 +103,7 @@ export default function MachineCollectionPage() {
                     </DialogContent>
                 </Dialog>
             </main>
+            <Footer></Footer>
         </div>
     );
 }

@@ -24,6 +24,7 @@ import Link from "next/link"
 import {useApi} from "@/lib/api";
 import {useAuth} from "@/lib/auth-context";
 import {useLanguage} from "@/lib/language-context";
+import Footer from "@/components/Footer";
 
 interface Collection {
     id: number
@@ -474,6 +475,7 @@ export default function CollectionsPage() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+            <Footer></Footer>
         </div>
     )
 }

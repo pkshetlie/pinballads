@@ -59,7 +59,7 @@ class PinballDto implements DtoInterface
         // Gestion des ventes
         $sales = $pinball->getPinballCurrentSales();
 
-        $currentSale = $sales;
+        $currentSale = !$sales ? null : $sales;
         $this->isForSale = !empty($sales);
         $this->price = $this->isForSale ? $sales->getStartPrice() : 0;
         $this->currency = $this->isForSale ? $sales->getCurrency() ?? '€' : '€';

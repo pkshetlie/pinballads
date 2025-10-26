@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator"
 import { Checkbox } from "@/components/ui/checkbox"
 import Link from "next/link"
 import { Mail, Lock, Eye, EyeOff } from "lucide-react"
-import {useEffect, useState} from "react"
+import React, {useEffect, useState} from "react"
 import { useLanguage } from "@/lib/language-context"
 import { useAuth } from '@/lib/auth-context';
 import {useRouter, useSearchParams} from 'next/navigation';
@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import {useApi} from "@/lib/api";
+import Footer from "@/components/Footer";
 
 export default function SignInPage() {
   const { apiPost } = useApi();
@@ -252,6 +253,7 @@ export default function SignInPage() {
           </Card>
         </div>
       </main>
+      <Footer></Footer>
     </div>
   );
 }

@@ -5,6 +5,9 @@ import { ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {useLanguage} from "@/lib/language-context";
+import Footer from "@/components/Footer";
+import type React from "react";
+import Navbar from "@/components/Navbar";
 
 export default function TermsOfService() {
   const {t} = useLanguage()
@@ -13,11 +16,13 @@ export default function TermsOfService() {
   const contactEmail = "contact@crazy-pinball.com"
 
   return (
+      <>
+        <Navbar></Navbar>
       <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-8">
           <div className="mb-8">
             <Link href="/">
-              <Button variant="ghost" className="mb-4">
+              <Button variant="ghost" className="mb-4 cursor-pointer">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 {t("terms.backHome")}
               </Button>
@@ -125,5 +130,7 @@ export default function TermsOfService() {
           </div>
         </div>
       </div>
+        <Footer></Footer>
+      </>
   )
 }
