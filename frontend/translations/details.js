@@ -10,10 +10,10 @@ export const details = {
       makeAnOffer: 'Make an Offer (Optional)',
       enterAmount: "Enter your offer amount",
       listedPrice: "Listed Price : {{currency}}{{price}}",
-
       safetyTips: "Safety Tips",
       testAllFunctionBeforePurchase: "Test all functions before purchase",
       useSecurePaymentMethods: "Use secure payment methods",
+      loading: "Loading the pinball machine...",
       verifySellerIdentity: "Verify seller identity",
     },
   },
@@ -28,10 +28,10 @@ export const details = {
       makeAnOffer: "Faire une offre (optionnel)",
       enterAmount: "Saisissez le montant de votre offre",
       listedPrice: "Prix affiché : {{currency}}{{price}}",
-
       safetyTips: "Conseils de sécurité",
       testAllFunctionBeforePurchase: "Testez toutes les fonctions avant l'achat",
       useSecurePaymentMethods: "Utilisez des moyens de paiement sécurisés",
+      loading: "Chargement du flipper...",
       verifySellerIdentity: "Vérifiez l'identité du vendeur",
     }
   },

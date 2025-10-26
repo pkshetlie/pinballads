@@ -20,7 +20,7 @@ import {ThemeToggle} from "@/components/theme-toggle";
 function LanguageToggleWrapper() {
     const {language, setLanguage} = useLanguage();
     useEffect(() => {
-        if (typeof window !== 'undefined') {
+        if (typeof window !== 'undefined' && !localStorage.getItem('language')) {
             setLanguage(window.navigator.language.split('-')[0])
         }
     }, [])

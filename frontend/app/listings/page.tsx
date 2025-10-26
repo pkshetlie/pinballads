@@ -442,7 +442,6 @@ export default function ListingsPage() {
 
     useEffect(() => {
         if (!filters ) return;
-        console.log('filters',filters);
         fetchCollection()
     }, [filters]);
 

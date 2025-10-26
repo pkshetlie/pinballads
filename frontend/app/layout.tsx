@@ -34,11 +34,11 @@ export default function RootLayout({
       <html lang="en" suppressHydrationWarning>
       <head>
           <link rel="icon" href="/images/logo.ico"/>
+          <title>Crazy Pinball.com</title>
       </head>
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
 
       <AuthProvider>
-
           <Toaster/>
           <Suspense fallback={null}>
               <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>

@@ -41,6 +41,7 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import {useAuth} from "@/lib/auth-context";
+import LoginOrRefreshButton from "@/components/LoginOrRefreshButton";
 
 export default function DetailPage() {
   const searchParams = useSearchParams()
@@ -60,8 +61,6 @@ export default function DetailPage() {
 
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    console.log("[v0] Sending message:", { message, offerAmount })
 
     // Reset form and close dialog
     setMessage("")
@@ -85,7 +84,7 @@ export default function DetailPage() {
     )
   },[pinballMachine])
 
-  if (!pinballMachine) return <div className="p-8">Machine not found</div>
+  if (!pinballMachine) return <div className="p-8">{t('details.loading')}</div>
 
   return (
     <div className="min-h-screen bg-background">
@@ -188,13 +187,16 @@ export default function DetailPage() {
                 <div className="space-y-3">
                   <Dialog open={isContactDialogOpen} onOpenChange={setIsContactDialogOpen}>
                     <DialogTrigger asChild>
-                      { pinballMachine.currentOwner?.id !== user?.id && (
-                          <Button className="w-full gap-2 cursor-pointer" size="lg">
-                            <MessageCircle className="w-5 h-5" />
-                            {t('details.sendMessage')}
-                          </Button>
-                      )}
-
+                      {!user ? (
+                          <LoginOrRefreshButton loginText={t('SignInToSendMessage')}/>
+                      ) : pinballMachine.currentOwner?.id !== user?.id ? (
+                          <DialogTrigger asChild>
+                            <Button className="w-full gap-2 cursor-pointer" size="lg">
+                              <MessageCircle className="w-5 h-5" />
+                              {t('details.sendMessage')}
+                            </Button>
+                          </DialogTrigger>
+                      ) : null}
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[500px]">
                       <DialogHeader>

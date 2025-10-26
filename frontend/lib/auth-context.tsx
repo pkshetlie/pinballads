@@ -5,6 +5,7 @@ import {loginUser, refreshToken} from './api';
 import { isTokenExpired } from './utils';
 
 type userType = {
+    language: string;
     id: number,
     name: string,
     avatar: string,

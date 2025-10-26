@@ -24,14 +24,14 @@ export default function ResetPasswordPage() {
     const [error, setError] = useState("")
     const [success, setSuccess] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
-    const [token, setToken] = useState<string | null>(null)
+    const [token, setToken] = useState('')
     const router = useRouter()
     const searchParams = useSearchParams()
     const {apiPost} = useApi()
     const {t} = useLanguage()
 
     useEffect(() => {
-        setToken(params.id.toString)
+        setToken(params.id)
     }, [params.id]);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

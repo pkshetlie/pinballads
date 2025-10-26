@@ -12,8 +12,6 @@ export function LanguageToggle() {
         // { code: "de", name: "Deutsch", flag: "🇩🇪" },
     ]
 
-    const currentLang = languages.find(lang => lang.code === currentLanguage) || languages[0]
-
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -26,7 +24,7 @@ export function LanguageToggle() {
                 {languages.map((language) => (
                     <DropdownMenuItem
                         key={language.code}
-                        onClick={() => setLanguage(language.code)}
+                        onClick={() => {setLanguage(language.code)}}
                         className={currentLanguage === language.code ? "bg-accent" : ""}
                     >
                         <span className="mr-2">{language.flag}</span>

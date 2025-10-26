@@ -46,6 +46,7 @@ export const translations = {
         submit: "Submit",
         back: "Back",
         success: 'Success',
+        SignInToSendMessage: "Sign in to send a message",
     },
 
     'fr': {
@@ -82,7 +83,8 @@ export const translations = {
         submit: "Soumettre",
         back: "Retour",
         update: 'Mettre à jour',
-        success: 'Réussi !'
+        success: 'Réussi !',
+        SignInToSendMessage: "Connectez-vous pour envoyer un message",
     }
 }
 

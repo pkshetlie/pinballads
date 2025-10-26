@@ -389,7 +389,7 @@ export default function SettingsPage() {
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="language-select">Langue de l'interface</Label>
-                                <Select value={language} onValueChange={(value) => setLanguage(value as "en" | "fr" | "de")}>
+                                <Select value={language} onValueChange={(value) => {setLanguage(value as "en" | "fr" | "de")}}>
                                     <SelectTrigger id="language-select">
                                         <SelectValue placeholder="Sélectionner une langue" />
                                     </SelectTrigger>

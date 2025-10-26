@@ -12,6 +12,8 @@ class PublicUserDto implements DtoInterface
     public ?string $name = null;
     public ?string $avatar = null;
     public int $numberOfMachines;
+    public string $language;
+    public ?string $bio;
     public ?string $location;
     public int $responseRate;
     public ?string $createdAt;
@@ -26,6 +28,7 @@ class PublicUserDto implements DtoInterface
         $this->numberOfMachines = $entity->getPinballs()->count();
         $this->avatar = $entity->getAvatar();;
         $this->createdAt = $entity->getCreatedAt()->format('Y-m-d');
+        $this->language = $entity->getLanguage();
         $this->responseRate = 100;
         $this->location = 'Middle of NoWhere';
         $this->reviewCount = 0;

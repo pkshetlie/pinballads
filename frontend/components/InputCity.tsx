@@ -118,7 +118,6 @@ export default function InputCity({onSelected, presetLocation}: InputCityProps) 
                                     })
                                     setLocationQuery(city)
                                     setLocationResults([])
-                                    console.log(result)
                                     onSelected?.(selectedLocation)
                                 }}
                                 className="w-full text-left p-3 hover:bg-muted transition-colors text-sm cursor-pointer"

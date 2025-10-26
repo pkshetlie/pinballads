@@ -228,7 +228,6 @@ export default function MachineForm({initialData, onSubmit, buttonText}: Machine
         const selectedManufacturer = game.manufacturer?.name?.toLowerCase() || "";
         const closestManufacturer = findClosestManufacturer(selectedManufacturer);
         // Mise à jour avec le fabricant le plus proche trouvé
-        console.log(closestManufacturer);
         setManufacturer(closestManufacturer.toLowerCase() || "");
 
         setYear(game.manufacture_date ? new Date(game.manufacture_date).getFullYear().toString() : "");

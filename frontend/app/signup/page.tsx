@@ -199,7 +199,7 @@ export default function SignUpPage() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="language">{t('auth.language')}</Label>
-                    <Select  defaultValue={currentLanguage} onValueChange={(value) => setLanguage(value)}>
+                    <Select  defaultValue={currentLanguage} onValueChange={(value) => {setLanguage(value)}}>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder={t('auth.selectLanguage')}/>
                       </SelectTrigger>

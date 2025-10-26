@@ -1,72 +1,84 @@
 "use client"
 
 import type React from "react"
-import {createContext, useContext, useState, useEffect} from "react"
-import {translations, type Language, type TranslationKey} from "@/translations/globals"
+import { createContext, useContext, useState, useEffect } from "react"
+import { translations, type Language } from "@/translations/globals"
+import {useAuth} from "@/lib/auth-context";
 
 interface LanguageContextType {
     language: Language
-    setLanguage: (language: string) => void
-    currentLanguage: string
-    t: (key: string, variables?: Record<string, string | number>, count?: number) => string,
+    setLanguage: (language: Language) => void
+    t: (key: string, variables?: Record<string, string | number>, count?: number) => string
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
 
-export function LanguageProvider({children}: { children: React.ReactNode }) {
-    const [language, setLanguage] = useState<Language>("fr")
+export function LanguageProvider({ children }: { children: React.ReactNode }) {
+    // Par défaut : français
+    const [language, setLanguage] = useState<Language>()
+    const {user} = useAuth()
 
-    // Load saved language from localStorage on mount
+    // Chargement de la langue enregistrée (si elle existe)
     useEffect(() => {
-        const savedLanguage = localStorage.getItem("language") as Language
-        if (savedLanguage && translations[savedLanguage]) {
-            setLanguage(savedLanguage)
+        if (typeof window === "undefined") return
+        console.log("user", user)
+        if(user) {
+            localStorage.setItem("language", user.language)
         }
-    }, [])
 
-    // Save language to localStorage when it changes
+        const saved = localStorage.getItem("language")
+        if (saved) {
+            setLanguage(saved as Language)
+        }
+    }, [user])
+
+    // Sauvegarde à chaque changement
     useEffect(() => {
+        if(!language) return
+        if (typeof window === "undefined") return
         localStorage.setItem("language", language)
     }, [language])
 
-    function getNestedTranslation(obj: any, path: string): string | undefined {
-        return path.split(".").reduce((acc, part) => acc?.[part], obj);
+    // Fonctions utilitaires
+    const getNestedTranslation = (obj: any, path: string): string | undefined =>
+        path.split(".").reduce((acc, part) => acc?.[part], obj)
+
+    const replaceVariables = (
+        text: string,
+        variables?: Record<string, string | number>,
+        count?: number
+    ): string => {
+        if (!variables && count === undefined) return text
+        let result = text
+        if (variables) {
+            result = result.replace(/\{\{(\w+)\}\}/g, (_, key) =>
+                (variables[key] ?? `{{${key}}}`).toString()
+            )
+        }
+        if (count !== undefined) {
+            const parts = result.split("|")
+            result = count <= 1 ? parts[0] : parts[1] || parts[0]
+        }
+        return result
     }
 
-  const replaceVariables = (text: string, variables?: Record<string, string | number>, count?: number): string => {
-    if (!variables && !count) return text;
-
-    let result = text;
-    if (variables) {
-      result = result.replace(/\{\{(\w+)\}\}/g, (match, key) => {
-        return (variables[key] ?? match).toString();
-      });
+    const t = (key: string, variables?: Record<string, string | number>, count?: number): string => {
+        const translation =
+            getNestedTranslation(translations[language], key) ||
+            getNestedTranslation(translations.en, key) ||
+            key
+        return replaceVariables(translation, variables, count)
     }
 
-    if (count !== undefined) {
-      const parts = result.split('|');
-      result = count <= 1 ? parts[0] : (parts[1] || parts[0]);
-    }
-
-    return result;
-  }
-
-  const t = (key: string, variables?: Record<string, string | number>, count?: number): string => {
-    const translation =
-        getNestedTranslation(translations[language], key) ||
-        getNestedTranslation(translations.en, key) ||
-        key;
-
-    return replaceVariables(translation, variables, count);
-  }
-
-  return <LanguageContext.Provider value={{language, setLanguage, t}}>{children}</LanguageContext.Provider>
+    return (
+        <LanguageContext.Provider value={{ language, setLanguage, t }}>
+            {children}
+        </LanguageContext.Provider>
+    )
 }
 
 export function useLanguage() {
     const context = useContext(LanguageContext)
-    if (context === undefined) {
-        throw new Error("useLanguage must be used within a LanguageProvider")
-    }
+    if (!context) throw new Error("useLanguage must be used within a LanguageProvider")
     return context
 }
