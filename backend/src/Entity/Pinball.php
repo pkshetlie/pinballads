@@ -67,11 +67,18 @@ class Pinball implements DtoableInterface
 
     private ?float $distance = null;
 
+    /**
+     * @var Collection<int, Conversation>
+     */
+    #[ORM\OneToMany(targetEntity: Conversation::class, mappedBy: 'Pinball', orphanRemoval: true)]
+    private Collection $conversations;
+
     public function __construct()
     {
         $this->pinballOwners = new ArrayCollection();
         $this->pinballSales = new ArrayCollection();
         $this->pinballCollections = new ArrayCollection();
+        $this->conversations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -292,5 +299,35 @@ class Pinball implements DtoableInterface
             return $sale->getSeller() === $sale->getPinball()->getCurrentOwner()
                 && $sale->getFinalPrice() === null;
         })->first() ?? false;
+    }
+
+    /**
+     * @return Collection<int, Conversation>
+     */
+    public function getConversations(): Collection
+    {
+        return $this->conversations;
+    }
+
+    public function addConversation(Conversation $conversation): static
+    {
+        if (!$this->conversations->contains($conversation)) {
+            $this->conversations->add($conversation);
+            $conversation->setPinball($this);
+        }
+
+        return $this;
+    }
+
+    public function removeConversation(Conversation $conversation): static
+    {
+        if ($this->conversations->removeElement($conversation)) {
+            // set the owning side to null (unless already changed)
+            if ($conversation->getPinball() === $this) {
+                $conversation->setPinball(null);
+            }
+        }
+
+        return $this;
     }
 }

@@ -33,21 +33,33 @@
         <source>Invalid file upload</source>
         <target>Fichier envoyé non valide</target>
       </trans-unit>
-      <trans-unit id="BjXq2yZ" resname="User already exists">
+      <trans-unit id="gbNGDZA" resname="User already exists">
         <source>User already exists</source>
         <target>L'utilisateur existe déjà</target>
       </trans-unit>
-      <trans-unit id="QPLOgH2" resname="Default collection">
+      <trans-unit id="AZ5CL5f" resname="Default collection">
         <source>Default collection</source>
         <target>Collection par défaut</target>
       </trans-unit>
-      <trans-unit id="5F98pSR" resname="This collection is created automatically when you register.">
+      <trans-unit id="ojK.STt" resname="This collection is created automatically when you register.">
         <source>This collection is created automatically when you register.</source>
         <target>Cette collection est créée automatiquement lors de votre inscription.</target>
       </trans-unit>
-      <trans-unit id="aSyDWZe" resname="User created">
+      <trans-unit id="Megz2eW" resname="User created">
         <source>User created</source>
         <target>Utilisateur créé</target>
+      </trans-unit>
+      <trans-unit id="ouglFfn" resname="New message from {username}">
+        <source>New message from {username}</source>
+        <target>Nouveau message de {username}</target>
+      </trans-unit>
+      <trans-unit id="u4RDvnO" resname="New message with offer from {username}">
+        <source>New message with offer from {username}</source>
+        <target>Nouveau message avec offre de {username}</target>
+      </trans-unit>
+      <trans-unit id="bx114zs" resname="New response from {username}">
+        <source>New response from {username}</source>
+        <target>Nouvelle réponse de {username}</target>
       </trans-unit>
     </body>
   </file>

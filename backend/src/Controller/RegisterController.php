@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Entity\PinballCollection;
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Service\DtoService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,6 +22,11 @@ class RegisterController extends AbstractController
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
+    }
+    #[Route('/api/user/me', methods: ['GET'])]
+    public function refresh(DtoService $dtoService): Response
+    {
+        return $this->json($dtoService->toPrivateDto($this->getUser()));
     }
 
     #[Route('/api/register', methods: ['POST'])]

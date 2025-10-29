@@ -44,7 +44,7 @@ export function useApi() {
     const {language} = useLanguage();
 
     const request = async (
-        method: 'GET' | 'POST' | 'PUT' | 'DELETE',
+        method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH',
         endpoint: string,
         body?: Record<string, any> | FormData // Permet maintenant de supporter FormData
     ) => {
@@ -98,7 +98,8 @@ export function useApi() {
     const apiGet = (endpoint: string) => request('GET', endpoint);
     const apiPost = (endpoint: string, body: Record<string, any>) => request('POST', endpoint, body);
     const apiPut = (endpoint: string, body: Record<string, any>) => request('PUT', endpoint, body);
+    const apiPatch = (endpoint: string, body: Record<string, any>) => request('PATCH', endpoint, body);
     const apiDelete = (endpoint: string) => request('DELETE', endpoint);
 
-    return {apiGet, apiPost, apiPut, apiDelete};
+    return {apiGet, apiPost, apiPut, apiPatch, apiDelete};
 }

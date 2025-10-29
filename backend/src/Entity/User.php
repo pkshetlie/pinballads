@@ -107,6 +107,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Dtoable
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $city = null;
 
+    /**
+     * @var Collection<int, Conversation>
+     */
+    #[ORM\OneToMany(targetEntity: Conversation::class, mappedBy: 'user1')]
+    private Collection $conversationsAsSender;
+
+    /**
+     * @var Collection<int, Conversation>
+     */
+    #[ORM\OneToMany(targetEntity: Conversation::class, mappedBy: 'User2', orphanRemoval: true)]
+    private Collection $conversationsAsReceiver;
+
     public function __construct()
     {
         $this->pinballOwners = new ArrayCollection();
@@ -116,6 +128,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Dtoable
         $this->pinballCollections = new ArrayCollection();
         $this->messagesAsSender = new ArrayCollection();
         $this->messagesAsRecipient = new ArrayCollection();
+        $this->conversationsAsSender = new ArrayCollection();
+        $this->conversationsAsReceiver = new ArrayCollection();
     }
 
     public function getId(): ?int

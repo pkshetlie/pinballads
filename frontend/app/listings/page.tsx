@@ -90,7 +90,7 @@ function FilterSidebar({
         return () => {
             debouncedOnChange.cancel();
         };
-    }, [selectedFeatures, selectedManufacturers, selectedDecades, selectedConditions, finalPriceRange, distanceRange, currency, selectedGame]);
+    }, [selectedFeatures, selectedManufacturers, selectedDecades, selectedConditions, finalPriceRange, distanceRange, currency, selectedGame, selectedLocation]);
 
     const manufacturerList = Object.values(Manufacturers);
     const filteredManufacturers = manufacturerList.filter((manufacturer) =>
@@ -149,14 +149,14 @@ function FilterSidebar({
 
     return (
         <div className={`bg-card border-r h-full ${className}`}>
-            <div className="p-6 border-b">
-                <h3 className="text-lg font-semibold text-foreground">{t("listings.filters")}</h3>
-                <Button variant="ghost" onClick={()=>resetFilters()} size="sm" className="mt-2 text-muted-foreground hover:text-foreground cursor-pointer">
+            <div className="p-3 border-b">
+                <h3 className="text-lg lg:block hidden font-semibold text-foreground">{t("listings.filters")}</h3>
+                <Button variant="outline" onClick={() => resetFilters()} size="lg"
+                        className="text-muted-foreground hover:text-foreground cursor-pointer">
                     {t("listings.clearAll")}
                 </Button>
             </div>
-
-            <div className="p-6 space-y-6 overflow-y-auto">
+            <div className="p-6 space-y-6 overflow-y-auto h-[calc(100vh-150px)]">
                 {/* Price Range Filter */}
                 <div className="space-y-4">
                     <h4 className="font-medium text-foreground">{t("listings.priceRange")}</h4>
@@ -198,19 +198,20 @@ function FilterSidebar({
                 {/* Distance Filter */}
                 <div className="space-y-4">
                     <h4 className="font-medium text-foreground">{t("listings.distance")}</h4>
-                    <InputCity onSelected={(location:QueryLocationResult|null)=> setSelectedLocation(location)}></InputCity>
+                    <InputCity
+                        onSelected={(location: QueryLocationResult | null) => setSelectedLocation(location)}></InputCity>
                     <div className={`space-y-3 ${selectedLocation ? '' : 'hidden'}`}>
-                                <SliderMax
-                                    value={distanceRange}
-                                    onValueChange={setDistanceRange}
-                                    max={250}
-                                    step={5}
-                                    className="w-full cursor-ew-resize"
-                                />
-                                <div className="text-sm text-muted-foreground">
-                                    {t("listings.within")} {distanceRange} {t("listings.miles")}
-                                </div>
-                            </div>
+                        <SliderMax
+                            value={distanceRange}
+                            onValueChange={setDistanceRange}
+                            max={250}
+                            step={5}
+                            className="w-full cursor-ew-resize"
+                        />
+                        <div className="text-sm text-muted-foreground">
+                            {t("listings.within")} {distanceRange} {t("listings.miles")}
+                        </div>
+                    </div>
                 </div>
 
                 {/* Manufacturer Filter */}
@@ -469,19 +470,19 @@ export default function ListingsPage() {
 
                         {/* Sort and View Controls */}
                         <div className="flex items-center gap-4">
-                            <Select defaultValue="relevance">
-                                <SelectTrigger className="w-40">
-                                    <SelectValue placeholder={t("listings.sortBy")}/>
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="relevance">{t("listings.relevance")}</SelectItem>
-                                    <SelectItem value="price-low">{t("listings.priceLowHigh")}</SelectItem>
-                                    <SelectItem value="price-high">{t("listings.priceHighLow")}</SelectItem>
-                                    <SelectItem value="year-new">{t("listings.yearNewest")}</SelectItem>
-                                    <SelectItem value="year-old">{t("listings.yearOldest")}</SelectItem>
-                                    <SelectItem value="distance">{t("listings.distance")}</SelectItem>
-                                </SelectContent>
-                            </Select>
+                            {/*<Select defaultValue="relevance">*/}
+                            {/*    <SelectTrigger className="w-40">*/}
+                            {/*        <SelectValue placeholder={t("listings.sortBy")}/>*/}
+                            {/*    </SelectTrigger>*/}
+                            {/*    <SelectContent>*/}
+                            {/*        <SelectItem value="relevance">{t("listings.relevance")}</SelectItem>*/}
+                            {/*        <SelectItem value="price-low">{t("listings.priceLowHigh")}</SelectItem>*/}
+                            {/*        <SelectItem value="price-high">{t("listings.priceHighLow")}</SelectItem>*/}
+                            {/*        <SelectItem value="year-new">{t("listings.yearNewest")}</SelectItem>*/}
+                            {/*        <SelectItem value="year-old">{t("listings.yearOldest")}</SelectItem>*/}
+                            {/*        <SelectItem value="distance">{t("listings.distance")}</SelectItem>*/}
+                            {/*    </SelectContent>*/}
+                            {/*</Select>*/}
 
                             <div className="flex items-center border rounded-lg">
                                 <Button
@@ -511,17 +512,12 @@ export default function ListingsPage() {
                                     </Button>
                                 </SheetTrigger>
                                 <SheetContent side="left" className="w-80 p-0">
-                                    <SheetHeader className="p-6 border-b">
+                                    <SheetHeader className="p-3 border-b">
                                         <SheetTitle>{t("listings.filters")}</SheetTitle>
                                     </SheetHeader>
                                     <FilterSidebar onChange={(filters) => setFilters(filters)}/>
                                 </SheetContent>
                             </Sheet>
-
-                            <Button variant="outline" className="gap-2 bg-transparent hidden lg:flex">
-                                <Filter className="w-4 h-4"/>
-                                {t("listings.filters")}
-                            </Button>
                         </div>
                     </div>
                 </div>

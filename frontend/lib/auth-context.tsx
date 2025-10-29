@@ -1,8 +1,9 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import {loginUser, refreshToken} from './api';
+import {loginUser, refreshToken, useApi} from './api';
 import { isTokenExpired } from './utils';
+import {config} from "zod/v4";
 
 type userType = {
     language: string;
@@ -15,6 +16,7 @@ type userType = {
     responseRate: number,
     isVerified: boolean,
     email: string,
+    newMessages: number,
 };
 
 interface AuthContextValue {

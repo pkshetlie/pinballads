@@ -2,9 +2,14 @@
 
 namespace App\Service;
 
+use App\Dto\ConversationDto;
+use App\Dto\MessageDto;
 use App\Dto\PinballCollectionDto;
 use App\Dto\PinballDto;
+use App\Dto\PrivateUserDto;
 use App\Dto\PublicUserDto;
+use App\Entity\Conversation;
+use App\Entity\Message;
 use App\Entity\Pinball;
 use App\Entity\PinballCollection;
 use App\Entity\User;
@@ -34,6 +39,8 @@ class DtoService
         return match ($firstObject::class) {
             User::class => array_map(fn(User $object) => new PublicUserDto($object), $array),
             Pinball::class => array_map(fn(Pinball $object) => new PinballDto($object), $array),
+            Conversation::class => array_map(fn(Conversation $object) => new ConversationDto($object), $array),
+            Message::class => array_map(fn(Message $object) => new MessageDto($object), $array),
             PinballCollection::class => array_map(fn(PinballCollection $object) => new PinballCollectionDto($object), $array),
         };
     }
@@ -44,6 +51,14 @@ class DtoService
             User::class => new PublicUserDto($entity),
             Pinball::class => new PinballDto($entity),
             PinballCollection::class => new PinballCollectionDto($entity),
+        };
+    }
+
+    public function toPrivateDto(DtoableInterface $entity)
+    {
+        return match ($entity::class) {
+            User::class => new PrivateUserDto($entity),
+           default => $this->toDto($entity),
         };
     }
 }

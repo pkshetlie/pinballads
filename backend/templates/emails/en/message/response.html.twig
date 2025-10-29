@@ -1,0 +1,42 @@
+{% extends '/emails/en/base-template.html.twig' %}
+
+{% block content %}
+  <h2 style="color: #1a1a1a; margin: 0 0 20px 0;">You have a new message</h2>
+
+  <p style="margin: 0 0 15px 0;">Hello {{ recipient_name }},</p>
+
+  <p style="margin: 0 0 15px 0;">You have received a response to your message!</p>
+
+  <!-- Machine Summary -->
+  <div class="machine-summary" style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 15px; margin: 20px 0;">
+    <h3 style="color: #1a1a1a; margin: 0 0 10px 0;">{{ pinball.name }}</h3>
+    <p style="margin: 5px 0; color: #666666;">Listed price: <strong
+          style="color: #667eea;">{{ currency }}{{ price }}</strong></p>
+  </div>
+
+  <!-- Buyer Info -->
+  <div class="buyer-card" style="background-color: #f9fafb; border-radius: 12px; padding: 20px; margin: 20px 0;">
+    <h3 style="color: #1a1a1a; margin: 0 0 15px 0;">The message</h3>
+
+    <p style="margin: 10px 0;">
+      <strong>Name:</strong> {{ sender_name }}
+    </p>
+
+    <div style="background-color: #ffffff; border-radius: 8px; padding: 15px; margin: 15px 0;">
+      <strong>Message:</strong>
+      <p style="margin: 10px 0; color: #666666; font-style: italic;">
+        "{{ message }}"
+      </p>
+    </div>
+  </div>
+
+  <div style="text-align: center; margin: 30px 0;">
+    <a href="https://crazy-pinball.com/messages" class="button"
+       style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff !important; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 10px;">Reply</a>
+  </div>
+
+  <p style="margin: 20px 0 0 0; color: #666666; font-size: 14px;">
+    <strong>Security reminder:</strong> Verify payment before transferring ownership. Never share sensitive financial
+    information via email.
+  </p>
+{% endblock %}

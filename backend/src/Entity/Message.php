@@ -2,13 +2,14 @@
 
 namespace App\Entity;
 
+use App\Interface\DtoableInterface;
 use App\Repository\MessageRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: MessageRepository::class)]
-class Message
+class Message implements DtoableInterface
 {
     use TimestampableEntity;
 
@@ -30,13 +31,25 @@ class Message
     private ?User $recipient = null;
 
     #[ORM\Column(nullable: true)]
-    private ?bool $isScam = null;
+    private ?bool $isScam = false;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $scamReason = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $score = null;
+
+    #[ORM\Column(nullable: true)]
+    private bool $isRead = false;
+
+    #[ORM\Column(nullable: true)]
+    private bool $isDeleted = false;
+
+    #[ORM\Column(nullable: true)]
+    private bool $isSpam = false;
+
+    #[ORM\ManyToOne(inversedBy: 'messages')]
+    private ?Conversation $conversation = null;
 
     public function getId(): ?int
     {
@@ -123,6 +136,54 @@ class Message
     public function setScore(?int $score): static
     {
         $this->score = $score;
+
+        return $this;
+    }
+
+    public function isRead(): bool
+    {
+        return $this->isRead;
+    }
+
+    public function setIsRead(bool $isRead): Message
+    {
+        $this->isRead = $isRead;
+
+        return $this;
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->isDeleted;
+    }
+
+    public function setIsDeleted(bool $isDeleted): Message
+    {
+        $this->isDeleted = $isDeleted;
+
+        return $this;
+    }
+
+    public function isSpam(): bool
+    {
+        return $this->isSpam;
+    }
+
+    public function setIsSpam(bool $isSpam): Message
+    {
+        $this->isSpam = $isSpam;
+
+        return $this;
+    }
+
+    public function getConversation(): ?Conversation
+    {
+        return $this->conversation;
+    }
+
+    public function setConversation(?Conversation $conversation): static
+    {
+        $this->conversation = $conversation;
 
         return $this;
     }

@@ -32,7 +32,7 @@ class CustomLoginSuccessHandler extends AuthenticationSuccessHandler
 
         // Ajouter les données utilisateur à la réponse JSON
         $data = json_decode($response->getContent(), true);
-        $data['user'] = $dtoService->toDto($user);
+        $data['user'] = $dtoService->toPrivateDto($user);
 
         // Met à jour le contenu de la réponse
         $response->setContent(json_encode($data));

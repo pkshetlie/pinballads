@@ -1,10 +1,15 @@
 "use client";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useRef} from "react";
 import {useAuth} from "@/lib/auth-context"; // Importez votre AuthContext pour gérer l'état utilisateur
 import {Button} from "@/components/ui/button";
 import {LanguageToggle} from "@/components/language-toggle";
 import {useLanguage} from "@/lib/language-context";
-import {LogOutIcon, User} from "lucide-react"
+import {
+    BellRing,
+    LogOutIcon,
+    MessageCircle,
+    User
+} from "lucide-react"
 
 
 import {
@@ -16,6 +21,7 @@ import {
     DialogTitle
 } from "@/components/ui/dialog";
 import {ThemeToggle} from "@/components/theme-toggle";
+import {useApi} from "@/lib/api";
 
 function LanguageToggleWrapper() {
     const {language, setLanguage} = useLanguage();
@@ -29,17 +35,42 @@ function LanguageToggleWrapper() {
 }
 
 export default function Navbar() {
-    const {user, logout} = useAuth(); // Récupère les données utilisateur via le contexte
+    const {user, logout, token, refreshUser} = useAuth();
+
+    const {apiGet} = useApi()
     const {t} = useLanguage()
     const [isReady, setIsReady] = useState(false); // Nouvel état pour vérifier que tout est prêt
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Nouvel état pour vérifier que tout est prêt
     const [showBetaDialog, setShowBetaDialog] = useState(false);
+
+// // Refresh user data every 10 seconds if logged in
+    useEffect(() => {
+        if (!user || !token) return;
+
+        const fetchUserData = async () => {
+
+            try {
+                await apiGet('/api/user/me').then((userData) => {
+                    refreshUser(userData)
+                });
+            } catch (error) {
+
+            }
+        };
+
+        const interval = setInterval(fetchUserData, 10000);
+
+        return () => clearInterval(interval);
+    }, [user, token]);
+
+
 
     useEffect(() => {
         // Simule un délai pour que le contexte soit prêt
         const timeout = setTimeout(() => setIsReady(true), 100); // Attendre 100ms
         return () => clearTimeout(timeout); // Cleanup timeout si Layout est démonté
     }, []);
+
 
     useEffect(() => {
         const hasSeenBeta = localStorage.getItem('hasSeenBeta');
@@ -75,11 +106,11 @@ export default function Navbar() {
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
-                        <Button onClick={() => setShowBetaDialog(false)}>{t('beta.gotIt')}</Button>
+                        <Button className={'cursor-pointer'} onClick={() => setShowBetaDialog(false)}>{t('beta.gotIt')}</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-            <header className="border-b bg-card md:sticky fixed top-0 w-full z-50">
+            <header className="border-b bg-card sticky top-0 w-full z-50">
                 <div className="container mx-auto px-4 py-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -167,10 +198,19 @@ export default function Navbar() {
                                 )}
                             </div>
                             <div className="hidden sm:flex items-center gap-2">
+
+
                                 <LanguageToggleWrapper/>
                                 <ThemeToggle/>
                                 {user ?
                                     <>
+                                        <Button onClick={
+                                            (x) => window.location.href = '/messages'
+                                        } variant={'outline'} size="icon" className={'cursor-pointer relative'}>
+                                            <MessageCircle />
+                                            {user.newMessages > 0 && (<BellRing className={'absolute -top-1 -right-1 text-destructive'}>{user.newMessages}</BellRing>)}
+                                        </Button>
+
                                         {/*<Button variant="outline" size="icon"*/}
                                         {/*        className={'cursor-pointer'}>*/}
                                         {/*    <CogIcon />*/}

@@ -375,7 +375,6 @@ export default function MachineForm({initialData, onSubmit, buttonText}: Machine
                                             <Checkbox
                                                 className="cursor-pointer"
                                                 id={`${category}-${key}`}
-                                                // @ts-ignore
                                                 checked={additionalOptions[category][key]}
                                                 onCheckedChange={(v) =>
                                                     handleOptionChange(category, key, v as boolean)

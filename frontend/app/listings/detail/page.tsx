@@ -1,17 +1,9 @@
 "use client"
 import {
-  ArrowLeft,
   Star,
   MapPin,
-  Heart,
-  Share2,
   MessageCircle,
-  Phone,
-  Mail,
   Shield,
-  Calendar,
-  Gauge,
-  Zap,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -47,7 +39,7 @@ export default function DetailPage() {
   const searchParams = useSearchParams()
   const id = searchParams.get("id")
   const [pinballMachine, setPinballMachine] = useState<PinballDto | null>(null)
-  const { apiGet } = useApi();
+  const { apiGet, apiPost } = useApi();
   const {t} = useLanguage()
   const {user} = useAuth()
   const [isContactDialogOpen, setIsContactDialogOpen] = useState(false)
@@ -56,9 +48,13 @@ export default function DetailPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSendMessage = async () => {
-    alert("coming soon")
     setIsSubmitting(true)
 
+    apiPost('/api/messages/send', {
+      message: message,
+      offerAmount: offerAmount,
+      pinballId: pinballMachine?.id
+    });
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
@@ -223,24 +219,24 @@ export default function DetailPage() {
                           />
                         </div>
 
-                        {/* Optional offer field */}
-                        <div className="space-y-2">
-                          <Label htmlFor="offer">{t('details.makeAnOffer')}</Label>
-                          <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
-                            <Input
-                                id="offer"
-                                type="number"
-                                placeholder={t('details.enterAmount')}
-                                value={offerAmount}
-                                onChange={(e) => setOfferAmount(e.target.value)}
-                                className="pl-7"
-                            />
-                          </div>
-                          <p className="text-xs text-muted-foreground">
-                            {t('details.listedPrice',{currency:Currencies[pinballMachine.currency as keyof typeof Currencies], 'price':pinballMachine.price.toLocaleString() })}
-                          </p>
-                        </div>
+                        {/*<div className="space-y-2">*/}
+                        {/*  <Label htmlFor="offer">{t('details.makeAnOffer')}</Label>*/}
+                        {/*  <div className="relative">*/}
+                        {/*    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>*/}
+                        {/*    <Input*/}
+                        {/*        id="offer"*/}
+                        {/*        type="number"*/}
+                        {/*        placeholder={t('details.enterAmount')}*/}
+                        {/*        value={offerAmount}*/}
+                        {/*        onChange={(e) => setOfferAmount(e.target.value)}*/}
+                        {/*        className="pl-7"*/}
+                        {/*    />*/}
+                        {/*  </div>*/}
+                        {/*  <p className="text-xs text-muted-foreground">*/}
+                        {/*    {t('details.listedPrice',{currency:Currencies[pinballMachine.currency as keyof typeof Currencies], 'price':pinballMachine.price.toLocaleString() })}*/}
+                        {/*  </p>*/}
+                        {/*</div>*/}
+
                       </div>
 
                       <DialogFooter>

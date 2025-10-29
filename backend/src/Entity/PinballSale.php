@@ -119,6 +119,15 @@ class PinballSale
         return $this->currency;
     }
 
+    public function getCurrencySign(): string
+    {
+        return match($this->currency){
+            'EUR' => '€',
+            'USD' => '$',
+            'GBP' => '£'
+        };
+    }
+
     public function setCurrency(string $currency): static
     {
         $this->currency = $currency;
