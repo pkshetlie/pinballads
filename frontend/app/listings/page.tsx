@@ -389,19 +389,18 @@ interface FiltersSidebarProps {
 
 export default function ListingsPage() {
     const {t} = useLanguage()
-    const {apiGet} = useApi()
+    const {apiGet, apiPost} = useApi()
     const searchParams = useSearchParams();
     const [opdbid, setOpdbid] = useState(searchParams.get('opdbId') ?? null);
     const [showMobileFilters, setShowMobileFilters] = useState(false)
     const [pinballMachines, setPinballMachines] = useState<PinballDto[] | []>([]); // Afficher les résultats supplémentaires
-    const {apiPost} = useApi();
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
     const [filters, setFilters] = useState<FiltersSidebarProps | null>(null)
     const [isLoadingMachine, setIsLoadingMachine] = useState(true)
     const [query, setQuery] = useState<string>("");
     const [selectedGame, setSelectedGame] = useState<GameDto | null>(null);
 
-   useEffect(() => {
+    useEffect(() => {
         if (!opdbid) return;
 
         apiGet(`/api/public/search/game/${opdbid}`).then((data) => {
@@ -442,7 +441,7 @@ export default function ListingsPage() {
     }
 
     useEffect(() => {
-        if (!filters ) return;
+        if (!filters) return;
         fetchCollection()
     }, [filters]);
 
@@ -456,7 +455,8 @@ export default function ListingsPage() {
                         {/* Search Inputs */}
                         <div className="flex flex-col sm:flex-row gap-4 flex-1">
                             <div className="flex-1 relative">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+                                <Search
+                                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5"/>
                                 <SearchDropdown
                                     id="title"
                                     placeholder={t("collection.searchForGame")}
@@ -590,7 +590,8 @@ export default function ListingsPage() {
                                                 <div
                                                     className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
                                                     <MapPin className="w-4 h-4"/>
-                                                    {machine.location?.city} {machine.distance && (<>- {machine.distance ?? 0} km away</>)}
+                                                    {machine.location?.city} {machine.distance && (<>- {machine.distance ?? 0} km
+                                                    away</>)}
                                                 </div>
                                             </CardContent>
                                             <CardFooter className="p-4 pt-0">
@@ -647,7 +648,8 @@ export default function ListingsPage() {
                                                                     <MapPin className="w-4 h-4"/>
                                                                     {machine.location?.city ?? ''}
                                                                 </div>
-                                                                {machine.distance && (<div>{machine.distance ?? 0} km away</div>)}
+                                                                {machine.distance && (
+                                                                    <div>{machine.distance ?? 0} km away</div>)}
                                                             </div>
                                                             <div
                                                                 className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-4">
@@ -662,7 +664,8 @@ export default function ListingsPage() {
                                                         <div className="flex flex-col items-end gap-3 sm:min-w-[180px]">
                                                         <span
                                                             className="text-2xl font-bold text-primary">{Currencies[machine.currency as keyof typeof Currencies]}{machine.price.toLocaleString()}</span>
-                                                            <Button className="w-full sm:w-auto cursor-pointer">{t('viewDetails')}</Button>
+                                                            <Button
+                                                                className="w-full sm:w-auto cursor-pointer">{t('viewDetails')}</Button>
                                                         </div>
                                                     </div>
                                                 </div>

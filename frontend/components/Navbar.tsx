@@ -182,6 +182,9 @@ export default function Navbar() {
                                         {/*    <span className="text-lg md:text-2xl">Settings</span>*/}
                                         {/*    <CogIcon/>*/}
                                         {/*</Button>*/}
+                                        <Button variant={'ghost'}>
+                                        <a href="/messages" className="text-2xl mb-4">{t('nav.notifications')}</a>
+                                        </Button>
                                         <Button
                                             onClick={() => logout()}
                                             variant="outline" className="cursor-pointer w-full"
@@ -198,8 +201,6 @@ export default function Navbar() {
                                 )}
                             </div>
                             <div className="hidden sm:flex items-center gap-2">
-
-
                                 <LanguageToggleWrapper/>
                                 <ThemeToggle/>
                                 {user ?

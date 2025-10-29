@@ -74,7 +74,11 @@ export default function PrivacyPolicy() {
                     <div className="lg:col-span-1">
                         <Card noPadding={true} className="sticky top-24 p-2">
                             <CardContent className="px-2 py-2">
-                                {conversations.map((conversation) => (
+                                {conversations.length == 0 && (
+                                    <p>{t('conversation.noConversation')}</p>
+                                )}
+
+                                {conversations.length > 0 && conversations.map((conversation) => (
                                     <div
                                         key={conversation.id}
                                         onClick={() => {

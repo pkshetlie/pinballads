@@ -11,6 +11,7 @@ export const nav = {
       listMachine: "List Machine",
       myCollection: "My collection",
       toggleLanguage: "Toggle Language",
+      notifications : 'Messages'
     },
   },
   fr: {
@@ -25,6 +26,7 @@ export const nav = {
       listMachine: "Lister Machine",
       myCollection: "Ma collection",
       toggleLanguage: "Changer de langue",
+      notifications: 'Messages'
     },
   },
 }

@@ -14,6 +14,7 @@ export const conversation = {
       selectAConversation: "Select a conversation",
       sent: 'sent',
       read: 'read',
+      noConversation: 'No conversation',
     },
   },
   fr: {
@@ -31,6 +32,7 @@ export const conversation = {
       selectAConversation: "Sélectionnez une conversation",
       sent: 'envoyé',
       read: 'lu',
+      noConversation: 'Aucune conversation',
     },
   },
 }
