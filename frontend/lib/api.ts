@@ -98,8 +98,7 @@ export function useApi() {
     const apiGet = (endpoint: string) => request('GET', endpoint);
     const apiPost = (endpoint: string, body: Record<string, any>) => request('POST', endpoint, body);
     const apiPut = (endpoint: string, body: Record<string, any>) => request('PUT', endpoint, body);
-    const apiPatch = (endpoint: string, body: Record<string, any>) => request('PATCH', endpoint, body);
     const apiDelete = (endpoint: string) => request('DELETE', endpoint);
 
-    return {apiGet, apiPost, apiPut, apiPatch, apiDelete};
+    return {apiGet, apiPost, apiPut, apiDelete};
 }

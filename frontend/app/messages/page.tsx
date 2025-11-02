@@ -15,7 +15,7 @@ import {Textarea} from "@/components/ui/textarea";
 
 export default function PrivacyPolicy() {
     const {t} = useLanguage()
-    const {apiGet, apiPost, apiPatch} = useApi()
+    const {apiGet, apiPost} = useApi()
     const {token, user} = useAuth()
     const [conversations, setConversations] = useState<ConversationDto[]>([])
     const [conversation, setConversation] = useState<ConversationDto | null>(null)
@@ -50,7 +50,7 @@ export default function PrivacyPolicy() {
     }
 
     const setRead = (conversation: ConversationDto) => {
-        apiPatch(`/api/conversations/${conversation.id}`, {
+        apiPost(`/api/conversations/${conversation.id}`, {
             read: true,
         }).then(res => {
             setConversations(prev => prev.map(c => {

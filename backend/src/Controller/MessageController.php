@@ -188,7 +188,7 @@ final class MessageController extends AbstractController
         return $this->json(new ConversationDto($conversation), Response::HTTP_OK);
     }
 
-    #[Route('/api/conversations/{id}', name: 'app_message_patch', methods: ['PATCH'])]
+    #[Route('/api/conversations/{id}', name: 'app_message_set_read', methods: ['POST'])]
     public function read(Conversation $conversation, Request $request, EntityManagerInterface $entityManager): Response
     {
         if ($conversation->getUserA() !== $this->getUser() && $conversation->getUserB() !== $this->getUser()) {
