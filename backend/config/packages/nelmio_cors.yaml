@@ -8,7 +8,7 @@ nelmio_cors:
         max_age: 3600
     paths:
         '^/':
-            allow_origin: ['http://localhost:3000']
+            allow_origin: ['%env(CORS_ALLOW_ORIGIN)%']
         '^/api/': # CORS s'applique uniquement aux routes commençant par /api/
-            allow_origin: ['http://localhost:3000']
+            allow_origin: ['%env(CORS_ALLOW_ORIGIN)%']
 
