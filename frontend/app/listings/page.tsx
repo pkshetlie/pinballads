@@ -29,7 +29,7 @@ import SearchDropdown from "@/components/SearchDropdown";
 import {useSearchParams} from 'next/navigation';
 import {GameDto} from "@/components/object/GameDto";
 import InputCity from "@/components/InputCity";
-import {QueryLocationResult} from "@/components/object/QueryLocationType";
+import {QueryLocationResult} from "@/components/object/QueryLocationResult";
 import {SliderMax} from "@/components/ui/sliderMax";
 
 // Mock data for pinball machine listings

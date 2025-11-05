@@ -1,12 +1,14 @@
+import {QueryLocationResult} from "@/components/object/QueryLocationResult";
+
 export type SettingsDto = {
-    notification: {
-        email: boolean,
-        sms: boolean,
-        push: boolean,
-    },
-    searchPreferences: {
-        city: string,
-        location: string,
-        price: string,
-    }
+    bio: string|null,
+    currency:string|null
+    defaultSearchDistance:number|null
+    defaultSearchLocation: QueryLocationResult|null
+    isEmailMessageNotificationAllowed:boolean
+    isEmailNewsletterNotificationAllowed:boolean
+    isEmailNotificationAllowed:boolean
+    isPublicProfile:boolean
+    language: string|null
+    theme: string|null
 }

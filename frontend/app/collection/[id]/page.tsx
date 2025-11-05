@@ -31,7 +31,7 @@ import {Currencies} from "@/components/object/Currencies";
 import {Manufacturers} from "@/components/object/Manufacturer";
 import {LocationResult} from "@/components/object/LocationResult";
 import InputCity from "@/components/InputCity";
-import {QueryLocationResult} from "@/components/object/QueryLocationType";
+import {QueryLocationResult} from "@/components/object/QueryLocationResult";
 
 export default function MyCollectionPage() {
     const [collection, setCollection] = useState<PinballDto[]>([])

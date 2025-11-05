@@ -9,6 +9,7 @@ class PrivateUserDto implements DtoInterface
 {
     public ?int $id = null;
     public ?string $name = null;
+    public ?string $email = null;
     public ?string $avatar = null;
     public int $numberOfMachines;
     public string $language;
@@ -17,6 +18,7 @@ class PrivateUserDto implements DtoInterface
     public ?string $createdAt;
     public int $reviewCount;
     public float $rating;
+    public SettingsDto $settings;
     public bool $isVerified;
     public int $newMessages;
 
@@ -29,10 +31,12 @@ class PrivateUserDto implements DtoInterface
         $this->createdAt = $entity->getCreatedAt()->format('Y-m-d');
         $this->language = $entity->getLanguage();
         $this->responseRate = 100;
+        $this->email = $entity->getEmail();
         $this->location = 'Middle of NoWhere';
         $this->reviewCount = 0;
         $this->rating = 5;
         $this->isVerified = false;
         $this->newMessages = $entity->getMessagesAsRecipient()->filter(function ($message) { return $message->isRead() === false;})->count();
+        $this->settings = new SettingsDto($entity);
     }
 }

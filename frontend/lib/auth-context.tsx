@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import {loginUser, refreshToken, useApi} from './api';
 import { isTokenExpired } from './utils';
 import {config} from "zod/v4";
+import {SettingsDto} from "@/components/object/SettingsDto";
 
 type userType = {
     language: string;
@@ -17,6 +18,7 @@ type userType = {
     isVerified: boolean,
     email: string,
     newMessages: number,
+    settings: SettingsDto
 };
 
 interface AuthContextValue {

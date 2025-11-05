@@ -23,11 +23,6 @@ class RegisterController extends AbstractController
     {
         $this->entityManager = $entityManager;
     }
-    #[Route('/api/user/me', methods: ['GET'])]
-    public function refresh(DtoService $dtoService): Response
-    {
-        return $this->json($dtoService->toPrivateDto($this->getUser()));
-    }
 
     #[Route('/api/register', methods: ['POST'])]
     public function index(Request $request, UserRepository $userRepository, TranslatorInterface $translator): Response

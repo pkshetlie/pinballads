@@ -1,5 +1,6 @@
 "use client";
 import React, {useEffect, useState, useRef} from "react";
+import {usePathname} from "next/navigation";
 import {useAuth} from "@/lib/auth-context"; // Importez votre AuthContext pour gérer l'état utilisateur
 import {Button} from "@/components/ui/button";
 import {LanguageToggle} from "@/components/language-toggle";
@@ -44,8 +45,9 @@ export default function Navbar() {
     const [showBetaDialog, setShowBetaDialog] = useState(false);
 
 // // Refresh user data every 10 seconds if logged in
+    const pathname = usePathname();
     useEffect(() => {
-        if (!user || !token) return;
+        if (!user || !token || pathname === '/settings') return;
 
         const fetchUserData = async () => {
 
@@ -61,8 +63,7 @@ export default function Navbar() {
         const interval = setInterval(fetchUserData, 10000);
 
         return () => clearInterval(interval);
-    }, [user, token]);
-
+    }, [user, token, pathname]);
 
 
     useEffect(() => {
@@ -170,7 +171,7 @@ export default function Navbar() {
 
                                     <span
                                         className={`text-foreground flex gap-2 font-medium ${isMobileMenuOpen ? 'text-2xl' : ''}`}>
-                                    <User/> {user.name}
+                                    <a href={'/settings'} className={'flex items-center'}> <User/> {user.name}</a>
 
 
                                 </span>
@@ -201,8 +202,8 @@ export default function Navbar() {
                                 )}
                             </div>
                             <div className="hidden sm:flex items-center gap-2">
-                                <LanguageToggleWrapper/>
-                                <ThemeToggle/>
+                                {/*<LanguageToggleWrapper/>*/}
+                                {/*<ThemeToggle/>*/}
                                 {user ?
                                     <>
                                         <Button onClick={

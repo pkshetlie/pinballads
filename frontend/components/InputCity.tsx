@@ -5,7 +5,7 @@ import {useLanguage} from "@/lib/language-context";
 import {useEffect, useState} from "react";
 import {LocationResult} from "@/components/object/LocationResult";
 import {useToast} from "@/hooks/use-toast";
-import {QueryLocationResult} from "@/components/object/QueryLocationType";
+import {QueryLocationResult} from "@/components/object/QueryLocationResult";
 
 interface InputCityProps {
     onSelected?: (location: QueryLocationResult|null) => void
@@ -85,7 +85,7 @@ export default function InputCity({onSelected, presetLocation}: InputCityProps) 
     }, [selectedLocation]);
 
     return (<>
-        <div className="relative">
+        <div className="relative pt-2 pb-2">
             <Input
                 id="location-search-cmpt"
                 type="text"
