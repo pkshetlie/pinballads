@@ -78,6 +78,7 @@ export default function InputCity({onSelected, presetLocation}: InputCityProps) 
             setLocationQuery(presetLocation?.city ?? '');
 
     }, [presetLocation]);
+
     useEffect(() => {
         if(onSelected === undefined) return;
         onSelected(selectedLocation)

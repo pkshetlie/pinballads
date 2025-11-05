@@ -1,12 +1,10 @@
 "use client"
 
-import type React from "react"
+import React, {useEffect, useState} from "react"
 
-import {useState, useEffect} from "react"
 import {Camera, MapPin, Bell, Globe, Palette, User, Save, Loader2, Lock, Trash2, Shield} from "lucide-react"
 import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar"
 import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
 import {Switch} from "@/components/ui/switch"
@@ -16,43 +14,26 @@ import {useTheme} from "next-themes"
 import {useToast} from "@/hooks/use-toast"
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
 import {Separator} from "@/components/ui/separator"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import Link from "next/link"
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {QueryLocationResult} from "@/components/object/QueryLocationResult";
 import InputCity from "@/components/InputCity";
 import {useApi} from "@/lib/api";
 
-interface LocationResult {
-    display_name: string
-    lat: string
-    lon: string
-}
-
 export default function SettingsPage() {
-    const {user} = useAuth()
+    const {user, refreshUser} = useAuth()
     const {language, setLanguage} = useLanguage()
     const {theme, setTheme} = useTheme()
     const {toast} = useToast()
+    const {t} = useLanguage()
+    const {apiPost} = useApi()
 
     const [fullName, setFullName] = useState("")
     const [email, setEmail] = useState("")
-    const [phone, setPhone] = useState("")
     const [currency, setCurrency] = useState("EUR")
-    const [profilePublic, setProfilePublic] = useState(true)
-    const [messageNotifications, setMessageNotifications] = useState(true)
-    const [nextUsernameChangeDate, setNextUsernameChangeDate] = useState(null)
+    const [profilePublic, setProfilePublic] = useState(false)
+    const [messageNotifications, setMessageNotifications] = useState(false)
+    const [nextUsernameChangeDate, setNextUsernameChangeDate] = useState<string|null>(null)
     const [newsletter, setNewsletter] = useState(false)
 
     const [bio, setBio] = useState<string>("")
@@ -62,29 +43,73 @@ export default function SettingsPage() {
     const [selectedLocation, setSelectedLocation] = useState<QueryLocationResult | null>(null)
     const [searchDistance, setSearchDistance] = useState<number | null>(null)
     const [isSaving, setIsSaving] = useState(false)
-    const {apiPost} = useApi()
 
     // Load user settings on mount
+    // useEffect(() => {
+    //     if (user) {
+    //         console.log("User settings loaded:", user.settings)
+    //         const settings = user.settings
+    //         setAvatarUrl(user.avatar || "")
+    //         setFullName(user.name || "")
+    //         setEmail(user.email || user.email || "")
+    //         console.log("settings loaded:", settings)
+    //
+    //
+    //         setEmailNotifications(settings.isEmailNotificationAllowed ?? true)
+    //         setMessageNotifications(settings.isEmailMessageNotificationAllowed ?? false)
+    //         setNewsletter(settings.isEmailNewsletterNotificationAllowed ?? false)
+    //         setProfilePublic(settings.isPublicProfile ?? false)
+    //
+    //         // setPreferredCity(settings.preferredCity || "")
+    //         setSelectedLocation(settings.defaultSearchLocation || null)
+    //         setSearchDistance(settings.defaultSearchDistance || null)
+    //         setCurrency(settings.currency || "EUR")
+    //
+    //         console.log("defaultSearchLocation:", selectedLocation, settings.defaultSearchLocation)
+    //
+    //
+    //     }
+    // }, [user])
+
     useEffect(() => {
-        if (user) {
-            const settings = user.settings
-            setAvatarUrl(user.avatar || "")
-            setFullName(user.name || "")
-            setEmail(user.email || user.email || "")
+        if (!user?.settings) return;
 
-            if (settings) {
-                setEmailNotifications(settings.isEmailNotificationAllowed ?? true)
-                setMessageNotifications(settings.isEmailMessageNotificationAllowed ?? true)
-                setNewsletter(settings.isEmailNewsletterNotificationAllowed ?? true)
-                setProfilePublic(settings.isPublicProfile ?? true)
+        const s = user.settings;
 
-                // setPreferredCity(settings.preferredCity || "")
-                setSelectedLocation(settings.defaultSearchLocation || null)
-                setSearchDistance(settings.defaultSearchDistance || null)
-                setCurrency(settings.currency || "EUR")
+        // On applique les settings aux états locaux
+        setAvatarUrl(user.avatar || "");
+        setFullName(user.name || "");
+        setEmail(user.email || "");
+
+        setEmailNotifications(s.isEmailNotificationAllowed ?? true);
+        setMessageNotifications(s.isEmailMessageNotificationAllowed ?? false);
+        setNewsletter(s.isEmailNewsletterNotificationAllowed ?? false);
+        setProfilePublic(s.isPublicProfile ?? false);
+
+        setSelectedLocation(s.defaultSearchLocation || null);
+        setSearchDistance(s.defaultSearchDistance || null);
+        setCurrency(s.currency || "EUR");
+
+        const lastChange = user.settings?.lastUsernameChange
+            ? new Date(user.settings.lastUsernameChange)
+            : null;
+
+        if (lastChange) {
+            const nextAllowed = new Date(lastChange.getTime() + (30 * 24 * 60 * 60 * 1000));
+            const now = new Date();
+
+            if (nextAllowed > now) {
+                const diff = nextAllowed.getTime() - now.getTime();
+                const days = Math.floor(diff / (24 * 60 * 60 * 1000));
+                const hours = Math.floor((diff % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+                const minutes = Math.floor((diff % (60 * 60 * 1000)) / (60 * 1000));
+
+                setNextUsernameChangeDate(`${days}j ${hours}h ${minutes}min`);
             }
         }
-    }, [user])
+
+
+    }, [user]);
 
     const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
@@ -104,7 +129,7 @@ export default function SettingsPage() {
 
         setIsSaving(true)
         // Simulate API call
-        await apiPost('api/settings', {
+        await apiPost('/api/settings', {
             settings : {
                 language,
                 defaultSearchLocation: selectedLocation,
@@ -122,14 +147,16 @@ export default function SettingsPage() {
                 displayName: fullName,
             }
         }).then((response) => {
+            refreshUser(response)
             toast({
                 title: "Paramètres sauvegardés",
                 description: "Vos paramètres ont été mis à jour avec succès",
+                variant: "success",
             })
         }).catch((e) => {
             toast({
-                title: "Erreur",
-                description: "Impossible de sauvegarder les paramètres",
+                title: t("error"),
+                description: e.message,
                 variant: "destructive",
             })
         }).finally(() => {
@@ -160,7 +187,7 @@ export default function SettingsPage() {
             })
         }
     }
-    if (!user) {
+    if (!user || !fullName) {
         return <></>
     }
     return (<>
@@ -208,15 +235,17 @@ export default function SettingsPage() {
                             {/*    </div>*/}
                             {/*</div>*/}
                             <div className="space-y-2">
-                                <Label htmlFor="full-name">Nom affiché {nextUsernameChangeDate && (<>Prochain changement
-                                    possible dans XXh</>)}</Label>
+                                <Label htmlFor="full-name">Nom affiché</Label>
                                 <Input
                                     id="full-name"
                                     type="text"
+                                    disabled={nextUsernameChangeDate != null}
                                     placeholder="Votre nom complet"
                                     value={fullName}
                                     onChange={(e) => setFullName(e.target.value)}
                                 />
+                                <small className={'text-destructive'}>{nextUsernameChangeDate && (<>Prochain changement
+                                    possible dans {nextUsernameChangeDate}</>)}</small>
                             </div>
                             <div className="flex items-center justify-between">
                                 <div className="space-y-0.5">
@@ -255,9 +284,7 @@ export default function SettingsPage() {
                                 <div>
                                     <Label htmlFor="city-search pb-2">Définissez votre ville pour voir les annonces à
                                         proximité</Label>
-                                    <InputCity onSelected={(city) => {
-                                        setSelectedLocation(city)
-                                    }} presetLocation={selectedLocation}/>
+                                    <InputCity onSelected={(city) => {setSelectedLocation(city)}} presetLocation={selectedLocation}/>
                                 </div>
                             </div>
 
@@ -404,10 +431,8 @@ export default function SettingsPage() {
                     {/*</Card>*/}
 
                     <div className="flex justify-end gap-4">
-                        <Button variant="outline" onClick={() => window.history.back()}>
-                            Annuler
-                        </Button>
-                        <Button onClick={handleSaveSettings} disabled={isSaving} className="gap-2">
+
+                        <Button onClick={handleSaveSettings} disabled={isSaving} className="gap-2 cursor-pointer">
                             {isSaving ? (
                                 <>
                                     <Loader2 className="w-4 h-4 animate-spin"/>

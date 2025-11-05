@@ -10,7 +10,7 @@ class SettingsDto implements DtoInterface
 {
 
     public string $language;
-    public ?string $defaultSearchLocation;
+    public ?array $defaultSearchLocation;
     public ?int $defaultSearchDistance;
     public bool $isPublicProfile;
     public ?string $bio;
@@ -19,6 +19,7 @@ class SettingsDto implements DtoInterface
     public bool $isEmailNotificationAllowed;
     public bool $isEmailMessageNotificationAllowed;
     public bool $isEmailNewsletterNotificationAllowed;
+    public ?string $lastUsernameChange;
 
 
     public function __construct(User $entity)
@@ -34,6 +35,6 @@ class SettingsDto implements DtoInterface
        $this->isEmailNotificationAllowed = (bool)($settings['isEmailNotificationAllowed'] ?? false);
        $this->isEmailMessageNotificationAllowed = (bool)($settings['isEmailMessageNotificationAllowed'] ?? true);
        $this->isEmailNewsletterNotificationAllowed = (bool)($settings['isEmailNewsletterNotificationAllowed'] ?? false);
-
+       $this->lastUsernameChange = $settings['lastUsernameChange'] ?? null;
     }
 }
