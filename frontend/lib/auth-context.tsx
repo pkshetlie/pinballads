@@ -96,6 +96,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     const refreshUser = (user: userType) => {
+        localStorage.setItem('user', JSON.stringify(user)); // Stocker une structure utilisateur
         setUser(user)
     }
 

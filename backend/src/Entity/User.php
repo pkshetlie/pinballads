@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Dto\SettingsDto;
 use App\Interface\DtoableInterface;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -489,9 +490,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Dtoable
         return $this;
     }
 
-    public function getSettings()
+    public function getSettings(): ?array
     {
         return $this->settings;
+    }
+
+    public function getSettingsDto(): SettingsDto
+    {
+        return new SettingsDto($this);
     }
 
     public function setSettings(array $settings): static

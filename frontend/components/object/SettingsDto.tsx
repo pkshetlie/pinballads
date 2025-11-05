@@ -11,4 +11,5 @@ export type SettingsDto = {
     isPublicProfile:boolean
     language: string|null
     theme: string|null
+    lastUsernameChange: string|null
 }
