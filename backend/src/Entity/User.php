@@ -494,7 +494,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Dtoable
         return $this->settings;
     }
 
-    public function setSettings($settings): static
+    public function setSettings(array $settings): static
     {
         $this->settings = $settings;
 

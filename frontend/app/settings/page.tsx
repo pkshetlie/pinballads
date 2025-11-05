@@ -2,20 +2,20 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
-import { Camera, MapPin, Bell, Globe, Palette, User, Save, Loader2, Lock, Trash2, Shield } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import { useAuth } from "@/lib/auth-context"
-import { useLanguage } from "@/lib/language-context"
-import { useTheme } from "next-themes"
-import { useToast } from "@/hooks/use-toast"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
+import {useState, useEffect} from "react"
+import {Camera, MapPin, Bell, Globe, Palette, User, Save, Loader2, Lock, Trash2, Shield} from "lucide-react"
+import {Button} from "@/components/ui/button"
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar"
+import {Input} from "@/components/ui/input"
+import {Label} from "@/components/ui/label"
+import {Switch} from "@/components/ui/switch"
+import {useAuth} from "@/lib/auth-context"
+import {useLanguage} from "@/lib/language-context"
+import {useTheme} from "next-themes"
+import {useToast} from "@/hooks/use-toast"
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
+import {Separator} from "@/components/ui/separator"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -32,6 +32,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {QueryLocationResult} from "@/components/object/QueryLocationResult";
 import InputCity from "@/components/InputCity";
+import {useApi} from "@/lib/api";
 
 interface LocationResult {
     display_name: string
@@ -40,10 +41,10 @@ interface LocationResult {
 }
 
 export default function SettingsPage() {
-    const { user } = useAuth()
-    const { language, setLanguage } = useLanguage()
-    const { theme, setTheme } = useTheme()
-    const { toast } = useToast()
+    const {user} = useAuth()
+    const {language, setLanguage} = useLanguage()
+    const {theme, setTheme} = useTheme()
+    const {toast} = useToast()
 
     const [fullName, setFullName] = useState("")
     const [email, setEmail] = useState("")
@@ -51,14 +52,17 @@ export default function SettingsPage() {
     const [currency, setCurrency] = useState("EUR")
     const [profilePublic, setProfilePublic] = useState(true)
     const [messageNotifications, setMessageNotifications] = useState(true)
+    const [nextUsernameChangeDate, setNextUsernameChangeDate] = useState(null)
     const [newsletter, setNewsletter] = useState(false)
 
+    const [bio, setBio] = useState<string>("")
     const [avatarUrl, setAvatarUrl] = useState<string>("")
     const [avatarFile, setAvatarFile] = useState<File | null>(null)
     const [emailNotifications, setEmailNotifications] = useState(true)
-    const [selectedLocation, setSelectedLocation] = useState<QueryLocationResult|null>(null)
-    const [searchDistance, setSearchDistance] = useState<number|null>(null)
+    const [selectedLocation, setSelectedLocation] = useState<QueryLocationResult | null>(null)
+    const [searchDistance, setSearchDistance] = useState<number | null>(null)
     const [isSaving, setIsSaving] = useState(false)
+    const {apiPost} = useApi()
 
     // Load user settings on mount
     useEffect(() => {
@@ -95,48 +99,42 @@ export default function SettingsPage() {
     }
 
 
-
     const handleSaveSettings = async () => {
         if (!user) return
 
         setIsSaving(true)
-        try {
-            // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 1000))
-
-            const settings = {
-                avatarUrl,
-                emailNotifications,
-                distance: searchDistance,
-                location: selectedLocation,
-                theme,
+        // Simulate API call
+        await apiPost('api/settings', {
+            settings : {
                 language,
-                fullName,
-                email,
-                phone,
+                defaultSearchLocation: selectedLocation,
+                defaultSearchDistance: searchDistance,
+                isPublicProfile: profilePublic,
+                bio,
+                theme,
                 currency,
-                profilePublic,
-                messageNotifications,
-                newsletter,
+                isEmailNotificationAllowed: emailNotifications,
+                isEmailMessageNotificationAllowed: messageNotifications,
+                isEmailNewsletterNotificationAllowed: newsletter,
+            },
+            user: {
+                email,
+                displayName: fullName,
             }
-
-            // Save to localStorage (in production, this would be an API call)
-            localStorage.setItem(`user_settings_${user.id}`, JSON.stringify(settings))
-
+        }).then((response) => {
             toast({
                 title: "Paramètres sauvegardés",
                 description: "Vos paramètres ont été mis à jour avec succès",
             })
-        } catch (error) {
-            console.error("Error saving settings:", error)
+        }).catch((e) => {
             toast({
                 title: "Erreur",
                 description: "Impossible de sauvegarder les paramètres",
                 variant: "destructive",
             })
-        } finally {
+        }).finally(() => {
             setIsSaving(false)
-        }
+        });
     }
 
     const handleDeleteAccount = async () => {
@@ -162,7 +160,9 @@ export default function SettingsPage() {
             })
         }
     }
-
+    if (!user) {
+        return <></>
+    }
     return (<>
             <Navbar></Navbar>
             <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -175,41 +175,41 @@ export default function SettingsPage() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <User className="w-5 h-5" />
+                                <User className="w-5 h-5"/>
                                 Informations du compte
                             </CardTitle>
                             <CardDescription>Gérez vos informations personnelles</CardDescription>
                         </CardHeader>
 
                         <CardContent className="space-y-4">
-                            <Label >Téléchargez une photo de profil pour personnaliser votre compte</Label>
-
-                            <div className="flex items-center gap-6">
-                                <Avatar className="w-24 h-24">
-                                    <AvatarImage src={avatarUrl} />
-                                    <AvatarFallback className="text-2xl">
-                                        {user.name?.charAt(0)?.toUpperCase() || user.email?.charAt(0)?.toUpperCase() || "U"}
-                                    </AvatarFallback>
-                                </Avatar>
-                                <div className="flex-1">
-                                    <Label htmlFor="avatar-upload" className="cursor-pointer">
-                                        <div className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors w-fit">
-                                            <Camera className="w-4 h-4" />
-                                            Changer la photo
-                                        </div>
-                                        <Input
-                                            id="avatar-upload"
-                                            type="file"
-                                            accept="image/*"
-                                            className="hidden"
-                                            onChange={handleAvatarChange}
-                                        />
-                                    </Label>
-                                    <p className="text-sm text-muted-foreground mt-2">JPG, PNG ou GIF. Max 5MB.</p>
-                                </div>
-                            </div>
+                            {/*<Label >Téléchargez une photo de profil pour personnaliser votre compte</Label>*/}
+                            {/*<div className="flex items-center gap-6">*/}
+                            {/*    <Avatar className="w-24 h-24">*/}
+                            {/*        <AvatarImage src={avatarUrl} />*/}
+                            {/*        <AvatarFallback className="text-2xl">*/}
+                            {/*            {user.name?.charAt(0)?.toUpperCase() || user.email?.charAt(0)?.toUpperCase() || "U"}*/}
+                            {/*        </AvatarFallback>*/}
+                            {/*    </Avatar>*/}
+                            {/*    <div className="flex-1">*/}
+                            {/*        <Label htmlFor="avatar-upload" className="cursor-pointer">*/}
+                            {/*            <div className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors w-fit">*/}
+                            {/*                <Camera className="w-4 h-4" />*/}
+                            {/*                Changer la photo*/}
+                            {/*            </div>*/}
+                            {/*            <Input*/}
+                            {/*                id="avatar-upload"*/}
+                            {/*                type="file"*/}
+                            {/*                accept="image/*"*/}
+                            {/*                className="hidden"*/}
+                            {/*                onChange={handleAvatarChange}*/}
+                            {/*            />*/}
+                            {/*        </Label>*/}
+                            {/*        <p className="text-sm text-muted-foreground mt-2">JPG, PNG ou GIF. Max 5MB.</p>*/}
+                            {/*    </div>*/}
+                            {/*</div>*/}
                             <div className="space-y-2">
-                                <Label htmlFor="full-name">Nom affiché</Label>
+                                <Label htmlFor="full-name">Nom affiché {nextUsernameChangeDate && (<>Prochain changement
+                                    possible dans XXh</>)}</Label>
                                 <Input
                                     id="full-name"
                                     type="text"
@@ -222,12 +222,13 @@ export default function SettingsPage() {
                                 <div className="space-y-0.5">
                                     <Label htmlFor="profile-public">Profil public</Label>
                                     <p className="text-sm text-muted-foreground">
-                                        Permettre aux autres utilisateurs de voir votre profil (seules les collections publiques sont visibles)
+                                        Permettre aux autres utilisateurs de voir votre profil (seules les collections
+                                        publiques sont visibles)
                                     </p>
                                 </div>
-                                <Switch id="profile-public" checked={profilePublic} onCheckedChange={setProfilePublic} />
+                                <Switch id="profile-public" checked={profilePublic} onCheckedChange={setProfilePublic}/>
                             </div>
-                            <Separator />
+                            <Separator/>
                             <div className="space-y-2">
                                 <Label htmlFor="email">Email (reste privé)</Label>
                                 <Input
@@ -244,7 +245,7 @@ export default function SettingsPage() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <MapPin className="w-5 h-5" />
+                                <MapPin className="w-5 h-5"/>
                                 Préférences de recherche
                             </CardTitle>
                             <CardDescription></CardDescription>
@@ -252,8 +253,11 @@ export default function SettingsPage() {
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
                                 <div>
-                                    <Label htmlFor="city-search pb-2">Définissez votre ville pour voir les annonces à proximité</Label>
-                                    <InputCity onSelected={(city) => {setSelectedLocation(city)}} presetLocation={selectedLocation} />
+                                    <Label htmlFor="city-search pb-2">Définissez votre ville pour voir les annonces à
+                                        proximité</Label>
+                                    <InputCity onSelected={(city) => {
+                                        setSelectedLocation(city)
+                                    }} presetLocation={selectedLocation}/>
                                 </div>
                             </div>
 
@@ -261,7 +265,7 @@ export default function SettingsPage() {
                                 <Label htmlFor="currency-select">Devise</Label>
                                 <Select value={currency} onValueChange={setCurrency}>
                                     <SelectTrigger id="currency-select" className="cursor-pointer">
-                                        <SelectValue placeholder="Sélectionner une devise" />
+                                        <SelectValue placeholder="Sélectionner une devise"/>
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="EUR">€ Euro (EUR)</SelectItem>
@@ -276,7 +280,7 @@ export default function SettingsPage() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <Palette className="w-5 h-5" />
+                                <Palette className="w-5 h-5"/>
                                 Thème
                             </CardTitle>
                             <CardDescription>Choisissez l'apparence de l'interface</CardDescription>
@@ -286,7 +290,7 @@ export default function SettingsPage() {
                                 <Label htmlFor="theme-select">Thème de l'interface</Label>
                                 <Select value={theme} onValueChange={setTheme}>
                                     <SelectTrigger id="theme-select">
-                                        <SelectValue placeholder="Sélectionner un thème" />
+                                        <SelectValue placeholder="Sélectionner un thème"/>
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="light">Clair</SelectItem>
@@ -297,9 +301,11 @@ export default function SettingsPage() {
                             </div>
                             <div className="space-y-4">
                                 <Label htmlFor="language-select">Langue de l'interface</Label>
-                                <Select value={language} onValueChange={(value) => {setLanguage(value as "en" | "fr")}}>
+                                <Select value={language} onValueChange={(value) => {
+                                    setLanguage(value as "en" | "fr")
+                                }}>
                                     <SelectTrigger id="language-select" className="cursor-pointer">
-                                        <SelectValue placeholder="Sélectionner une langue" />
+                                        <SelectValue placeholder="Sélectionner une langue"/>
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="en">🇺🇸 English</SelectItem>
@@ -314,7 +320,7 @@ export default function SettingsPage() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <Bell className="w-5 h-5" />
+                                <Bell className="w-5 h-5"/>
                                 Notifications
                             </CardTitle>
                             <CardDescription>Gérez vos préférences de notification</CardDescription>
@@ -322,8 +328,10 @@ export default function SettingsPage() {
                         <CardContent className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <div className="space-y-0.5">
-                                    <Label htmlFor="message-notifications" className="cursor-pointer">Notifications de messages</Label>
-                                    <p className="text-sm text-muted-foreground">Recevoir des emails pour les nouveaux messages</p>
+                                    <Label htmlFor="message-notifications" className="cursor-pointer">Notifications de
+                                        messages</Label>
+                                    <p className="text-sm text-muted-foreground">Recevoir des emails pour les nouveaux
+                                        messages</p>
                                 </div>
                                 <Switch className="cursor-pointer"
                                         id="message-notifications"
@@ -331,26 +339,30 @@ export default function SettingsPage() {
                                         onCheckedChange={setMessageNotifications}
                                 />
                             </div>
-                            <Separator />
+                            <Separator/>
                             <div className="flex items-center justify-between">
                                 <div className="space-y-0.5">
-                                    <Label htmlFor="email-notifications" className="cursor-pointer">Notifications par email</Label>
-                                    <p className="text-sm text-muted-foreground">Recevoir des emails pour les nouvelles annonces</p>
+                                    <Label htmlFor="email-notifications" className="cursor-pointer">Notifications par
+                                        email</Label>
+                                    <p className="text-sm text-muted-foreground">Recevoir des emails pour les nouvelles
+                                        annonces</p>
                                 </div>
-                                <Switch id="email-notifications" className="cursor-pointer" checked={emailNotifications} onCheckedChange={setEmailNotifications} />
+                                <Switch id="email-notifications" className="cursor-pointer" checked={emailNotifications}
+                                        onCheckedChange={setEmailNotifications}/>
                             </div>
-                            <Separator />
+                            <Separator/>
 
                             <div className="flex items-center justify-between">
                                 <div className="space-y-0.5">
                                     <Label htmlFor="newsletter" className="cursor-pointer">Newsletter</Label>
-                                    <p className="text-sm text-muted-foreground">Recevoir la newsletter avec les actualités et offres</p>
+                                    <p className="text-sm text-muted-foreground">Recevoir la newsletter avec les
+                                        actualités et offres</p>
                                 </div>
-                                <Switch className="cursor-pointer" id="newsletter" checked={newsletter} onCheckedChange={setNewsletter} />
+                                <Switch className="cursor-pointer" id="newsletter" checked={newsletter}
+                                        onCheckedChange={setNewsletter}/>
                             </div>
                         </CardContent>
                     </Card>
-
 
 
                     {/*<Card className="border-destructive">*/}
@@ -398,12 +410,12 @@ export default function SettingsPage() {
                         <Button onClick={handleSaveSettings} disabled={isSaving} className="gap-2">
                             {isSaving ? (
                                 <>
-                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    <Loader2 className="w-4 h-4 animate-spin"/>
                                     Enregistrement...
                                 </>
                             ) : (
                                 <>
-                                    <Save className="w-4 h-4" />
+                                    <Save className="w-4 h-4"/>
                                     Enregistrer les modifications
                                 </>
                             )}
