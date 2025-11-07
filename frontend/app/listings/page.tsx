@@ -200,7 +200,8 @@ function FilterSidebar({
                     <h4 className="font-medium text-foreground">{t("listings.distance")}</h4>
                     <InputCity
                         onSelected={(location: QueryLocationResult | null) => setSelectedLocation(location)}></InputCity>
-                    <div className={`space-y-3 ${selectedLocation ? '' : 'hidden'}`}>
+
+                    { selectedLocation && (<div className={`space-y-3 `}>
                         <SliderMax
                             value={distanceRange}
                             onValueChange={setDistanceRange}
@@ -212,6 +213,7 @@ function FilterSidebar({
                             {t("listings.within")} {distanceRange} {t("listings.miles")}
                         </div>
                     </div>
+                        )}
                 </div>
 
                 {/* Manufacturer Filter */}

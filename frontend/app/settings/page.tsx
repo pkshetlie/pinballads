@@ -19,6 +19,7 @@ import Footer from "@/components/Footer";
 import {QueryLocationResult} from "@/components/object/QueryLocationResult";
 import InputCity from "@/components/InputCity";
 import {useApi} from "@/lib/api";
+import {SliderMax} from "@/components/ui/sliderMax";
 
 export default function SettingsPage() {
     const {user, refreshUser} = useAuth()
@@ -41,7 +42,7 @@ export default function SettingsPage() {
     const [avatarFile, setAvatarFile] = useState<File | null>(null)
     const [emailNotifications, setEmailNotifications] = useState(true)
     const [selectedLocation, setSelectedLocation] = useState<QueryLocationResult | null>(null)
-    const [searchDistance, setSearchDistance] = useState<number | null>(null)
+    const [searchDistance, setSearchDistance] = useState<number>(50)
     const [isSaving, setIsSaving] = useState(false)
 
     // Load user settings on mount
@@ -87,7 +88,7 @@ export default function SettingsPage() {
         setProfilePublic(s.isPublicProfile ?? false);
 
         setSelectedLocation(s.defaultSearchLocation || null);
-        setSearchDistance(s.defaultSearchDistance || null);
+        setSearchDistance(s.defaultSearchDistance || 50);
         setCurrency(s.currency || "EUR");
 
         const lastChange = user.settings?.lastUsernameChange
@@ -249,13 +250,13 @@ export default function SettingsPage() {
                             </div>
                             <div className="flex items-center justify-between">
                                 <div className="space-y-0.5">
-                                    <Label htmlFor="profile-public">Profil public</Label>
+                                    <Label htmlFor="profile-public cursor-pointer">Profil public</Label>
                                     <p className="text-sm text-muted-foreground">
                                         Permettre aux autres utilisateurs de voir votre profil (seules les collections
                                         publiques sont visibles)
                                     </p>
                                 </div>
-                                <Switch id="profile-public" checked={profilePublic} onCheckedChange={setProfilePublic}/>
+                                <Switch className={'cursor-pointer'} id="profile-public" checked={profilePublic} onCheckedChange={setProfilePublic}/>
                             </div>
                             <Separator/>
                             <div className="space-y-2">
@@ -285,6 +286,26 @@ export default function SettingsPage() {
                                     <Label htmlFor="city-search pb-2">Définissez votre ville pour voir les annonces à
                                         proximité</Label>
                                     <InputCity onSelected={(city) => {setSelectedLocation(city)}} presetLocation={selectedLocation}/>
+                                    {selectedLocation?.lat && (<div className={`my-5 `}>
+                                            <SliderMax
+                                                value={searchDistance}
+                                                onValueChange={(values) => {
+                                                        if (Array.isArray(values)) {
+                                                            setSearchDistance(values[1] ?? (values[0] ?? 0));
+                                                        } else {
+                                                            setSearchDistance(values ?? 0);
+                                                        }
+                                                    }
+                                                }
+                                                max={250}
+                                                step={5}
+                                                className="w-full cursor-ew-resize"
+                                            />
+                                            <div className="text-sm text-muted-foreground">
+                                                {t("listings.within")} {searchDistance} {t("listings.miles")}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 

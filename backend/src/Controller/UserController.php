@@ -67,7 +67,7 @@ class UserController extends AbstractController
             }
         }
 
-        $user->setSettings($settings);
+        $user->setSettings([$settings, ...$requ['settings']]);
         $entityManager->flush();
 
         return $this->json(new PrivateUserDto($user));
