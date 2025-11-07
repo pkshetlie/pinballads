@@ -3,6 +3,7 @@
 
 import {useLanguage} from "@/lib/language-context";
 import * as Sentry from "@sentry/react";
+import React from "react";
 
 export default function Footer() {
     const { t } = useLanguage()
@@ -20,8 +21,10 @@ export default function Footer() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div>
                     <div className="flex items-center gap-2 mb-4">
-                        <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                            <span className="text-primary-foreground font-bold text-lg">P</span>
+                        <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                            <span className="text-primary-foreground text-lg">
+                                <img src="/images/logo.svg" alt="Logo"/>
+                            </span>
                         </div>
                         <span className="text-xl font-bold text-foreground">Crazy Pinball</span>
                     </div>
