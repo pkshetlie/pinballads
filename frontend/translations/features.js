@@ -29,6 +29,13 @@ export const features = {
         miniPlayfields: "Mini-playfields",
         dropTargetsEvolutifs: "Drop targets evolving"
       },
+      barryAllen: {
+        backglassBarryAllen: "Backglass",
+        sideArtBarryAllen: "Side art",
+        playfieldBarryAllen: "Playfield",
+        cabinetDecalsBarryAllen: "Cabinet decals",
+        apronBarryAllen: "Apron",
+      },
       gameModes: {
         multiball: "Multiball",
         missions: "Missions",

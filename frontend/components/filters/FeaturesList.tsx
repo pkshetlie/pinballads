@@ -54,7 +54,9 @@ export default function FeaturesList({handleFeatureSelection, preselectedFeature
             {Object.entries(filteredFeatures).map(([category, features]) => (
                 <div key={category} className="space-y-2">
                     {/* Nom de la catégorie */}
-                    <h4 className="font-medium text-lg text-foreground capitalize">{category}</h4>
+                    <h4 className="font-medium text-lg text-foreground">
+                        {t('sell.'+category)}
+                    </h4>
 
                     {/* Liste des fonctionnalités */}
                     <div className="space-y-2">
