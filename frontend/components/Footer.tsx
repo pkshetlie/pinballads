@@ -77,6 +77,7 @@ export default function Footer() {
             </div>
             <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
                 <p>&copy; 2025 crazy-pinball. {t("footer.allRightsReserved")}.</p>
+                <img referrerPolicy="no-referrer-when-downgrade" src="https://matomo.ragnacustoms.com/matomo.php?idsite=5&amp;rec=1" style={{border:0}} />
             </div>
         </div>
     </footer>)
