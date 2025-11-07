@@ -2,9 +2,17 @@
 
 
 import {useLanguage} from "@/lib/language-context";
+import * as Sentry from "@sentry/react";
 
 export default function Footer() {
     const { t } = useLanguage()
+
+    Sentry.init({
+        dsn: "https://b6c01400b8bfc7764f2929b6f084cf87@o139094.ingest.us.sentry.io/4510255670493184",
+        // Setting this option to true will send default PII data to Sentry.
+        // For example, automatic IP address collection on events
+        sendDefaultPii: true
+    });
 
     return (
     <footer className="bg-card border-t py-12">
