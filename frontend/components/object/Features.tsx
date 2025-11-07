@@ -9,12 +9,12 @@ const schema = {
         motionControlShakerKit: false,
         subwooferAndLineOutConnector: false,
     },
-    barryAllen: {
-        backglassBarryAllen: false,
-        sideArtBarryAllen: false,
-        playfieldBarryAllen: false,
-        cabinetDecalsBarryAllen: false,
-        apronBarryAllen: false,
+    brianAllen: {
+        backglassBrianAllen: false,
+        sideArtBrianAllen: false,
+        playfieldBrianAllen: false,
+        cabinetDecalsBrianAllen: false,
+        apronBrianAllen: false,
     },
     dmd: {
         xl: false,
