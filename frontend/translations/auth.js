@@ -63,6 +63,7 @@ export const auth = {
       signInLink: "Sign In",
       backToHome: "Back to Home",
       confirmNewPassword: "Confirm new password",
+      logout: "Logout",
     },
   },
   fr: {
@@ -128,7 +129,8 @@ export const auth = {
       rememberPassword: "Vous souvenez-vous de votre mot de passe ?",
       signInLink: "Se connecter",
       backToHome: "Retour à l'accueil",
-      confirmNewPassword: "Confirmez votre nouveau mot de passe"
+      confirmNewPassword: "Confirmez votre nouveau mot de passe",
+      logout: 'Déconnexion'
     },
   },
 }

@@ -2,7 +2,7 @@
 
 import React, {useEffect, useState} from "react"
 
-import {Camera, MapPin, Bell, Globe, Palette, User, Save, Loader2, Lock, Trash2, Shield} from "lucide-react"
+import {Camera, MapPin, Bell, Globe, Palette, User, Save, Loader2, Lock, Trash2, Shield, LogOutIcon} from "lucide-react"
 import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
 import {Input} from "@/components/ui/input"
@@ -28,6 +28,7 @@ export default function SettingsPage() {
     const {toast} = useToast()
     const {t} = useLanguage()
     const {apiPost} = useApi()
+    const {logout} = useAuth()
 
     const [fullName, setFullName] = useState("")
     const [email, setEmail] = useState("")
@@ -412,6 +413,20 @@ export default function SettingsPage() {
                         </CardContent>
                     </Card>
 
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <LogOutIcon className="w-5 h-5"/>
+                                {t("auth.logout")}
+                            </CardTitle>
+                            <CardDescription>On se revoit bientôt ?</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                           <Button variant="secondary" onClick={()=>logout()} className="w-full cursor-pointer">
+                               {t("auth.logout")}
+                           </Button>
+                        </CardContent>
+                    </Card>
 
                     {/*<Card className="border-destructive">*/}
                     {/*    <CardHeader>*/}

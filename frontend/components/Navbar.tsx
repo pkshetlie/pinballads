@@ -36,7 +36,7 @@ function LanguageToggleWrapper() {
 }
 
 export default function Navbar() {
-    const {user, logout, token, refreshUser} = useAuth();
+    const {user} = useAuth();
 
     const {apiGet} = useApi()
     const {t} = useLanguage()
@@ -186,14 +186,6 @@ export default function Navbar() {
                                         <Button variant={'ghost'}>
                                         <a href="/messages" className="text-2xl mb-4">{t('nav.notifications')}</a>
                                         </Button>
-                                        <Button
-                                            onClick={() => logout()}
-                                            variant="outline" className="cursor-pointer w-full"
-                                        >
-                                            <span className="text-lg md:text-2xl">Logout</span>
-                                            <LogOutIcon/>
-                                        </Button>
-
                                     </div>
                                 </>) : (
                                     <Button variant="outline" size="sm" asChild>
@@ -212,17 +204,7 @@ export default function Navbar() {
                                             <MessageCircle />
                                             {user.newMessages > 0 && (<BellRing className={'absolute -top-1 -right-1 text-destructive'}>{user.newMessages}</BellRing>)}
                                         </Button>
-
-                                        {/*<Button variant="outline" size="icon"*/}
-                                        {/*        className={'cursor-pointer'}>*/}
-                                        {/*    <CogIcon />*/}
-                                        {/*    <span className="sr-only">Settings</span>*/}
-                                        {/*</Button>*/}
-                                        <Button onClick={() => logout()} variant="secondary" size="icon"
-                                                className={'cursor-pointer'}>
-                                            <LogOutIcon/>
-                                            <span className="sr-only">Logout</span>
-                                        </Button></> : <></>}
+                                    </> : <></>}
                             </div>
 
                         </nav>
