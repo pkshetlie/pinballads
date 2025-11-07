@@ -31,6 +31,7 @@ import {GameDto} from "@/components/object/GameDto";
 import InputCity from "@/components/InputCity";
 import {QueryLocationResult} from "@/components/object/QueryLocationResult";
 import {SliderMax} from "@/components/ui/sliderMax";
+import {useAuth} from "@/lib/auth-context";
 
 // Mock data for pinball machine listings
 
@@ -50,6 +51,7 @@ function FilterSidebar({
     const years = searchParams.get('years') ? searchParams.get('years')?.split(',').map(Number) : [];
 
     const {t} = useLanguage()
+    const {user} = useAuth()
     const [filterLoaded, setfilterLoaded] = useState(false)
     const [currency, setCurrency] = useState('EUR')
     const [priceRange, setPriceRange] = useState([200, 50000])
@@ -79,6 +81,15 @@ function FilterSidebar({
 
     }, [filterLoaded]);
 
+    useEffect(() => {
+        if (!user) return;
+
+        setDistanceRange(user?.settings.defaultSearchDistance || 50);
+        setSelectedLocation(user?.settings.defaultSearchLocation || null);
+        setCurrency(user?.settings.currency || 'EUR');
+
+
+    }, [user]);
 
     useEffect(() => {
         const debouncedOnChange = debounce((filters) => {
@@ -104,7 +115,7 @@ function FilterSidebar({
 
     const conditions = [
         {key: 'excellent', name: "sell.conditions.excellent", count: 'x'},
-        {key: 'veryGood', name: "sell.conditions.veryGood", count: 'x'},
+        {key: 'very-good', name: "sell.conditions.veryGood", count: 'x'},
         {key: 'good', name: "sell.conditions.good", count: 'x'},
         {key: 'fair', name: "sell.conditions.fair", count: 'x'},
         {key: 'project', name: "sell.conditions.project", count: 'x'},
@@ -121,7 +132,8 @@ function FilterSidebar({
 
     const resetFilters = () => {
         setPriceRange([200, 50000]);
-        setDistanceRange(50);
+        setDistanceRange(user?.settings.defaultSearchDistance || 50);
+        setSelectedLocation(user?.settings.defaultSearchLocation || null);
         setSelectedManufacturers([]);
         setSelectedFeatures([]);
         setSelectedDecades([]);
@@ -198,8 +210,7 @@ function FilterSidebar({
                 {/* Distance Filter */}
                 <div className="space-y-4">
                     <h4 className="font-medium text-foreground">{t("listings.distance")}</h4>
-                    <InputCity
-                        onSelected={(location: QueryLocationResult | null) => setSelectedLocation(location)}></InputCity>
+                    <InputCity onSelected={(location: QueryLocationResult | null) => setSelectedLocation(location)} presetLocation={selectedLocation}/>
 
                     { selectedLocation && (<div className={`space-y-3 `}>
                         <SliderMax

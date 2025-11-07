@@ -46,24 +46,24 @@ export default function Navbar() {
 
 // // Refresh user data every 10 seconds if logged in
     const pathname = usePathname();
-    useEffect(() => {
-        if (!user || !token || pathname === '/settings') return;
-
-        const fetchUserData = async () => {
-
-            try {
-                await apiGet('/api/user/me').then((userData) => {
-                    refreshUser(userData)
-                });
-            } catch (error) {
-
-            }
-        };
-
-        const interval = setInterval(fetchUserData, 10000);
-
-        return () => clearInterval(interval);
-    }, [user, token, pathname]);
+    // useEffect(() => {
+    //     if (!user || !token || pathname === '/settings') return;
+    //
+    //     const fetchUserData = async () => {
+    //
+    //         try {
+    //             await apiGet('/api/user/me').then((userData) => {
+    //                 refreshUser(userData)
+    //             });
+    //         } catch (error) {
+    //
+    //         }
+    //     };
+    //
+    //     const interval = setInterval(fetchUserData, 10000);
+    //
+    //     return () => clearInterval(interval);
+    // }, [user, token, pathname]);
 
 
     useEffect(() => {

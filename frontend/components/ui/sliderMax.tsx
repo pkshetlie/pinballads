@@ -15,7 +15,7 @@ function SliderMax({
                      onValueChange,
                      ...props
                    }: React.ComponentProps<typeof SliderPrimitive.Root> & {
-  onValueChange?: (value: number) => void; // Pour capturer le changement de valeur
+  onValueChange?: (value: number) => void;
 }) {
   const handleValueChange = (value: number[]) => {
     // Appeler une fonction callback avec uniquement la valeur maximale

@@ -160,6 +160,7 @@ export default function InputCity({onSelected, presetLocation}: InputCityProps) 
                     onClick={() => {
                         setSelectedLocation(null)
                         setLocationQuery("")
+                        setLocationResults([])
                     }}
                     className="h-auto p-1 cursor-pointer"
                 >
