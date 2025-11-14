@@ -74,7 +74,7 @@ class RegisterController extends AbstractController
             ->to('pierrick.pobelle@gmail.com')
             ->subject('New user registration')
             ->html('A new user has registered: '.$content['username'].' <'.$content['email'].'>');
-        $mailer->send( new Message());
+        $mailer->send($email);
 
         $content['password'] = '********';
 
