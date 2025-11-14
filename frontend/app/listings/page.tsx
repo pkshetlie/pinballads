@@ -84,11 +84,9 @@ function FilterSidebar({
     useEffect(() => {
         if (!user) return;
 
-        setDistanceRange(user?.settings.defaultSearchDistance || 50);
-        setSelectedLocation(user?.settings.defaultSearchLocation || null);
-        setCurrency(user?.settings.currency || 'EUR');
-
-
+        setDistanceRange(user?.settings?.defaultSearchDistance || 50);
+        setSelectedLocation(user?.settings?.defaultSearchLocation || null);
+        setCurrency(user?.settings?.currency || 'EUR');
     }, [user]);
 
     useEffect(() => {
