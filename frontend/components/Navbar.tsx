@@ -194,8 +194,7 @@ export default function Navbar() {
                                 )}
                             </div>
                             <div className="hidden sm:flex items-center gap-2">
-                                {/*<LanguageToggleWrapper/>*/}
-                                {/*<ThemeToggle/>*/}
+
                                 {user ?
                                     <>
                                         <Button onClick={
@@ -204,7 +203,10 @@ export default function Navbar() {
                                             <MessageCircle />
                                             {user.newMessages > 0 && (<BellRing className={'absolute -top-1 -right-1 text-destructive'}>{user.newMessages}</BellRing>)}
                                         </Button>
-                                    </> : <></>}
+                                    </> : <>
+                                        <LanguageToggleWrapper/>
+                                        <ThemeToggle/>
+                                    </>}
                             </div>
 
                         </nav>
