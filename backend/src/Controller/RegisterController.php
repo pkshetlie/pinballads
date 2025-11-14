@@ -9,9 +9,13 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\DtoService;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Message;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -25,7 +29,7 @@ class RegisterController extends AbstractController
     }
 
     #[Route('/api/register', methods: ['POST'])]
-    public function index(Request $request, UserRepository $userRepository, TranslatorInterface $translator): Response
+    public function index(Request $request, UserRepository $userRepository, TranslatorInterface $translator, MailerInterface $mailer): Response
     {
         // Récupérer le contenu JSON de la requête
         $content = json_decode($request->getContent(), true);
@@ -63,6 +67,14 @@ class RegisterController extends AbstractController
             ->setOwner($user);
         $this->entityManager->persist($defaultPinballCollection);
         $this->entityManager->flush();
+        unset($content['password']);
+
+        $email = new TemplatedEmail()
+            ->from(new Address('contact@crazy-pinball.com', 'Crazy-Pinball'))
+            ->to('pierrick.pobelle@gmail.com')
+            ->subject('New user registration')
+            ->html('A new user has registered: '.$content['username'].' <'.$content['email'].'>');
+        $mailer->send( new Message());
 
         $content['password'] = '********';
 
