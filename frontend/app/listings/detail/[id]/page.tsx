@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import Navbar from "@/components/Navbar";
-import { useSearchParams } from "next/navigation"
+import {useParams, useSearchParams} from "next/navigation"
 import {useEffect, useState} from "react";
 import {useApi} from "@/lib/api";
 import {PinballDto} from "@/components/object/PinballDto";
@@ -34,10 +34,11 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import {useAuth} from "@/lib/auth-context";
 import LoginOrRefreshButton from "@/components/LoginOrRefreshButton";
+import {buildNextMetadata} from "@/lib/buildMeta";
 
 export default function DetailPage() {
-  const searchParams = useSearchParams()
-  const id = searchParams.get("id")
+  const params = useParams();
+  const id = params.id
   const [pinballMachine, setPinballMachine] = useState<PinballDto | null>(null)
   const { apiGet, apiPost } = useApi();
   const {t} = useLanguage()

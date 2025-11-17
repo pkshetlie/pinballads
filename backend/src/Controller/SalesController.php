@@ -113,7 +113,7 @@ final class SalesController extends AbstractController
         $pinballs = $qb->setMaxResults($limit)
             ->setFirstResult($page * $limit)->getQuery()->getResult();
 
-        if (!empty($requestData->location) && !empty($requestData->location->lon) && !empty($requestData->location->lat) && !empty($requestData->distance)) {
+        if ($pinballs && !empty($requestData->location) && !empty($requestData->location->lon) && !empty($requestData->location->lat) && !empty($requestData->distance)) {
             $pinballDistanceService->setDistances($pinballs, $requestData->location->lat, $requestData->location->lon);
         }
 

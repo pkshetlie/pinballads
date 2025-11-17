@@ -8,7 +8,7 @@ import {Label} from "@/components/ui/label"
 import {Textarea} from "@/components/ui/textarea"
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
 import {Checkbox} from "@/components/ui/checkbox"
-import {Settings, Upload} from "lucide-react"
+import {Save, Settings, Upload} from "lucide-react"
 import PhotoUploader from "@/components/PhotoUploader"
 import {useLanguage} from "@/lib/language-context"
 import {PinballDto} from "@/components/object/PinballDto";
@@ -17,6 +17,7 @@ import {DefaultFeatures, FeaturesType} from '@/components/object/Features';
 import SearchDropdown from "@/components/SearchDropdown";
 import {UploadedImageResult} from "@/components/object/UploadedImageResult";
 import {GameDto} from "@/components/object/GameDto";
+import {MaintenanceEntry} from "@/components/object/MaintenanceDto";
 
 type MachineFormProps = {
     initialData?: PinballDto;
@@ -34,13 +35,8 @@ export type MachineFormData = {
     condition: string;
     startDate?: string;
     images: UploadedImageResult[];
+    maintenanceLogs: MaintenanceEntry[];
 }
-
-type UploadedImage = {
-    url: string; // URL Blob de l'image
-    title: string; // Titre de l'image
-    uid: string; // Titre de l'image
-};
 
 type AnyObj = Record<string, string>;
 
@@ -154,7 +150,7 @@ export default function MachineForm({initialData, onSubmit, buttonText}: Machine
     const [description, setDescription] = useState(initialData?.description || "");
     const [condition, setCondition] = useState(initialData?.condition || "");
     const [startDate, setStartDate] = useState(initialData?.owningDate || "");
-    const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>(initialData?.images||[]);
+    const [uploadedImages, setUploadedImages] = useState<UploadedImageResult[]>(initialData?.images||[]);
 
     const additionalOptionsData = DefaultFeatures;
 
@@ -178,14 +174,15 @@ export default function MachineForm({initialData, onSubmit, buttonText}: Machine
         }));
     };
 
-    const convertBlobUrlsToFiles = async (blobUrls: UploadedImage[]): Promise<UploadedImageResult[]> => {
+    const convertBlobUrlsToFiles = async (blobUrls: UploadedImageResult[]): Promise<UploadedImageResult[]> => {
         const responses = blobUrls.map(async (blobUrl) => {
             if (blobUrl.uid !== 'none') return (
                 {
                     file: new File([], 'empty.jpg', {type: 'image/jpeg'}),
                     url: blobUrl.url,
                     title: blobUrl.title,
-                    uid: blobUrl.uid
+                    uid: blobUrl.uid,
+                    rotation: 0
                 }
             )
             const MAX_SIZE = 2 * 1024 * 1024; // 2MB in bytes
@@ -196,7 +193,8 @@ export default function MachineForm({initialData, onSubmit, buttonText}: Machine
                 file: new File([blob], fileName, {type: blob.type}),
                 url: blobUrl.url,
                 title: blobUrl.title,
-                uid: blobUrl.uid
+                uid: blobUrl.uid,
+                rotation: 0
             };
         });
 
@@ -220,7 +218,7 @@ export default function MachineForm({initialData, onSubmit, buttonText}: Machine
         })
     }
 
-    const handleSelectGame = (game: GameDto) => {
+    const handleSelectGame = (game: GameDto|null) => {
         setQuery(game.name);
         setOpdbId(game.opdb_id);
 
@@ -395,9 +393,11 @@ export default function MachineForm({initialData, onSubmit, buttonText}: Machine
                     ))}
                 </CardContent>
             </Card>
-            <div className="flex justify-end space-x-4">
+            <div className="fixed bottom-6 right-6">
                 <Button type="submit"
-                        className="bg-primary hover:bg-primary/90 cursor-pointer">{buttonText}</Button>
+                        className="bg-primary hover:bg-primary/90 cursor-pointer rounded-full w-20 h-20 flex items-center justify-center">
+                    <Save className={'size-9'}/>
+                </Button>
             </div>
         </form>
     )

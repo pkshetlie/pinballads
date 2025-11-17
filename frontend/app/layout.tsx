@@ -6,7 +6,6 @@ import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "@/components/theme-provider"
 import { LanguageProvider } from "@/lib/language-context"
 import {Suspense} from "react"
-import * as Sentry from "@sentry/react";
 
 import "./globals.css"
 import { AuthProvider } from '@/lib/auth-context';
@@ -27,7 +26,6 @@ export default function RootLayout({
       <html lang="en" suppressHydrationWarning>
       <head>
           <link rel="icon" href="/images/logo.ico"/>
-          <title>Crazy Pinball.com</title>
       </head>
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
 

@@ -27,8 +27,9 @@ class PinballDto implements DtoInterface
     public ?string $distance = null;
     public ?string $currency = 'EUR';
     public ?int $rating = 5;
+    public array $maintenanceLogs = [];
 
-    public function __construct(Pinball $pinball)
+    public function __construct(Pinball $pinball, bool $displayMaintenanceLogs = false)
     {
         $this->id = $pinball->getId();
         $this->name = $pinball->getName();
@@ -78,5 +79,11 @@ class PinballDto implements DtoInterface
         // Localisation
         $this->location = $currentSale?->getLocation() ?? [];
         $this->distance = $pinball?->getDistance();
+
+        if($displayMaintenanceLogs) {
+            foreach( $pinball->getMaintenanceLogs() as $maintenanceLog){
+                $this->maintenanceLogs[] = new MaintenanceLogDto($maintenanceLog);
+            }
+        }
     }
 }

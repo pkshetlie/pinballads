@@ -3,20 +3,15 @@ import {Upload, X, Loader2} from "lucide-react";
 import {useToast} from "@/hooks/use-toast";
 import {useLanguage} from "@/lib/language-context";
 import {Button} from "@/components/ui/button";
+import {UploadedImageResult} from "@/components/object/UploadedImageResult";
 
-type UploadedImage = {
-    url: string; // URL Blob de l'image
-    title: string; // Titre de l'image
-    uid: string;
-    rotation: number;
-};
 
 export default function PhotoUploader({
                                           uploadedImages,
                                           setUploadedImages,
                                       }: {
-    uploadedImages: UploadedImage[];
-    setUploadedImages: React.Dispatch<React.SetStateAction<UploadedImage[]>>;
+    uploadedImages: UploadedImageResult[];
+    setUploadedImages: React.Dispatch<React.SetStateAction<UploadedImageResult[]>>;
 }) {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [isDragging, setIsDragging] = useState(false);
@@ -28,7 +23,7 @@ export default function PhotoUploader({
 
     const handleFiles = (files: FileList | null) => {
         if (!files) return;
-        const newImages: UploadedImage[] = [];
+        const newImages: UploadedImageResult[] = [];
 
         Array.from(files).forEach((file, index) => {
             if (file.type.startsWith("image/")) {
@@ -42,6 +37,7 @@ export default function PhotoUploader({
                 // }
 
                 newImages.push({
+                    file: file,
                     url: URL.createObjectURL(file),
                     title: `Photo ${uploadedImages.length + index + 1}`, // Titre par défaut
                     uid: "none",

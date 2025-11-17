@@ -24,7 +24,7 @@ class UserController extends AbstractController
     #[Route('/api/settings', methods: ['POST'])]
     public function settingsSave(Request $request, UserRepository $userRepository, EntityManagerInterface $entityManager, TranslatorInterface $translator): Response
     {
-        $requ = json_decode($request->getContent(), true);
+        $content = json_decode($request->getContent(), true);
 
         $settings = $this->getUser()->getSettings();
 
@@ -32,12 +32,12 @@ class UserController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        if ($requ['user']['email'] ?? null) {
+        if ($content['user']['email'] ?? null) {
             $emailUser = $userRepository->createQueryBuilder('u')
                 ->where('u.id != :id')
                 ->andWhere('u.email = :email')
                 ->setParameter('id', $user->getId())
-                ->setParameter('email', $requ['user']['email'])
+                ->setParameter('email', $content['user']['email'])
                 ->getQuery()->getOneOrNullResult();
 
             if ($emailUser) {
@@ -45,9 +45,9 @@ class UserController extends AbstractController
             }
         }
 
-        $user->setEmail($requ['user']['email']);
+        $user->setEmail($content['user']['email']);
 
-        if ($user->getDisplayName() != $requ['user']['displayName'] && $requ['user']['displayName'] ?? null) {
+        if ($user->getDisplayName() != $content['user']['displayName'] && $content['user']['displayName'] ?? null) {
             $lastChange = isset($settings['lastUsernameChange'])
                 ? new \DateTimeImmutable($settings['lastUsernameChange'])
                 : null;
@@ -60,14 +60,14 @@ class UserController extends AbstractController
             }
 
             if ($canChange) {
-                $user->setDisplayName($requ['user']['displayName']);
+                $user->setDisplayName($content['user']['displayName']);
                 $settings['lastUsernameChange'] = (new \DateTimeImmutable('now', new \DateTimeZone('UTC')))->format(DATE_ATOM);
             } else {
                 return $this->json(['error' => $translator->trans('You can only change your username every 30 days')], Response::HTTP_BAD_REQUEST);
             }
         }
 
-        $user->setSettings([$settings, ...$requ['settings']]);
+        $user->setSettings([$settings, ...$content['settings']]);
         $entityManager->flush();
 
         return $this->json(new PrivateUserDto($user));

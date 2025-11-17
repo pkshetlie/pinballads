@@ -11,6 +11,7 @@ import {collection} from "./collection";
 import {toasts} from "./toasts";
 import {privacyPolicy} from "@/translations/privacy_policy";
 import {conversation} from "@/translations/conversation";
+import {maintenance} from "@/translations/maintenance";
 
 export const translations = {
     'en': {
@@ -33,6 +34,7 @@ export const translations = {
         ...privacyPolicy.en,
         ...details.en,
         ...conversation.en,
+        ...maintenance.en,
 
         // Machine details
         viewDetails: "View Details",
@@ -41,6 +43,7 @@ export const translations = {
         removeFromWishlist: "Remove from Wishlist",
         loading: "Loading...",
         error: "Error",
+        add: "Add",
         save: "Save",
         viewAll: "View All",
         update: 'Update',
@@ -72,6 +75,7 @@ export const translations = {
         ...privacyPolicy.fr,
         ...details.fr,
         ...conversation.fr,
+        ...maintenance.fr,
         // Machine details
         viewDetails: "Voir Détails",
         contactSeller: "Contacter Vendeur",
@@ -80,6 +84,7 @@ export const translations = {
         // Common
         loading: "Chargement...",
         error: "Erreur",
+        add: "Ajouter",
         save: "Sauvegarder",
         viewAll: "Voir tout",
         cancel: "Annuler",

@@ -2,10 +2,13 @@
 
 namespace App\Controller;
 
+use App\Dto\PinballDto;
 use App\Entity\Pinball;
 use App\Entity\PinballCollection;
 use App\Entity\PinballOwner;
 use App\Entity\PinballSale;
+use App\Entity\MaintenanceLog;
+use App\Enum\MaintenanceType;
 use App\Service\DtoService;
 use Doctrine\ORM\EntityManagerInterface;
 use Jsor\Doctrine\PostGIS\Functions\Geography;
@@ -71,6 +74,22 @@ final class MachineController extends AbstractController
                 )
         );
 
+        if (!empty($data->maintenanceLogs)) {
+            foreach ($data->maintenanceLogs as $log) {
+                $maintenanceLog = new MaintenanceLog();
+                $maintenanceLog
+                    ->setPinball($pinball)
+                    ->setDoneAt(\DateTimeImmutable::createFromFormat('Y-m-d', $log->date))
+                    ->setType(MaintenanceType::from(strtolower($log->type)))
+                    ->setDescription($log->description)
+                    ->setNotes($log->notes)
+                ->setCost($log->cost)
+                ->setParts($log->parts);
+                $entityManager->persist($maintenanceLog);
+            }
+        }
+
+
         $entityManager->persist($pinball);
         $entityManager->flush();
 
@@ -131,10 +150,57 @@ final class MachineController extends AbstractController
             );
         }
 
+        if (!empty($data->maintenanceLogs)) {
+            foreach ($data->maintenanceLogs as $log) {
+                $existingLog = null;
+
+                // Check if maintenance log with same ID exists
+                foreach ($pinball->getMaintenanceLogs() as $currentLog) {
+                    if (isset($log->id) && $currentLog->getId() == $log->id) {
+                        $existingLog = $currentLog;
+                        break;
+                    }
+                }
+
+                if ($existingLog) {
+                    // Update existing log
+                    $existingLog
+                        ->setDoneAt(\DateTimeImmutable::createFromFormat('Y-m-d', $log->date))
+                        ->setType(MaintenanceType::from($log->type))
+                        ->setDescription($log->description)
+                        ->setNotes($log->notes);
+                } else {
+                    // Create new log
+                    $maintenanceLog = new MaintenanceLog();
+                    $maintenanceLog
+                        ->setPinball($pinball)
+                        ->setDoneAt(\DateTimeImmutable::createFromFormat('Y-m-d', $log->date))
+                        ->setType(MaintenanceType::from($log->type))
+                        ->setDescription($log->description)
+                        ->setNotes($log->notes);
+                    $entityManager->persist($maintenanceLog);
+                }
+            }
+
+            // Remove logs that were not sent
+            foreach ($pinball->getMaintenanceLogs() as $existingLog) {
+                $found = false;
+                foreach ($data->maintenanceLogs as $log) {
+                    if (isset($log->id) && $existingLog->getId() == $log->id) {
+                        $found = true;
+                        break;
+                    }
+                }
+                if (!$found) {
+                    $entityManager->remove($existingLog);
+                }
+            }
+        }
+
         $entityManager->persist($pinball);
         $entityManager->flush();
 
-        return $this->json($pinballService->toDto($pinball));
+        return $this->json(new PinballDto($pinball, true));
     }
 
     #[Route('/api/machine/{id}/sell', name: 'api_collection_machine_sell', methods: ['POST'])]
@@ -180,7 +246,7 @@ final class MachineController extends AbstractController
 
         $pinball->addPinballSale($pinballSale);
 
-        return $this->json($pinballService->toDto($pinball));
+        return $this->json(new PinballDto($pinball, true));
     }
 
     #[Route('/api/machine/{id}/sell', name: 'api_collection_machine_sell_delete', methods: ['DELETE'])]
@@ -210,7 +276,7 @@ final class MachineController extends AbstractController
 
         $entityManager->flush();
 
-        return $this->json($dtoService->toDto($pinball));
+        return $this->json(new PinballDto($pinball, $this->getUser() === $pinball->getCurrentOwner()));
     }
 
     #[Route('/api/machine/{id}/sell', name: 'api_collection_machine_update_sell', methods: ['PUT'])]
@@ -252,11 +318,6 @@ final class MachineController extends AbstractController
             $pinballOnSale->setFinalPrice($pinballOnSale->getStartPrice());
         }
 
-        $point = new Geography(
-            'POINT(4.3217677 46.0991652)',
-            4326
-        );
-
         $pinballSale = new PinballSale()
             ->setPinball($pinball)
             ->setCity($data->location->city)
@@ -269,7 +330,7 @@ final class MachineController extends AbstractController
 
         $pinball->addPinballSale($pinballSale);
 
-        return $this->json($pinballService->toDto($pinball));
+        return $this->json(new PinballDto($pinball, true));
     }
 
 
@@ -278,7 +339,7 @@ final class MachineController extends AbstractController
         Pinball $pinball,
         DtoService $pinballService,
     ): Response {
-        return $this->json($pinballService->toDto($pinball));
+        return $this->json(new PinballDto($pinball, $this->getUser() === $pinball->getCurrentOwner()));
     }
 
     #[Route('/api/machine/{id}/images', name: 'api_collection_machine_image', methods: ['POST'])]

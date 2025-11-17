@@ -32,6 +32,7 @@ import {Manufacturers} from "@/components/object/Manufacturer";
 import {LocationResult} from "@/components/object/LocationResult";
 import InputCity from "@/components/InputCity";
 import {QueryLocationResult} from "@/components/object/QueryLocationResult";
+import {MaintenanceEntry} from "@/components/object/MaintenanceDto";
 
 export default function MyCollectionPage() {
     const [collection, setCollection] = useState<PinballDto[]>([])
@@ -52,7 +53,6 @@ export default function MyCollectionPage() {
     const [locationResults, setLocationResults] = useState<LocationResult[]>([])
     const [selectedLocation, setSelectedLocation] = useState<QueryLocationResult | null>(null)
     const [searchingLocation, setSearchingLocation] = useState(false)
-
     const handleEdit = (machine: any) => {
         window.location.href = `/machine/${machine.id}`
     }
@@ -171,6 +171,7 @@ export default function MyCollectionPage() {
             </div>
         )
     }
+
 
     return (
         <div className="min-h-screen bg-background">

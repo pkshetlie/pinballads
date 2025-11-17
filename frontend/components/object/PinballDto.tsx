@@ -1,5 +1,7 @@
 import {FeaturesType} from "@/components/object/Features";
 import {PublicUserDto} from "@/components/object/PublicUserDto";
+import {MaintenanceEntry} from "@/components/object/MaintenanceDto";
+import {UploadedImageResult} from "@/components/object/UploadedImageResult";
 
 export type PinballDto = {
     rating: number;
@@ -14,12 +16,13 @@ export type PinballDto = {
     features: FeaturesType;
     description: string | null;
     condition: string;
-    images: { title: string, url: string, uid: string }[];
+    images: UploadedImageResult[];
     year: string;
     manufacturer: string;
     owningDate: string;
     currency: any;
     currentOwner?: PublicUserDto | null;
+    maintenanceLogs: MaintenanceEntry[];
     location: {
         city: string;
         lat: number;

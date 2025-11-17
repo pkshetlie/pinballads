@@ -33,6 +33,11 @@ class PinballDistanceService
 
     public function setDistance(Pinball $pinball, float $lat2, float $lon2): void
     {
+        if(!$pinball->getPinballCurrentSales()){
+            $pinball->setDistance(null);
+            return;
+        }
+
         $earthRadius = 6371000; // en mètres
         $coords = $this->extractCoordinates($pinball->getPinballCurrentSales()?->getGeography());
 
@@ -60,6 +65,7 @@ class PinballDistanceService
 
     public function setDistances(array $pinballs, float $lat2, float $lon2): void
     {
+        /** @var Pinball $pinball */
         foreach ($pinballs as $pinball) {
             $this->setDistance($pinball, $lat2, $lon2);
         }

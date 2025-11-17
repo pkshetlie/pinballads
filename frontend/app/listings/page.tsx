@@ -56,7 +56,7 @@ function FilterSidebar({
     const [currency, setCurrency] = useState('EUR')
     const [priceRange, setPriceRange] = useState([200, 50000])
     const [finalPriceRange, setFinalPriceRange] = useState([200, 50000])
-    const [distanceRange, setDistanceRange] = useState(50)
+    const [distanceRange, setDistanceRange] = useState([0,50])
     const [manufacturerOpen, setManufacturerOpen] = useState(true)
     const [yearOpen, setYearOpen] = useState(true)
     const [featuresOpen, setFeaturesOpen] = useState(true)
@@ -609,7 +609,7 @@ export default function ListingsPage() {
                                                 <div className="flex items-center justify-between w-full">
                                             <span
                                                 className="text-xl font-bold text-primary">{Currencies[machine.currency as keyof typeof Currencies]}{machine.price.toLocaleString()}</span>
-                                                    <Link href={`/listings/detail?id=${machine.id}`}>
+                                                    <Link href={`/listings/detail/${machine.id}`}>
 
                                                         <Button size="sm" className={'cursor-pointer'}
                                                                 variant="outline">

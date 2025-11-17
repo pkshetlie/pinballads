@@ -20,6 +20,7 @@ class PrivateUserDto implements DtoInterface
     public float $rating;
     public SettingsDto $settings;
     public bool $isVerified;
+    public bool $isAdmin;
     public int $newMessages;
 
     public function __construct(User $entity)
@@ -35,6 +36,7 @@ class PrivateUserDto implements DtoInterface
         $this->location = 'Middle of NoWhere';
         $this->reviewCount = 0;
         $this->rating = 5;
+        $this->isAdmin = in_array('ROLE_ADMIN', $entity->getRoles());
         $this->isVerified = false;
         $this->newMessages = $entity->getMessagesAsRecipient()->filter(function ($message) { return $message->isRead() === false;})->count();
         $this->settings = new SettingsDto($entity);

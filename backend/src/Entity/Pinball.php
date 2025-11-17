@@ -70,8 +70,14 @@ class Pinball implements DtoableInterface
     /**
      * @var Collection<int, Conversation>
      */
-    #[ORM\OneToMany(targetEntity: Conversation::class, mappedBy: 'Pinball', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Conversation::class, mappedBy: 'pinball', orphanRemoval: true)]
     private Collection $conversations;
+
+    /**
+     * @var Collection<int, MaintenanceLog>
+     */
+    #[ORM\OneToMany(targetEntity: MaintenanceLog::class, mappedBy: 'pinball', orphanRemoval: true)]
+    private Collection $maintenanceLogs;
 
     public function __construct()
     {
@@ -79,6 +85,7 @@ class Pinball implements DtoableInterface
         $this->pinballSales = new ArrayCollection();
         $this->pinballCollections = new ArrayCollection();
         $this->conversations = new ArrayCollection();
+        $this->maintenanceLogs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -325,6 +332,36 @@ class Pinball implements DtoableInterface
             // set the owning side to null (unless already changed)
             if ($conversation->getPinball() === $this) {
                 $conversation->setPinball(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, MaintenanceLog>
+     */
+    public function getMaintenanceLogs(): Collection
+    {
+        return $this->maintenanceLogs;
+    }
+
+    public function addMaintenanceLog(MaintenanceLog $maintenanceLog): static
+    {
+        if (!$this->maintenanceLogs->contains($maintenanceLog)) {
+            $this->maintenanceLogs->add($maintenanceLog);
+            $maintenanceLog->setPinball($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMaintenanceLog(MaintenanceLog $maintenanceLog): static
+    {
+        if ($this->maintenanceLogs->removeElement($maintenanceLog)) {
+            // set the owning side to null (unless already changed)
+            if ($maintenanceLog->getPinball() === $this) {
+                $maintenanceLog->setPinball(null);
             }
         }
 
