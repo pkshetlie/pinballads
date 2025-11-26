@@ -3,15 +3,14 @@
 namespace App\Controller;
 
 use App\Dto\PinballDto;
+use App\Entity\MaintenanceLog;
 use App\Entity\Pinball;
 use App\Entity\PinballCollection;
 use App\Entity\PinballOwner;
 use App\Entity\PinballSale;
-use App\Entity\MaintenanceLog;
 use App\Enum\MaintenanceType;
 use App\Service\DtoService;
 use Doctrine\ORM\EntityManagerInterface;
-use Jsor\Doctrine\PostGIS\Functions\Geography;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -83,8 +82,8 @@ final class MachineController extends AbstractController
                     ->setType(MaintenanceType::from(strtolower($log->type)))
                     ->setDescription($log->description)
                     ->setNotes($log->notes)
-                ->setCost($log->cost)
-                ->setParts($log->parts);
+                    ->setCost($log->cost)
+                    ->setParts($log->parts);
                 $entityManager->persist($maintenanceLog);
             }
         }
@@ -106,9 +105,13 @@ final class MachineController extends AbstractController
         $data = json_decode($request->getContent(), false);
 
         $features = [];
-        foreach ($data->features as $feature) {
-            foreach ($feature as $key => $value) {
-                $features[$key] = $value;
+        foreach ($data->features as $fkey => $feature) {
+            if (is_array($feature)) {
+                foreach ($feature as $key => $value) {
+                    $features[$key] = $value;
+                }
+            } else {
+                $features[$fkey] = $feature;
             }
         }
 
@@ -168,6 +171,8 @@ final class MachineController extends AbstractController
                         ->setDoneAt(\DateTimeImmutable::createFromFormat('Y-m-d', $log->date))
                         ->setType(MaintenanceType::from($log->type))
                         ->setDescription($log->description)
+                        ->setCost($log->cost)
+                        ->setParts(is_array($log->parts) ? implode(', ', $log->parts) : $log->parts)
                         ->setNotes($log->notes);
                 } else {
                     // Create new log
@@ -176,9 +181,12 @@ final class MachineController extends AbstractController
                         ->setPinball($pinball)
                         ->setDoneAt(\DateTimeImmutable::createFromFormat('Y-m-d', $log->date))
                         ->setType(MaintenanceType::from($log->type))
+                        ->setCost($log->cost)
+                        ->setParts(is_array($log->parts) ? implode(', ', $log->parts) : $log->parts)
                         ->setDescription($log->description)
                         ->setNotes($log->notes);
                     $entityManager->persist($maintenanceLog);
+                    $pinball->addMaintenanceLog($maintenanceLog);
                 }
             }
 
@@ -186,7 +194,7 @@ final class MachineController extends AbstractController
             foreach ($pinball->getMaintenanceLogs() as $existingLog) {
                 $found = false;
                 foreach ($data->maintenanceLogs as $log) {
-                    if (isset($log->id) && $existingLog->getId() == $log->id) {
+                    if (!isset($log->id) || $existingLog->getId() == $log->id) {
                         $found = true;
                         break;
                     }
@@ -194,6 +202,10 @@ final class MachineController extends AbstractController
                 if (!$found) {
                     $entityManager->remove($existingLog);
                 }
+            }
+        } else {
+            foreach($pinball->getMaintenanceLogs() as $log) {
+                $entityManager->remove($log);
             }
         }
 
@@ -270,7 +282,7 @@ final class MachineController extends AbstractController
             return $this->json([], Response::HTTP_NOT_FOUND);
         }
 
-        foreach($activeSales AS $activeSale) {
+        foreach ($activeSales as $activeSale) {
             $activeSale->setFinalPrice($activeSale->getStartPrice());
         }
 
@@ -439,7 +451,7 @@ final class MachineController extends AbstractController
 
     }
 
-    #[Route('/api/machine/{id}', name: 'api_collection_machine_delete', methods: ['DELETE'])]
+    #[Route('/api/machines/{id}', name: 'api_collection_machine_delete', methods: ['DELETE'])]
     public function delete(
         Pinball $pinball,
         EntityManagerInterface $entityManager,

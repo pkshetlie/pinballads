@@ -34,7 +34,6 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import {useAuth} from "@/lib/auth-context";
 import LoginOrRefreshButton from "@/components/LoginOrRefreshButton";
-import {buildNextMetadata} from "@/lib/buildMeta";
 
 export default function DetailPage() {
   const params = useParams();

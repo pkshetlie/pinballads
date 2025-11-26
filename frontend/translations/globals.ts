@@ -12,6 +12,7 @@ import {toasts} from "./toasts";
 import {privacyPolicy} from "@/translations/privacy_policy";
 import {conversation} from "@/translations/conversation";
 import {maintenance} from "@/translations/maintenance";
+import {features} from "@/translations/features";
 
 export const translations = {
     'en': {
@@ -35,6 +36,7 @@ export const translations = {
         ...details.en,
         ...conversation.en,
         ...maintenance.en,
+        ...features.en,
 
         // Machine details
         viewDetails: "View Details",
@@ -76,6 +78,7 @@ export const translations = {
         ...details.fr,
         ...conversation.fr,
         ...maintenance.fr,
+        ...features.fr,
         // Machine details
         viewDetails: "Voir Détails",
         contactSeller: "Contacter Vendeur",

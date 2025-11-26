@@ -12,7 +12,7 @@ class MaintenanceLogDto
     public ?string $description = null;
     public ?string $cost = null;
     public ?string $notes = null;
-    public ?string $parts = null;
+    public ?array $parts = [];
     // public ?int $technician = null;
 
     /**
@@ -26,6 +26,6 @@ class MaintenanceLogDto
         $this->description = $maintenanceLog->getDescription();
         $this->cost = $maintenanceLog->getCost();
         $this->notes = $maintenanceLog->getNotes();
-        $this->parts = $maintenanceLog->getParts();
+        $this->parts = array_map(function($r) {return trim($r);}, explode(',', $maintenanceLog->getParts()));
     }
 }

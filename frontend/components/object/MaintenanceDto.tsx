@@ -11,9 +11,9 @@ export interface MaintenanceEntry {
     type: MaintenanceType
     date: string
     description: string
-    cost?: number
-    notes?: string
-    parts?: string[]
+    cost: number | null
+    notes: string | null
+    parts: string[] | null
     // technician?: string
 }
 
@@ -27,7 +27,7 @@ export interface CreateMaintenanceEntryDto {
     date: string
     type: MaintenanceType
     description: string
-    cost?: number
-    notes?: string
-    parts?: string[]
+    cost: number | null
+    notes: string | null
+    parts: string[] | null
 }

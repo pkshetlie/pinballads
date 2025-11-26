@@ -1,9 +1,10 @@
 <?php
+
 namespace App\Dto;
 
-    use App\Entity\Pinball;
-    use App\Entity\PinballOwner;
-    use App\Interface\DtoInterface;
+use App\Entity\Pinball;
+use App\Entity\PinballOwner;
+use App\Interface\DtoInterface;
 
 class PinballDto implements DtoInterface
 {
@@ -80,8 +81,8 @@ class PinballDto implements DtoInterface
         $this->location = $currentSale?->getLocation() ?? [];
         $this->distance = $pinball?->getDistance();
 
-        if($displayMaintenanceLogs) {
-            foreach( $pinball->getMaintenanceLogs() as $maintenanceLog){
+        if ($displayMaintenanceLogs) {
+            foreach ($pinball->getMaintenanceLogs() as $maintenanceLog) {
                 $this->maintenanceLogs[] = new MaintenanceLogDto($maintenanceLog);
             }
         }

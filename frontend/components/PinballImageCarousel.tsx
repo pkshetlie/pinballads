@@ -38,7 +38,8 @@ export function PinballImageCarousel({
                 <CarouselContent>
                     {limitedImages.map((image, index) => (
                         <CarouselItem key={index}>
-                            <div className="aspect-[4/3] overflow-hidden rounded-lg relative group">
+                            <div
+                                className="aspect-[3/4] overflow-hidden rounded-lg relative group h-full">
                                 <img
                                     src={`${image.url}` || `${config.CDN_BASE_URL}/placeholder.png`}
                                     alt={`${image.title}`}
@@ -58,7 +59,8 @@ export function PinballImageCarousel({
                                     className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center cursor-zoom-in"
                                     onClick={() => handleImageClick(index)}
                                 >
-                                    <ZoomIn className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                    <ZoomIn
+                                        className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300"/>
                                 </div>
                             </div>
                         </CarouselItem>

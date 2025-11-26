@@ -79,7 +79,12 @@ export const maintenance = {
       additionalNotes: 'Additional notes',
       additionalNotesPlaceholder: 'Additional details...',
       history: "Maintenance history",
-      suggestions: 'Suggestions'
+      suggestions: 'Suggestions',
+      maintenanceLog: 'Maintenance log',
+      quickAdd: 'Add maintenance',
+      quickAddTitle: 'Add maintenance entry',
+      quickAddDescription: 'You worked on the flipper? Tell the world about it with a maintenance message.',
+      count: 'Maintenance entries',
     },
   },
   fr: {
@@ -162,8 +167,12 @@ export const maintenance = {
       additionalNotes: 'Notes supplémentaires',
       additionalNotesPlaceholder: 'Détails supplémentaires...',
       history: "Historique d'entretien",
-      suggestions: 'Suggestions'
-
+      suggestions: 'Suggestions',
+      maintenanceLog: 'Carnet d\'entretien',
+      quickAdd: 'Ajouter une maintenance',
+      quickAddTitle: 'Ajouter une entrée de maintenance',
+      quickAddDescription: 'Vous avez bossé sur le flipper ? Faites le savoir avec un message de maintenance',
+      count: 'Entrées de maintenance',
     },
   },
 }

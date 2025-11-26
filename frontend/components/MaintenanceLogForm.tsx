@@ -1,6 +1,6 @@
 "use client"
 
-import {useState} from "react"
+import {useEffect, useState} from "react"
 import {Plus, Trash2} from 'lucide-react'
 import {Button} from "@/components/ui/button"
 import {Input} from "@/components/ui/input"
@@ -20,12 +20,15 @@ import {CreateMaintenanceEntryDto, MaintenanceEntry, MaintenanceType} from "@/co
 import {maintenanceSuggestions} from "@/components/object/MaintenanceSuggestion";
 import {useLanguage} from "@/lib/language-context";
 import {PinballDto} from "@/components/object/PinballDto";
+import {useAuth} from "@/lib/auth-context";
+import {Currencies} from "@/components/object/Currencies";
 
 interface MaintenanceLogFormProps {
-    machine: PinballDto
-    onAddEntry: (entry: MaintenanceEntry) => void
-    onDeleteEntry: (entry: MaintenanceEntry) => void
-    isLoading?: boolean
+    machine: PinballDto,
+    onAddEntry: (entry: MaintenanceEntry) => void,
+    onDeleteEntry: (entry: MaintenanceEntry) => void,
+    isLoading?: boolean,
+    entries: MaintenanceEntry[]
 }
 
 export function MaintenanceLogForm({
@@ -33,18 +36,22 @@ export function MaintenanceLogForm({
                                        onAddEntry,
                                        onDeleteEntry,
                                        isLoading = false,
+                                       entries
                                    }: MaintenanceLogFormProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [formData, setFormData] = useState<MaintenanceEntry>({
-        id:null,
+        id: null,
         date: new Date().toISOString().split("T")[0],
         type: MaintenanceType.cleaning,
         description: "",
-        cost: undefined,
+        cost: null,
+        parts: null,
         notes: "",
     })
     const [showSuggestions, setShowSuggestions] = useState(false)
     const {t} = useLanguage();
+    const {user} = useAuth();
+
     const handleSubmit = () => {
         if (!formData.description.trim()) {
             alert("Veuillez entrer une description")
@@ -53,11 +60,12 @@ export function MaintenanceLogForm({
 
         onAddEntry(formData)
         setFormData({
-            id:null,
+            id: null,
             date: new Date().toISOString().split("T")[0],
             type: MaintenanceType.cleaning,
             description: "",
-            cost: undefined,
+            cost: null,
+            parts: null,
             notes: "",
         })
         setIsOpen(false)
@@ -178,7 +186,7 @@ export function MaintenanceLogForm({
                                     onChange={(e) =>
                                         setFormData({
                                             ...formData,
-                                            cost: e.target.value ? Number(e.target.value) : undefined,
+                                            cost: e.target.value ? Number(e.target.value) : null,
                                         })
                                     }
                                 />
@@ -233,13 +241,13 @@ export function MaintenanceLogForm({
                 </DialogContent>
             </Dialog>
 
-            {machine.maintenanceLogs.length > 0 && (
+            {entries.length > 0 && (
                 <div className="border rounded-lg overflow-hidden">
                     <div className="bg-muted p-3">
                         <h4 className="font-semibold text-sm">{t('maintenance.history')}</h4>
                     </div>
                     <div className="divide-y max-h-96 overflow-y-auto">
-                        {machine.maintenanceLogs
+                        {entries
                             .sort(
                                 (a, b) =>
                                     new Date(b.date).getTime() - new Date(a.date).getTime()
@@ -263,7 +271,8 @@ export function MaintenanceLogForm({
                                                 entry.parts?.length ||
                                                 entry.notes) && (
                                                 <div className="text-xs text-muted-foreground mt-2 space-y-1">
-                                                    {entry.cost && <div>Coût: ${entry.cost.toFixed(2)}</div>}
+                                                    {entry.cost &&
+                                                      <div>Coût: {Currencies[user?.settings.currency as keyof typeof Currencies]}{entry.cost}</div>}
                                                     {entry.parts?.length && (
                                                         <div>Pièces: {entry.parts.join(", ")}</div>
                                                     )}

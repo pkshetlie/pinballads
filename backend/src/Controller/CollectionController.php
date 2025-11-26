@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Dto\PinballCollectionDto;
+use App\Dto\PinballDto;
+use App\Entity\Pinball;
 use App\Entity\PinballCollection;
 use App\Repository\PinballCollectionRepository;
 use App\Service\DtoService;
@@ -121,7 +123,7 @@ final class CollectionController extends AbstractController
         return $this->json(new PinballCollectionDto($pinballCollection));
     }
 
-    #[Route('/api/collection/{id}', name: 'api_collection_list_pinballs', methods: ['GET'])]
+    #[Route('/api/collections/{id}', name: 'api_collection_list_pinballs', methods: ['GET'])]
     public function listPinballs(PinballCollection $pinballCollection, DtoService $dtoService): Response
     {
         if($pinballCollection->getOwner() !== $this->getUser() && !$pinballCollection->isDefault()) {
@@ -129,6 +131,6 @@ final class CollectionController extends AbstractController
                 Response::HTTP_FORBIDDEN);
         }
 
-        return $this->json($dtoService->toDtos($pinballCollection->getPinballs()->toArray()));
+        return $this->json(array_map(fn(Pinball $object) => new PinballDto($object, $this->getUser() === $object->getCurrentOwner()), $pinballCollection->getPinballs()->toArray()));
     }
 }

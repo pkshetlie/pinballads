@@ -26,6 +26,7 @@ export default function EditMachinePage() {
     const [pinball, setPinball] = useState<PinballDto>();
     const {token} = useAuth();
     const {toast} = useToast();
+    const [entries, setEntries] = useState<MaintenanceEntry[]>([]);
     const [progressOpen, setProgressOpen] = useState(false);
     const [progress, setProgress] = useState<'data' | 'images' | 'success' | 'error'>('data');
     const machineId = params.id;
@@ -38,6 +39,11 @@ export default function EditMachinePage() {
             .then(data => setPinball(data))
             .catch((err) => console.error("Erreur lors du chargement de la machine :", err));
     }, [machineId, token]);
+
+    useEffect(() => {
+        setEntries(pinball?.maintenanceLogs || []);
+    }, [pinball]);
+
 
     const handleUpdate = async (formData: MachineFormData) => {
         const formDataImage = new FormData();
@@ -55,21 +61,13 @@ export default function EditMachinePage() {
 
         setProgressOpen(true);
         setProgress('data');
-        formData.maintenanceLogs = pinball?.maintenanceLogs || [];
+        formData.maintenanceLogs = entries || [];
+
         // If all images are valid, proceed with appending the
         try {
             await apiPut(`/api/machine/${machineId}`, formData).then(data => {
 
             });
-
-
-        } catch (error) {
-            toast({
-                title: t('toasts.error'),
-                description: error instanceof Error ? error.message : t('collection.toasts.machineUpdateError'),
-                variant: 'destructive',
-            });
-        }
             try{
 
                 setProgress('images');
@@ -101,15 +99,21 @@ export default function EditMachinePage() {
 
                 await apiPost(`/api/machine/${machineId}/images`, formDataImage).then(data => {
                     setProgress('success');
-                    // setTimeout(function () {
-                    //     router.back()
-                    // }, 2000)
+                    // window.location.;
                 });
                 toast({
-                title: t('toasts.success'),
-                description: t('collection.toasts.machineUpdated'),
-                variant: "success",
-            });
+                    title: t('toasts.success'),
+                    description: t('collection.toasts.machineUpdated'),
+                    variant: "success",
+                });
+
+            } catch (error) {
+                toast({
+                    title: t('toasts.error'),
+                    description: error instanceof Error ? error.message : t('collection.toasts.machineUpdateError'),
+                    variant: 'destructive',
+                });
+            }
 
         } catch (error) {
             toast({
@@ -118,6 +122,7 @@ export default function EditMachinePage() {
                 variant: 'destructive',
             });
         }
+
     };
 
     if (!pinball) {
@@ -130,10 +135,10 @@ export default function EditMachinePage() {
 
     const handleAddMaintenanceEntry = async (entry: MaintenanceEntry) => {
         try {
-            console.log(pinball.maintenanceLogs)
             pinball.maintenanceLogs = [...pinball.maintenanceLogs, entry];
             setPinball(pinball);
-            console.log(pinball.maintenanceLogs)
+            setEntries(pinball.maintenanceLogs);
+
         } catch (error) {
             toast({
                 title: t("Error"),
@@ -144,8 +149,11 @@ export default function EditMachinePage() {
     }
 
     const handleDeleteMaintenanceEntry = (formEntry: MaintenanceEntry) => {
+
         pinball.maintenanceLogs = pinball.maintenanceLogs.filter((entry) => entry !== formEntry);
         setPinball(pinball);
+        setEntries(pinball.maintenanceLogs);
+
     }
 
     return (
@@ -186,10 +194,10 @@ export default function EditMachinePage() {
                     {/* Partie droite */}
                     <div className="w-full lg:w-1/3 px-4 py-8"> {/* Full width par défaut, 1/3 sur grand écran */}
                         <div className="border-t lg:border-t-0 pt-4 mt-4 lg:mt-0">
-                            <h3 className="font-semibold text-lg mb-4">Carnet d'entretien</h3>
+                            <h3 className="font-semibold text-lg mb-4">{t('maintenance.maintenanceLog')}</h3>
                             <MaintenanceLogForm
                                 machine={pinball}
-                                entries={pinball.maintenanceLogs || []}
+                                entries={entries || []}
                                 onAddEntry={(entry) => handleAddMaintenanceEntry(entry)}
                                 onDeleteEntry={handleDeleteMaintenanceEntry}
                             />
