@@ -655,7 +655,7 @@ export default function MyCollectionPage() {
                                                                         </Badge>
                                                                     </div>
                                                                     {machine.isForSale && (
-                                                                        <div class={'pl-2'}>
+                                                                        <div className={'pl-2'}>
                                                                             <div
                                                                                 className="flex items-center gap-1 text-xs text-foreground">
                                                                                 <MapPin className="w-3 h-3"/>
