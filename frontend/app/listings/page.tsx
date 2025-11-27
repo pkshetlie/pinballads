@@ -113,7 +113,7 @@ function FilterSidebar({
 
     const conditions = [
         {key: 'excellent', name: "sell.conditions.excellent", count: 'x'},
-        {key: 'very-good', name: "sell.conditions.veryGood", count: 'x'},
+        {key: 'very-good', name: "sell.conditions.verygood", count: 'x'},
         {key: 'good', name: "sell.conditions.good", count: 'x'},
         {key: 'fair', name: "sell.conditions.fair", count: 'x'},
         {key: 'project', name: "sell.conditions.project", count: 'x'},

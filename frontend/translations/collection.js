@@ -45,7 +45,7 @@ export const collection = {
             },
             conditions: {
                 excellent: "Excellent",
-                veryGood: "Very Good",
+                verygood: "Very Good",
                 good: "Good",
                 fair: "Fair",
                 projectRestauration: "Project / Needs Restoration",
@@ -171,7 +171,7 @@ export const collection = {
             },
             conditions: {
                 excellent: "Excellent",
-                veryGood: "Très bon",
+                verygood: "Très bon",
                 good: "Bon",
                 fair: "Moyen",
                 projectRestauration: "Projet / À restaurer",

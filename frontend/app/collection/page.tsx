@@ -95,7 +95,6 @@ export default function MyCollectionPage() {
     const [showSuggestions, setShowSuggestions] = useState(false)
     const currentSuggestions = maintenanceSuggestions[maintenanceFormData.type] || []
 
-
     const {toast} = useToast()
     const {t} = useLanguage()
     const {user, token} = useAuth()
@@ -193,7 +192,6 @@ export default function MyCollectionPage() {
             const data = await response.json()
             setLocationResults(data)
         } catch (error) {
-            console.error("[v0] Error searching location:", error)
             toast({
                 title: "Erreur",
                 description: "Impossible de rechercher la localisation. Veuillez réessayer.",
@@ -650,20 +648,14 @@ export default function MyCollectionPage() {
                                                             </div>
 
                                                             <div className="space-y-3 bg-muted/50 p-3 rounded-lg">
-                                                                <div className="grid grid-cols-2 gap-3">
+                                                                <div className="flex justify-content-between items-center">
                                                                     <div>
-                                                                        <div
-                                                                            className="text-xs font-medium text-muted-foreground mb-1">État
-                                                                        </div>
                                                                         <Badge variant="outline" className="text-xs">
-                                                                            {machine.condition}
+                                                                            {t(`sell.conditions.${machine.condition.toLowerCase().replace(/[-/\s]/g, "")}`)}
                                                                         </Badge>
                                                                     </div>
-                                                                    {machine.location && (
-                                                                        <div>
-                                                                            <div
-                                                                                className="text-xs font-medium text-muted-foreground mb-1">Localisation
-                                                                            </div>
+                                                                    {machine.isForSale && (
+                                                                        <div class={'pl-2'}>
                                                                             <div
                                                                                 className="flex items-center gap-1 text-xs text-foreground">
                                                                                 <MapPin className="w-3 h-3"/>

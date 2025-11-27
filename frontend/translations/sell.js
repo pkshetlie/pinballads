@@ -56,7 +56,7 @@ export const sell = {
       selectCondition: "Select condition",
       conditions: {
         excellent: "Excellent",
-        veryGood: "Very Good",
+        verygood: "Very Good",
         good: "Good",
         fair: "Fair",
         project: "Project / Needs Restoration",
@@ -168,7 +168,7 @@ export const sell = {
       selectCondition: "Sélectionnez un état",
       conditions: {
         excellent: "Excellent",
-        veryGood: "Très bon",
+        verygood: "Très bon",
         good: "Bon",
         fair: "Moyen",
         project: "Projet / À restaurer",

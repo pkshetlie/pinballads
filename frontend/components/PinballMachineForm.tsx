@@ -293,7 +293,7 @@ export default function MachineForm({initialData, onSubmit, buttonText}: Machine
                                 <SelectTrigger><SelectValue placeholder={t('sell.selectCondition')}/></SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="excellent">{t('sell.conditions.excellent')}</SelectItem>
-                                    <SelectItem value="very-good">{t('sell.conditions.veryGood')}</SelectItem>
+                                    <SelectItem value="very-good">{t('sell.conditions.verygood')}</SelectItem>
                                     <SelectItem value="good">{t('sell.conditions.good')}</SelectItem>
                                     <SelectItem value="fair">{t('sell.conditions.fair')}</SelectItem>
                                     <SelectItem value="project">{t('sell.conditions.project')}</SelectItem>
