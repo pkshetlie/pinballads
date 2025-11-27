@@ -43,6 +43,9 @@ class PinballSale
     #[ORM\Column(type: 'text')]
     private string $city;
 
+    #[ORM\Column(length: 20)]
+    private ?string $condition = null;
+
     #[ORM\Column(
         type: PostGISType::GEOGRAPHY,
         options: ['geometry_type' => 'POINT', 'srid' => 4326],
@@ -202,5 +205,17 @@ class PinballSale
         }
 
         return null;
+    }
+
+    public function getCondition(): ?string
+    {
+        return $this->condition;
+    }
+
+    public function setCondition(string $condition): static
+    {
+        $this->condition = $condition;
+
+        return $this;
     }
 }

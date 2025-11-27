@@ -219,7 +219,6 @@ final class MachineController extends AbstractController
     public function addForSales(
         Request $request,
         Pinball $pinball,
-        DtoService $pinballService,
         TranslatorInterface $translator,
         EntityManagerInterface $entityManager,
     ): Response {
@@ -227,7 +226,6 @@ final class MachineController extends AbstractController
             return $this->json(['error' => $translator->trans('You are not the owner of this machine')],
                 Response::HTTP_FORBIDDEN);
         }
-
 
         $countPinballOnSale = $pinball->getPinballSales()->filter(function(PinballSale $po) {
             if ($po->getSeller() === $this->getUser()) {
@@ -251,6 +249,7 @@ final class MachineController extends AbstractController
             ->setCity($data->location->city)
             ->setGeographyWithPoints($data->location->lon, $data->location->lat)
             ->setCurrency($data->currency)
+            ->setCondition($data->condition ?? $pinball->getCondition())
             ->setStartPrice($data->price)
             ->setSeller($this->getUser());
         $entityManager->persist($pinballSale);
@@ -264,7 +263,6 @@ final class MachineController extends AbstractController
     #[Route('/api/machine/{id}/sell', name: 'api_collection_machine_sell_delete', methods: ['DELETE'])]
     public function deleteSale(
         Pinball $pinball,
-        DtoService $dtoService,
         EntityManagerInterface $entityManager,
         TranslatorInterface $translator,
     ): Response {
@@ -323,7 +321,7 @@ final class MachineController extends AbstractController
             $pinballOnSale->getLongitude() == $data->location->lon &&
             $pinballOnSale->getStartPrice() == $data->price
         ) {
-            return $this->json($pinballService->toDto($pinball));
+            return $this->json(new PinballDto($pinball, true));
         }
 
         if ($pinballOnSale) {
@@ -335,6 +333,7 @@ final class MachineController extends AbstractController
             ->setCity($data->location->city)
             ->setGeographyWithPoints($data->location->lon, $data->location->lat)
             ->setCurrency($data->currency)
+            ->setCondition($data->condition ?? $pinball->getCondition())
             ->setStartPrice($data->price)
             ->setSeller($this->getUser());
         $entityManager->persist($pinballSale);
@@ -349,7 +348,6 @@ final class MachineController extends AbstractController
     #[Route('/api/machine/{id}', name: 'api_collection_machine_get_one', methods: ['GET'])]
     public function getOne(
         Pinball $pinball,
-        DtoService $pinballService,
     ): Response {
         return $this->json(new PinballDto($pinball, $this->getUser() === $pinball->getCurrentOwner()));
     }
@@ -358,7 +356,6 @@ final class MachineController extends AbstractController
     public function addImage(
         Request $request,
         Pinball $pinball,
-        DtoService $pinballService,
         TranslatorInterface $translator,
         EntityManagerInterface $entityManager,
     ): Response {
