@@ -322,14 +322,12 @@ export default function MyCollectionPage() {
 
     const handleProposeExchange = async (machineId: number) => {
         try {
-            console.log("[v0] Proposing machine for exchange:", machineId)
             toast({
                 title: "Succès",
                 description: "Machine proposée à l'échange. Les intéressés peuvent vous contacter.",
             })
             setExchangeDialogOpen(null)
         } catch (error) {
-            console.error("[v0] Error proposing exchange:", error)
             toast({
                 title: "Erreur",
                 description: "Impossible de proposer l'échange.",
@@ -517,7 +515,7 @@ export default function MyCollectionPage() {
                                             {currentCollection && (
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
-                                                        <Button variant="outline" className="gap-2 bg-transparent">
+                                                        <Button variant="outline" className="gap-2 bg-transparent cursor-pointer">
                                                             <Folder className="w-4 h-4"/>
                                                             {currentCollection.name}
                                                             <ChevronDown className="w-4 h-4"/>
@@ -528,7 +526,7 @@ export default function MyCollectionPage() {
                                                             <DropdownMenuItem
                                                                 key={collection.id}
                                                                 onClick={() => handleCollectionChange(collection)}
-                                                                className={currentCollection.id === collection.id ? "bg-primary/10" : ""}
+                                                                className={`${currentCollection.id === collection.id ? "bg-primary/10" : ""} cursor-pointer`}
                                                             >
                                                                 <div className="flex items-center gap-2 w-full">
                                                                     <Folder className="w-4 h-4"/>
@@ -549,9 +547,9 @@ export default function MyCollectionPage() {
                                                         ))}
                                                         <DropdownMenuSeparator/>
                                                         <DropdownMenuItem asChild>
-                                                            <Link href="/collections" className="w-full">
+                                                            <Link href="/collections" className="w-full cursor-pointer">
                                                                 <Plus className="w-4 h-4 mr-2"/>
-                                                                Gérer les collections
+                                                                {t('collection.manageCollections')}
                                                             </Link>
                                                         </DropdownMenuItem>
                                                     </DropdownMenuContent>
@@ -560,15 +558,16 @@ export default function MyCollectionPage() {
                                         </div>
                                         <p className="text-muted-foreground">
                                             {currentCollection
-                                                ? `${machines.length} machines dans "${currentCollection.name}"`
-                                                : `${machines.length} machines dans votre collection`}
+                                                ? t('collection.countMachineInCollectionName', {count:machines.length, name: currentCollection.name}, machines.length)
+                                                : t('collection.countMachineInCollection', {count:machines.length}, machines.length)
+                                            }
                                         </p>
                                     </div>
                                 </div>
                                 <Button onClick={(e) => handleAddMachine(currentCollection?.id ?? 0)}
                                         className="gap-2 cursor-pointer">
                                     <Plus className="w-4 h-4"/>
-                                    Ajouter une machine
+                                    {t('collection.addMachine')}
                                 </Button>
                             </div>
 
@@ -576,14 +575,14 @@ export default function MyCollectionPage() {
                                 <Card className="p-12 text-center">
                                     <div className="text-muted-foreground">
                                         <p className="text-lg mb-2">
-                                            {currentCollection ? `"${currentCollection.name}" est vide` : "Votre Collection est vide"}
+                                            {currentCollection ? t('collection.withNameIsEmpty', {name: currentCollection.name}) : t('collection.isEmpty')}
                                         </p>
-                                        <p className="text-sm mb-4">Commencez par ajouter votre première machine
-                                            pinball</p>
+                                        <p className="text-sm mb-4">
+                                            {t('collection.addYourFirstMachine')}</p>
                                         <Button onClick={(e) => handleAddMachine(currentCollection?.id ?? 0)}
                                                 className="gap-2 cursor-pointer">
                                             <Plus className="w-4 h-4"/>
-                                            Ajouter une machine
+                                            {t('collection.addMachine')}
                                         </Button>
                                     </div>
                                 </Card>
@@ -594,14 +593,14 @@ export default function MyCollectionPage() {
                                               className="group hover:shadow-md transition-all duration-200 p-0">
                                             <CardContent className="p-0">
                                                 <div
-                                                    className="grid grid-cols-1 lg:grid-cols-4 gap-0 h-full flex items-center">
+                                                    className="grid grid-cols-1 lg:grid-cols-4 gap-0 h-full items-center">
                                                     {/* Left Section - Portrait Image */}
                                                     <div className="lg:col-span-1">
                                                         <div className="relative h-48 lg:h-full">
                                                             <PinballImageCarousel
                                                                 machine={machine}
                                                                 showActions={false}
-                                                                className="rounded-t-lg lg:rounded-l-lg lg:rounded-tr-none overflow-hidden h-full"
+                                                                className="overflow-hidden h-full"
                                                             />
                                                             <div className="absolute top-2 left-2 flex gap-1 flex-wrap">
                                                                 <Badge
@@ -622,8 +621,8 @@ export default function MyCollectionPage() {
                                                     </div>
 
                                                     {/* Middle Section - Info and Features */}
-                                                    <div className="lg:col-span-2 p-4 flex flex-col justify-between">
-                                                        <div className="space-y-4">
+                                                    <div className="lg:col-span-2 h-full p-2">
+                                                        <div className=" flex flex-col justify-between h-full">
                                                             {/* Header Info */}
                                                             <div className="space-y-2">
                                                                 <div className="flex items-start justify-between gap-2">
@@ -644,10 +643,10 @@ export default function MyCollectionPage() {
                                                                         </div>
                                                                     )}
                                                                 </div>
-                                                                <p className="text-sm text-muted-foreground">{machine.description}</p>
+                                                                <p className="text-sm text-muted-foreground line-clamp-6">{machine.description}</p>
                                                             </div>
 
-                                                            <div className="space-y-3 bg-muted/50 p-3 rounded-lg">
+                                                            <div className="space-y-2 bg-muted/50 p-2 rounded-lg">
                                                                 <div className="flex justify-content-between items-center">
                                                                     <div>
                                                                         <Badge variant="outline" className="text-xs">
@@ -666,19 +665,19 @@ export default function MyCollectionPage() {
                                                                 </div>
 
                                                                 <div className="space-y-2 pt-2 border-t">
+                                                                    {Object.values(machine.features).filter((feature) => feature).length == 0 && (<div
+                                                                        className="text-xs font-medium text-muted-foreground">
+                                                                        {t('collection.noPinballFeatures')}
+                                                                    </div>)}
                                                                     <div
-                                                                        className="text-xs font-medium text-muted-foreground">Éléments
-                                                                        du flipper
-                                                                    </div>
-                                                                    <div
-                                                                        className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+                                                                        className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
                                                                         {Object.entries(DefaultFeatures).map(([category, features]) => {
                                                                             const hasFeatures = Object.entries(features).some(([feature]) => machine.features[feature as keyof FeaturesType]);
 
                                                                             if (!hasFeatures) return null;
 
                                                                             return (
-                                                                                <div key={category} className="mb-4">
+                                                                                <div key={category} className="mb-2">
                                                                                     <h4 className="font-semibold mb-2 capitalize">{t(`sell.${category}`)}</h4>
                                                                                     {Object.entries(features).length > 0 && !Object.entries(features).some(([feature]) => machine.features[feature as keyof FeaturesType]) ? (
                                                                                         <div
@@ -702,46 +701,8 @@ export default function MyCollectionPage() {
                                                                             );
                                                                         })}
                                                                     </div>
-
-                                                                    {/*<div className="grid grid-cols-2 gap-2">*/}
-                                                                    {/*    <div className="text-xs space-y-1">*/}
-                                                                    {/*        <div className="flex items-start gap-1">*/}
-                                                                    {/*            <span className="text-primary mt-0.5">•</span>*/}
-                                                                    {/*            <span className="text-foreground">Flippers actifs</span>*/}
-                                                                    {/*        </div>*/}
-                                                                    {/*        <div className="flex items-start gap-1">*/}
-                                                                    {/*            <span className="text-primary mt-0.5">•</span>*/}
-                                                                    {/*            <span className="text-foreground">Bumpers</span>*/}
-                                                                    {/*        </div>*/}
-                                                                    {/*        <div className="flex items-start gap-1">*/}
-                                                                    {/*            <span className="text-primary mt-0.5">•</span>*/}
-                                                                    {/*            <span className="text-foreground">Rampes</span>*/}
-                                                                    {/*        </div>*/}
-                                                                    {/*    </div>*/}
-                                                                    {/*    <div className="text-xs space-y-1">*/}
-                                                                    {/*        <div className="flex items-start gap-1">*/}
-                                                                    {/*            <span className="text-primary mt-0.5">•</span>*/}
-                                                                    {/*            <span className="text-foreground">Cibles</span>*/}
-                                                                    {/*        </div>*/}
-                                                                    {/*        <div className="flex items-start gap-1">*/}
-                                                                    {/*            <span className="text-primary mt-0.5">•</span>*/}
-                                                                    {/*            <span className="text-foreground">Trous de sortie</span>*/}
-                                                                    {/*        </div>*/}
-                                                                    {/*        <div className="flex items-start gap-1">*/}
-                                                                    {/*            <span className="text-primary mt-0.5">•</span>*/}
-                                                                    {/*            <span className="text-foreground">Moteurs</span>*/}
-                                                                    {/*        </div>*/}
-                                                                    {/*    </div>*/}
-                                                                    {/*</div>*/}
                                                                 </div>
                                                             </div>
-
-                                                            {/*{machine.isForSale && (*/}
-                                                            {/*    <div className="flex items-center gap-1 text-xs text-muted-foreground">*/}
-                                                            {/*        <Eye className="w-3 h-3" />*/}
-                                                            {/*        {machine.views} vues*/}
-                                                            {/*    </div>*/}
-                                                            {/*)}*/}
                                                         </div>
                                                     </div>
 

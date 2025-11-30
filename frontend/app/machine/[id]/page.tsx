@@ -37,7 +37,11 @@ export default function EditMachinePage() {
 
         apiGet(`/api/machine/${machineId}`)
             .then(data => setPinball(data))
-            .catch((err) => console.error("Erreur lors du chargement de la machine :", err));
+            .catch((err) => toast({
+                title: t('toasts.error'),
+                description: t('collection.toasts.chooseAMachineInList'),
+                variant: "destructive",
+            }));
     }, [machineId, token]);
 
     useEffect(() => {
@@ -99,7 +103,7 @@ export default function EditMachinePage() {
 
                 await apiPost(`/api/machine/${machineId}/images`, formDataImage).then(data => {
                     setProgress('success');
-                    // window.location.;
+                    window.location.href= '/collection';
                 });
                 toast({
                     title: t('toasts.success'),

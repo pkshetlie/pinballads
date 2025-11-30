@@ -1,7 +1,7 @@
 export const footer = {
     en: {
         footer: {
-            premierMarketplace: "The premier marketplace for pinball enthusiasts worldwide.",
+            premierMarketplace: "One day, the first marketplace for pinball enthusiasts worldwide.",
             marketplace: "Marketplace",
             browseMachines: "Browse Machines",
             sellYourMachine: "Sell Your Machine",

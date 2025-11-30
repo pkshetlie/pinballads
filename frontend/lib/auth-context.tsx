@@ -61,7 +61,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     localStorage.setItem('token', newToken);
                     setToken(newToken);
                 } catch (error) {
-                    console.error('Erreur lors du rafraîchissement du token :', error);
                     logout();
                 }
             }

@@ -350,16 +350,14 @@ export default function CollectionsPage() {
                                             </CardContent>
                                             <CardFooter className="pt-0">
                                                 <div className="flex gap-2 w-full">
-                                                    <Button asChild size="sm" className="flex-1">
-                                                        <Link href={`/collection/${collection.id}`}>{t('collection.see')}</Link>
-                                                    </Button>
                                                     <Button
                                                         size="sm"
-                                                        variant="outline"
-                                                        className="gap-2 bg-transparent cursor-pointer"
+                                                        variant="secondary"
+                                                        className="gap-2 cursor-pointer"
                                                         onClick={() => handleEditCollection(collection)}
                                                     >
                                                         <Edit className="w-4 h-4"/>
+                                                        {t('collection.edit')}
                                                     </Button>
                                                     {collection.isDefault ? <></> : (
                                                         <Dialog

@@ -13,6 +13,7 @@ import {privacyPolicy} from "@/translations/privacy_policy";
 import {conversation} from "@/translations/conversation";
 import {maintenance} from "@/translations/maintenance";
 import {features} from "@/translations/features";
+import {settings} from "@/translations/settings";
 
 export const translations = {
     'en': {
@@ -37,6 +38,7 @@ export const translations = {
         ...conversation.en,
         ...maintenance.en,
         ...features.en,
+        ...settings.en,
 
         // Machine details
         viewDetails: "View Details",
@@ -79,6 +81,7 @@ export const translations = {
         ...conversation.fr,
         ...maintenance.fr,
         ...features.fr,
+        ...settings.fr,
         // Machine details
         viewDetails: "Voir Détails",
         contactSeller: "Contacter Vendeur",

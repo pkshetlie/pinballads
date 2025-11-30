@@ -16,7 +16,6 @@ export function isTokenExpired(token: string): boolean {
     const now = Math.floor(Date.now() / 1000);
     return now >= payload.exp; // "exp" est la clé d'expiration JWT
   } catch (error) {
-    console.error('Erreur lors de la vérification du token :', error);
     return true; // Considérer invalide si erreur
   }
 }

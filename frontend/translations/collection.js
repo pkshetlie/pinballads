@@ -13,6 +13,7 @@ export const collection = {
                 collectionUpdated: 'Collection updated',
                 collectionDeleted: 'Collection deleted',
                 cantLoadCollections: 'Failed to load your collections',//"Impossible de charger vos collections. Veuillez réessayer."
+                cantLoadMachine: 'Failed to load your pinball machine',//"Impossible de charger vos collections. Veuillez réessayer."
                 machineUpdated: "Pinball upated",
                 chooseAMachineInList: "Choose a pinball in the list",
                 machineCreated: "Pinball created, you are going to be redirected to your collection",
@@ -50,6 +51,14 @@ export const collection = {
                 fair: "Fair",
                 projectRestauration: "Project / Needs Restoration",
             },
+            manageCollections: 'Manage collections',
+            countMachineInCollectionName:'{{count}} pinball machine in the collection "{{name}}"|{{count}} pinball machines in the collection "{{name}}"',
+            countMachineInCollection: '{{count}} pinball machine in the collection|{{count}} pinball machines in the  collection',
+            addYourFirstMachine: 'Start by adding your first pinball machine',
+            withNameIsEmpty: '"{{name}}" is empty',
+            isEmpty: 'The collection is empty',
+            pinballFeatures: 'Pinball Features',
+            noPinballFeatures: 'No pinball feature set',
             confirmDeleteSell: 'You are about to delete the sale for "{{machine}}". Are you sure you want to continue?',
             putSell: 'Put on sale',
             sellDescription:  'Set the selling price for "{{machine}}". This machine will be visible in public listings.',
@@ -121,7 +130,7 @@ export const collection = {
             saveDraft: "Save as Draft",
             publishListing: "Publish Listing",
             updateMachine: "Update Pinball",
-            addMachine: 'Add flipper'
+            addMachine: 'Add a pinball machine'
 
         },
     },
@@ -139,6 +148,7 @@ export const collection = {
                 collectionUpdated: "Collection mise à jour",
                 collectionDeleted: "Collection supprimée",
                 cantLoadCollections: "Impossible de charger vos collections. Veuillez réessayer.",
+                cantLoadMachine: 'Impossible de charger votre flipper',
                 machineUpdated: "Flipper mis à jour",
                 machineCreated: "Flipper ajouté, vous allez etre redirigé vers votre collection",
                 chooseAMachineInList: "Choisissez un flipper dans la liste",
@@ -176,7 +186,15 @@ export const collection = {
                 fair: "Moyen",
                 projectRestauration: "Projet / À restaurer",
             },
+            manageCollections: 'Gérer les collections',
+            countMachineInCollectionName:'{{count}} flipper dans la collection "{{name}}"|{{count}} flippers dans la collection "{{name}}"',
+            countMachineInCollection: '{{count}} flipper dans la collection|{{count}} flippers dans la collection',
             confirmDeleteSell: 'Vous êtes sur le point de supprimer la vente pour « {{machine}} ». Voulez-vous vraiment continuer ?',
+            addYourFirstMachine: 'Commencez par ajouter votre premier flipper',
+            pinballFeatures: 'Éléments du flipper',
+            noPinballFeatures: 'Pas d\'élément du flipper renseigné',
+            withNameIsEmpty: '"{{name}}" est vide',
+            isEmpty: 'La collection est vide',
             putSell: 'Mettre en vente',
             sellDescription:  'Définissez le prix de vente pour "{{machine}}". Cette machine sera visible dans les annonces publiques.',
             editSell: 'Modifier la vente',
@@ -247,7 +265,7 @@ export const collection = {
             saveDraft: "Enregistrer comme Brouillon",
             publishListing: "Publier l'Annonce",
             updateMachine: 'Mettre à jour le flipper',
-            addMachine: 'Ajouter le flipper'
+            addMachine: 'Ajouter un flipper'
         },
     },
 }

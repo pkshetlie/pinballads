@@ -97,7 +97,6 @@ async function savePinballData() {
 
     return data
   } catch (error) {
-    console.error("[v0] Error saving pinball data:", error)
     throw error
   }
 }

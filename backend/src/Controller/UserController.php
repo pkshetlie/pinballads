@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller;
 
 use App\Dto\PrivateUserDto;
@@ -10,7 +11,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Contracts\Translation\TranslatableInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UserController extends AbstractController
@@ -22,8 +22,12 @@ class UserController extends AbstractController
     }
 
     #[Route('/api/settings', methods: ['POST'])]
-    public function settingsSave(Request $request, UserRepository $userRepository, EntityManagerInterface $entityManager, TranslatorInterface $translator): Response
-    {
+    public function settingsSave(
+        Request $request,
+        UserRepository $userRepository,
+        EntityManagerInterface $entityManager,
+        TranslatorInterface $translator
+    ): Response {
         $content = json_decode($request->getContent(), true);
 
         $settings = $this->getUser()->getSettings();
@@ -61,10 +65,17 @@ class UserController extends AbstractController
 
             if ($canChange) {
                 $user->setDisplayName($content['user']['displayName']);
-                $settings['lastUsernameChange'] = (new \DateTimeImmutable('now', new \DateTimeZone('UTC')))->format(DATE_ATOM);
+                $settings['lastUsernameChange'] = (new \DateTimeImmutable('now', new \DateTimeZone('UTC')))->format(
+                    DATE_ATOM
+                );
             } else {
-                return $this->json(['error' => $translator->trans('You can only change your username every 30 days')], Response::HTTP_BAD_REQUEST);
+                return $this->json(['error' => $translator->trans('You can only change your username every 30 days')],
+                    Response::HTTP_BAD_REQUEST);
             }
+        }
+
+        if (!empty($content['settings']['language'])) {
+            $user->setLanguage($content['settings']['language']);
         }
 
         $user->setSettings([$settings, ...$content['settings']]);

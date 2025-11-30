@@ -11,6 +11,7 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { LanguageToggle } from "@/components/language-toggle"
 import { useLanguage } from "@/lib/language-context"
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 // Mock user data
 const user = {
@@ -351,87 +352,7 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="bg-card border-t py-12 mt-16">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                  <span className="text-primary-foreground font-bold text-lg">P</span>
-                </div>
-                <span className="text-xl font-bold text-foreground">Crazy-Pinball</span>
-              </div>
-              <p className="text-muted-foreground text-sm">
-                The premier marketplace for pinball enthusiasts worldwide.
-              </p>
-            </div>
-            <div>
-              <h5 className="font-semibold text-foreground mb-3">Marketplace</h5>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Browse Machines
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Sell Your Machine
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Price Guide
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h5 className="font-semibold text-foreground mb-3">Support</h5>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Help Center
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Safety Tips
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Contact Us
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h5 className="font-semibold text-foreground mb-3">Community</h5>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Forums
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Events
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Newsletter
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; 2025 Crazy-Pinball. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer/>
     </div>
   )
 }

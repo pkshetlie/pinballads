@@ -106,13 +106,13 @@ final class MachineController extends AbstractController
 
         $features = [];
         foreach ($data->features as $fkey => $feature) {
-            if (is_array($feature)) {
+            // if (is_array($feature)) {
                 foreach ($feature as $key => $value) {
                     $features[$key] = $value;
                 }
-            } else {
-                $features[$fkey] = $feature;
-            }
+            // } else {
+            //     $features[$fkey] = $feature;
+            // }
         }
 
         $pinball

@@ -76,12 +76,6 @@ export default function SignUpPage() {
     }
 
     try {
-      console.log({
-        email: formData.get('email'),
-        password: formData.get('password'),
-        username: formData.get('name'),
-        language: language,
-      })
         const response = await fetch(`${config.API_BASE_URL}register`, {
             method: "POST",
             headers: {
@@ -103,7 +97,6 @@ export default function SignUpPage() {
             window.location.href = `/signin?email=${encodeURIComponent(email as string)}`
         }
     } catch (error) {
-      console.log(error)
       setError(error instanceof Error ? error.message : t("common.error"))
     } finally {
       setIsLoading(false)

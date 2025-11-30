@@ -181,7 +181,6 @@ export default function SettingsPage() {
             // In production, this would log out the user and redirect
             window.location.href = "/"
         } catch (error) {
-            console.error("Error deleting account:", error)
             toast({
                 title: "Erreur",
                 description: "Impossible de supprimer le compte",
@@ -196,8 +195,8 @@ export default function SettingsPage() {
             <Navbar></Navbar>
             <div className="container mx-auto px-4 py-8 max-w-4xl">
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-foreground mb-2">Paramètres</h1>
-                    <p className="text-muted-foreground">Gérez vos préférences et informations personnelles</p>
+                    <h1 className="text-3xl font-bold text-foreground mb-2">{t('settings.title')}</h1>
+                    <p className="text-muted-foreground">{t('settings.description')}</p>
                 </div>
 
                 <div className="space-y-6">
@@ -205,9 +204,11 @@ export default function SettingsPage() {
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <User className="w-5 h-5"/>
-                                Informations du compte
+                                {t('settings.accountInformations.title')}
                             </CardTitle>
-                            <CardDescription>Gérez vos informations personnelles</CardDescription>
+                            <CardDescription>
+                                {t('settings.accountInformations.description')}
+                            </CardDescription>
                         </CardHeader>
 
                         <CardContent className="space-y-4">
@@ -237,35 +238,36 @@ export default function SettingsPage() {
                             {/*    </div>*/}
                             {/*</div>*/}
                             <div className="space-y-2">
-                                <Label htmlFor="full-name">Nom affiché</Label>
+                                <Label htmlFor="full-name">
+                                    {t('settings.accountInformations.displayedName')}
+                                </Label>
                                 <Input
                                     id="full-name"
                                     type="text"
                                     disabled={nextUsernameChangeDate != null}
-                                    placeholder="Votre nom complet"
+                                    placeholder={t('settings.accountInformations.displayedNamePlaceholder')}
                                     value={fullName}
-                                    onChange={(e) => setFullName(e.target.value)}
+                                    onChange={(e) => setFullName(e.target.value || "")}
                                 />
-                                <small className={'text-destructive'}>{nextUsernameChangeDate && (<>Prochain changement
-                                    possible dans {nextUsernameChangeDate}</>)}</small>
+                                <small className={'text-destructive'}>{nextUsernameChangeDate && (<>
+                                    {t('settings.accountInformations.displayedNameNextChange', {nextUsernameChangeDate:nextUsernameChangeDate})}</>)}</small>
                             </div>
                             <div className="flex items-center justify-between">
                                 <div className="space-y-0.5">
-                                    <Label htmlFor="profile-public cursor-pointer">Profil public</Label>
+                                    <Label htmlFor="profile-public cursor-pointer">{t('settings.accountInformations.publicProfile')}</Label>
                                     <p className="text-sm text-muted-foreground">
-                                        Permettre aux autres utilisateurs de voir votre profil (seules les collections
-                                        publiques sont visibles)
+                                        {t('settings.accountInformations.publicProfileHelper')}
                                     </p>
                                 </div>
                                 <Switch className={'cursor-pointer'} id="profile-public" checked={profilePublic} onCheckedChange={setProfilePublic}/>
                             </div>
                             <Separator/>
                             <div className="space-y-2">
-                                <Label htmlFor="email">Email (reste privé)</Label>
+                                <Label htmlFor="email">{t('settings.accountInformations.email')}</Label>
                                 <Input
                                     id="email"
                                     type="email"
-                                    placeholder="votre@email.com"
+                                    placeholder={t('settings.accountInformations.emailPlaceholder')}
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                 />
@@ -277,15 +279,16 @@ export default function SettingsPage() {
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <MapPin className="w-5 h-5"/>
-                                Préférences de recherche
+                                {t('settings.searchPreferences.title')}
                             </CardTitle>
                             <CardDescription></CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
                                 <div>
-                                    <Label htmlFor="city-search pb-2">Définissez votre ville pour voir les annonces à
-                                        proximité</Label>
+                                    <Label htmlFor="city-search pb-2">
+                                        {t('settings.searchPreferences.defineACity')}
+                                    </Label>
                                     <InputCity onSelected={(city) => {setSelectedLocation(city)}} presetLocation={selectedLocation}/>
                                     {selectedLocation?.lat && (<div className={`my-5 `}>
                                             <SliderMax
@@ -311,10 +314,12 @@ export default function SettingsPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="currency-select">Devise</Label>
+                                <Label htmlFor="currency-select">
+                                    {t('settings.searchPreferences.currency')}
+                                </Label>
                                 <Select value={currency} onValueChange={setCurrency}>
                                     <SelectTrigger id="currency-select" className="cursor-pointer">
-                                        <SelectValue placeholder="Sélectionner une devise"/>
+                                        <SelectValue placeholder={t('settings.searchPreferences.currencyPlaceholder')}/>
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="EUR">€ Euro (EUR)</SelectItem>
@@ -330,31 +335,33 @@ export default function SettingsPage() {
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <Palette className="w-5 h-5"/>
-                                Thème
+                                {t('settings.theme.title')}
                             </CardTitle>
-                            <CardDescription>Choisissez l'apparence de l'interface</CardDescription>
+                            <CardDescription>{t('settings.theme.description')}</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-4">
-                                <Label htmlFor="theme-select">Thème de l'interface</Label>
+                                <Label htmlFor="theme-select">{t('settings.theme.uiColor')}</Label>
                                 <Select value={theme} onValueChange={setTheme}>
                                     <SelectTrigger id="theme-select">
-                                        <SelectValue placeholder="Sélectionner un thème"/>
+                                        <SelectValue placeholder={t('settings.theme.placeholder')}/>
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="light">Clair</SelectItem>
-                                        <SelectItem value="dark">Sombre</SelectItem>
-                                        <SelectItem value="system">Système</SelectItem>
+                                        <SelectItem value="light">{t('settings.theme.light')}</SelectItem>
+                                        <SelectItem value="dark">{t('settings.theme.dark')}</SelectItem>
+                                        <SelectItem value="system">{t('settings.theme.system')}</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
                             <div className="space-y-4">
-                                <Label htmlFor="language-select">Langue de l'interface</Label>
+                                <Label htmlFor="language-select">
+                                    {t('settings.theme.uiLanguage')}
+                                </Label>
                                 <Select value={language} onValueChange={(value) => {
                                     setLanguage(value as "en" | "fr")
                                 }}>
                                     <SelectTrigger id="language-select" className="cursor-pointer">
-                                        <SelectValue placeholder="Sélectionner une langue"/>
+                                        <SelectValue placeholder={t('settings.theme.uiLanguage')}/>
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="en">🇺🇸 English</SelectItem>
@@ -370,17 +377,24 @@ export default function SettingsPage() {
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <Bell className="w-5 h-5"/>
-                                Notifications
+                                {t('settings.notifications.title')}
+
                             </CardTitle>
-                            <CardDescription>Gérez vos préférences de notification</CardDescription>
+                            <CardDescription>
+                                {t('settings.notifications.description')}
+                                </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <div className="space-y-0.5">
-                                    <Label htmlFor="message-notifications" className="cursor-pointer">Notifications de
-                                        messages</Label>
-                                    <p className="text-sm text-muted-foreground">Recevoir des emails pour les nouveaux
-                                        messages</p>
+                                    <Label htmlFor="message-notifications" className="cursor-pointer">
+                                        {t('settings.notifications.message')}
+
+                                    </Label>
+                                    <p className="text-sm text-muted-foreground">
+                                        {t('settings.notifications.messageHelper')}
+
+                                    </p>
                                 </div>
                                 <Switch className="cursor-pointer"
                                         id="message-notifications"
@@ -391,10 +405,12 @@ export default function SettingsPage() {
                             <Separator/>
                             <div className="flex items-center justify-between">
                                 <div className="space-y-0.5">
-                                    <Label htmlFor="email-notifications" className="cursor-pointer">Notifications par
-                                        email</Label>
-                                    <p className="text-sm text-muted-foreground">Recevoir des emails pour les nouvelles
-                                        annonces</p>
+                                    <Label htmlFor="email-notifications" className="cursor-pointer">
+                                        {t('settings.notifications.email')}
+                                    </Label>
+                                    <p className="text-sm text-muted-foreground">
+                                        {t('settings.notifications.emailHelper')}
+                                    </p>
                                 </div>
                                 <Switch id="email-notifications" className="cursor-pointer" checked={emailNotifications}
                                         onCheckedChange={setEmailNotifications}/>
@@ -403,9 +419,12 @@ export default function SettingsPage() {
 
                             <div className="flex items-center justify-between">
                                 <div className="space-y-0.5">
-                                    <Label htmlFor="newsletter" className="cursor-pointer">Newsletter</Label>
-                                    <p className="text-sm text-muted-foreground">Recevoir la newsletter avec les
-                                        actualités et offres</p>
+                                    <Label htmlFor="newsletter" className="cursor-pointer">
+                                        {t('settings.notifications.newsletter')}
+                                    </Label>
+                                    <p className="text-sm text-muted-foreground">
+                                        {t('settings.notifications.newsletterHelper')}
+                                    </p>
                                 </div>
                                 <Switch className="cursor-pointer" id="newsletter" checked={newsletter}
                                         onCheckedChange={setNewsletter}/>
@@ -417,54 +436,16 @@ export default function SettingsPage() {
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <LogOutIcon className="w-5 h-5"/>
-                                {t("auth.logout")}
+                                {t('settings.logout')}
                             </CardTitle>
-                            <CardDescription>On se revoit bientôt ?</CardDescription>
+                            <CardDescription></CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                            <Button variant="secondary" onClick={()=>logout()} className="w-full cursor-pointer">
-                               {t("auth.logout")}
+                               {t('settings.logout')}
                            </Button>
                         </CardContent>
                     </Card>
-
-                    {/*<Card className="border-destructive">*/}
-                    {/*    <CardHeader>*/}
-                    {/*        <CardTitle className="flex items-center gap-2 text-destructive">*/}
-                    {/*            <Trash2 className="w-5 h-5" />*/}
-                    {/*            Zone de danger*/}
-                    {/*        </CardTitle>*/}
-                    {/*        <CardDescription>Actions irréversibles sur votre compte</CardDescription>*/}
-                    {/*    </CardHeader>*/}
-                    {/*    <CardContent>*/}
-                    {/*        <AlertDialog>*/}
-                    {/*            <AlertDialogTrigger asChild>*/}
-                    {/*                <Button variant="destructive" className="gap-2">*/}
-                    {/*                    <Trash2 className="w-4 h-4" />*/}
-                    {/*                    Supprimer mon compte*/}
-                    {/*                </Button>*/}
-                    {/*            </AlertDialogTrigger>*/}
-                    {/*            <AlertDialogContent>*/}
-                    {/*                <AlertDialogHeader>*/}
-                    {/*                    <AlertDialogTitle>Êtes-vous absolument sûr ?</AlertDialogTitle>*/}
-                    {/*                    <AlertDialogDescription>*/}
-                    {/*                        Cette action est irréversible. Cela supprimera définitivement votre compte et toutes vos données*/}
-                    {/*                        de nos serveurs, y compris vos collections et annonces.*/}
-                    {/*                    </AlertDialogDescription>*/}
-                    {/*                </AlertDialogHeader>*/}
-                    {/*                <AlertDialogFooter>*/}
-                    {/*                    <AlertDialogCancel>Annuler</AlertDialogCancel>*/}
-                    {/*                    <AlertDialogAction*/}
-                    {/*                        onClick={handleDeleteAccount}*/}
-                    {/*                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"*/}
-                    {/*                    >*/}
-                    {/*                        Oui, supprimer mon compte*/}
-                    {/*                    </AlertDialogAction>*/}
-                    {/*                </AlertDialogFooter>*/}
-                    {/*            </AlertDialogContent>*/}
-                    {/*        </AlertDialog>*/}
-                    {/*    </CardContent>*/}
-                    {/*</Card>*/}
 
                     <div className="flex justify-end gap-4">
 
@@ -472,12 +453,12 @@ export default function SettingsPage() {
                             {isSaving ? (
                                 <>
                                     <Loader2 className="w-4 h-4 animate-spin"/>
-                                    Enregistrement...
+                                    {t('settings.saving')}
                                 </>
                             ) : (
                                 <>
                                     <Save className="w-4 h-4"/>
-                                    Enregistrer les modifications
+                                    {t('settings.save')}
                                 </>
                             )}
                         </Button>
