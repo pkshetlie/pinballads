@@ -8,7 +8,7 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const id = params.id;
-
+console.log('JE suis call !')
     // Appel API côté serveur (pas en client !)
     const res = await fetch(`${config.API_BASE_URL}/public/sales/machine/${id}`, {
         cache: "no-store"

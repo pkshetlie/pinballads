@@ -997,14 +997,7 @@ export default function MyCollectionPage() {
                                                                                 htmlFor="location-search">{t('collection.machine.locationCity')} *</Label>
                                                                             <InputCity
                                                                                 onSelected={(location: QueryLocationResult | null) => setSelectedLocation(location)}
-                                                                                presetLocation={
-                                                                                    machine.location?.lat != null && machine.location?.lon != null ? {
-                                                                                        lat: machine.location?.lat,
-                                                                                        lon: machine.location?.lon,
-                                                                                        city: machine.location?.city,
-                                                                                        display_name: machine.location?.city
-                                                                                    } : null
-                                                                                }></InputCity>
+                                                                                presetLocation={selectedLocation}></InputCity>
                                                                         </div>
                                                                     </div>
                                                                     <DialogFooter>

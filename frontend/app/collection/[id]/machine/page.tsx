@@ -36,14 +36,14 @@ export default function MachineCollectionPage() {
 
             await apiPost(`/api/collection/${id}/machine`, formData).then((data) => {
                 const machineId = data.id;
+                const images = formData.images;
 
-                if(formData.images.length === 0) {
+                if(images.length === 0) {
                     setTimeout(function () {
-                        window.location.href = `/collection/${id}`;
-                    }, 2000)
+                        window.location.href = `/collection`;
+                    }, 500)
                 }
                 
-                const images = formData.images;
 
                 const formDataImage = new FormData();
 
@@ -57,8 +57,8 @@ export default function MachineCollectionPage() {
                 apiPost(`/api/machine/${machineId}/images`, formDataImage).then(() => {
                     setProgress('success');
                     setTimeout(function () {
-                        window.location.href = `/collection/${id}`;
-                    }, 2000)
+                        window.location.href = `/collection`;
+                    }, 500)
                 });
             });
 
